@@ -1,130 +1,106 @@
 import { MaintenanceConfig, PageConfig, WorkerConfig } from './types/config'
 
 const pageConfig: PageConfig = {
-  // Title for your status page
-  title: "lyc8503's Status Page",
-  // Links shown at the header of your status page, could set `highlight` to `true`
+  // 状态页面的标题
+  title: "Nianshu's Status Page",
+  // 显示在状态页面顶部的链接，可以将 `highlight` 设置为 `true` 来高亮显示
   links: [
     { link: 'https://mv.nianshu2022.cn/', label: 'MoonTV' },
     { link: 'https://time.nianshu2022.cn/', label: 'WithYou' },
     { link: 'mailto:ouerqixi@nianshu2022.cn', label: 'Email Me', highlight: true },
   ],
-  // [OPTIONAL] Group your monitors
-  // If not specified, all monitors will be shown in a single list
-  // If specified, monitors will be grouped and ordered, not-listed monitors will be invisble (but still monitored)
-  group: {
-    '🌐 Public (example group name)': ['foo_monitor', 'bar_monitor', 'more monitor ids...'],
-    '🔐 Private': ['test_tcp_monitor'],
-  },
-  // [OPTIONAL] Set the path to your favicon, default to '/favicon.png' if not specified
+  // [可选] 对监控项进行分组
+  // 如果不指定，所有监控项将显示在一个列表中
+  // 如果指定，监控项将被分组和排序，未列出的监控项将不可见（但仍会被监控）
+  // group: {
+  //   '🌐 Public (example group name)': ['foo_monitor', 'bar_monitor', 'more monitor ids...'],
+  //   '🔐 Private': ['test_tcp_monitor'],
+  // },
+  // [可选] 设置网站图标的路径，如果未指定则默认为 '/favicon.png'
   // favicon: 'https://example.com/favicon.ico',
-  // [OPTIONAL] Set the path to your logo, default to '/logo.svg' if not specified
+  // [可选] 设置网站徽标的路径，如果未指定则默认为 '/logo.svg'
   // logo: 'https://example.com/logo.svg',
-  // [OPTIONAL] Maintenance related settings
+  // [可选] 维护相关设置
   maintenances: {
-    // [OPTIONAL] The color of upcoming maintenance alerts, default to 'gray'
-    // Active alerts will always use the color specified in the MaintenanceConfig
+    // [可选] 即将到来的维护提醒的颜色，默认为 'gray'
+    // 活动提醒将始终使用 MaintenanceConfig 中指定的颜色
     upcomingColor: 'gray',
   },
-  // [OPTIONAL] Custom footer html
+  // [可选] 自定义页脚 HTML
   // customFooter: '',
 }
 
 const workerConfig: WorkerConfig = {
-  // [Optional] Write KV at most every N minutes unless the status changed, default to 3
+  // [可选] 除非状态改变，否则最多每 N 分钟写入一次 KV，默认为 3
   kvWriteCooldownMinutes: 3,
-  // Enable HTTP Basic auth for status page & API by uncommenting the line below, format `<USERNAME>:<PASSWORD>`
+  // 通过取消注释下面一行来为状态页面和 API 启用 HTTP Basic 认证，格式为 `<USERNAME>:<PASSWORD>`
   // passwordProtection: 'username:password',
-  // Define all your monitors here
+  // 在此定义所有监控项
   monitors: [
-    // Example HTTP Monitor
+    // MoonTV 监控
     {
-      // `id` should be unique, history will be kept if the `id` remains constant
-      id: 'foo_monitor',
-      // `name` is used at status page and callback message
-      name: 'My API Monitor',
-      // `method` should be a valid HTTP Method
-      method: 'POST',
-      // `target` is a valid URL
-      target: 'https://example.com',
-      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
-      tooltip: 'This is a tooltip for this monitor',
-      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
-      statusPageLink: 'https://example.com',
-      // [OPTIONAL] `hideLatencyChart` will hide status page latency chart if set to true
-      hideLatencyChart: false,
-      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
-      expectedCodes: [200],
-      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
-      timeout: 10000,
-      // [OPTIONAL] headers to be sent
-      headers: {
-        'User-Agent': 'Uptimeflare',
-        Authorization: 'Bearer YOUR_TOKEN_HERE',
-      },
-      // [OPTIONAL] body to be sent
-      body: 'Hello, world!',
-      // [OPTIONAL] if specified, the response must contains the keyword to be considered as operational.
-      responseKeyword: 'success',
-      // [OPTIONAL] if specified, the response must NOT contains the keyword to be considered as operational.
-      responseForbiddenKeyword: 'bad gateway',
-      // [OPTIONAL] if specified, will call the check proxy to check the monitor, mainly for geo-specific checks
-      // refer to docs https://github.com/lyc8503/UptimeFlare/wiki/Check-proxy-setup before setting this value
-      // currently supports `worker://`, `globalping://` and `http(s)://` proxies
-      checkProxy: 'https://xxx.example.com OR worker://weur',
-      // [OPTIONAL] if true, the check will fallback to local if the specified proxy is down
-      checkProxyFallback: true,
+      // `id` 应该是唯一的，如果 `id` 保持不变，历史记录将被保留
+      id: 'moontv_monitor',
+      // `name` 用于状态页面和回调消息
+      name: 'MoonTV',
+      // `method` 应该是一个有效的 HTTP 方法
+      method: 'GET',
+      // `target` 是一个有效的 URL
+      target: 'https://mv.nianshu2022.cn/',
+      // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
+      statusPageLink: 'https://mv.nianshu2022.cn/',
     },
-    // Example TCP Monitor
+    // WithYou 监控
     {
-      id: 'test_tcp_monitor',
-      name: 'Example TCP Monitor',
-      // `method` should be `TCP_PING` for tcp monitors
-      method: 'TCP_PING',
-      // `target` should be `host:port` for tcp monitors
-      target: '1.2.3.4:22',
-      tooltip: 'My production server SSH',
-      statusPageLink: 'https://example.com',
-      timeout: 5000,
+      // `id` 应该是唯一的，如果 `id` 保持不变，历史记录将被保留
+      id: 'withyou_monitor',
+      // `name` 用于状态页面和回调消息
+      name: 'WithYou',
+      // `method` 应该是一个有效的 HTTP 方法
+      method: 'GET',
+      // `target` 是一个有效的 URL
+      target: 'https://time.nianshu2022.cn/',
+      // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
+      statusPageLink: 'https://time.nianshu2022.cn/',
     },
   ],
-  // [Optional] Notification settings
+  // [可选] 通知设置
   notification: {
-    // [Optional] Notification webhook settings, if not specified, no notification will be sent
-    // More info at Wiki: https://github.com/lyc8503/UptimeFlare/wiki/Setup-notification
+    // [可选] 通知 Webhook 设置，如果未指定，则不会发送通知
+    // 更多信息请查看 Wiki: https://github.com/lyc8503/UptimeFlare/wiki/Setup-notification
     webhook: {
-      // [Required] webhook URL (example: Telegram Bot API)
+      // [必需] Webhook URL（例如：Telegram Bot API）
       url: 'https://api.telegram.org/bot123456:ABCDEF/sendMessage',
-      // [Optional] HTTP method, default to 'GET' for payloadType=param, 'POST' otherwise
+      // [可选] HTTP 方法，当 payloadType=param 时默认为 'GET'，否则为 'POST'
       method: 'POST',
-      // [Optional] headers to be sent
+      // [可选] 要发送的请求头
       headers: {
         foo: 'bar',
       },
-      // [Required] Specify how to encode the payload
-      // Should be one of 'param', 'json' or 'x-www-form-urlencoded'
-      // 'param': append url-encoded payload to URL search parameters
-      // 'json': POST json payload as body, set content-type header to 'application/json'
-      // 'x-www-form-urlencoded': POST url-encoded payload as body, set content-type header to 'x-www-form-urlencoded'
+      // [必需] 指定如何编码负载
+      // 应该是 'param'、'json' 或 'x-www-form-urlencoded' 之一
+      // 'param': 将 URL 编码的负载追加到 URL 查询参数
+      // 'json': 将 JSON 负载作为请求体 POST，设置 content-type 请求头为 'application/json'
+      // 'x-www-form-urlencoded': 将 URL 编码的负载作为请求体 POST，设置 content-type 请求头为 'x-www-form-urlencoded'
       payloadType: 'x-www-form-urlencoded',
-      // [Required] payload to be sent
-      // $MSG will be replaced with the human-readable notification message
+      // [必需] 要发送的负载
+      // $MSG 将被替换为人类可读的通知消息
       payload: {
         chat_id: 12345678,
         text: '$MSG',
       },
-      // [Optional] timeout calling this webhook, in millisecond, default to 5000
+      // [可选] 调用此 webhook 的超时时间，单位为毫秒，默认为 5000
       timeout: 10000,
     },
-    // [Optional] timezone used in notification messages, default to "Etc/GMT"
+    // [可选] 通知消息中使用的时区，默认为 "Etc/GMT"
     timeZone: 'Asia/Shanghai',
-    // [Optional] grace period in minutes before sending a notification
-    // notification will be sent only if the monitor is down for N continuous checks after the initial failure
-    // if not specified, notification will be sent immediately
+    // [可选] 发送通知前的宽限期（分钟）
+    // 只有在初始失败后，监控项持续故障 N 次连续检查后才会发送通知
+    // 如果未指定，通知将立即发送
     gracePeriod: 5,
-    // [Optional] disable notification for monitors with specified ids
-    skipNotificationIds: ['foo_monitor', 'bar_monitor'],
-    // [Optional] suppress extra notifications for error reason changes during an incident, default to false
+    // [可选] 对指定 id 的监控项禁用通知
+    skipNotificationIds: [],
+    // [可选] 在事件期间抑制错误原因更改的额外通知，默认为 false
     skipErrorChangeNotification: true,
   },
   callbacks: {
@@ -136,10 +112,10 @@ const workerConfig: WorkerConfig = {
       timeNow: number,
       reason: string
     ) => {
-      // This callback will be called when there's a status change for any monitor
-      // Write any TypeScript code here
-      // This will not follow the grace period settings and will be called immediately when the status changes
-      // You need to handle the grace period manually if you want to implement it
+      // 当任何监控项的状态发生变化时，将调用此回调
+      // 在此编写任何 TypeScript 代码
+      // 这不会遵循宽限期设置，将在状态变化时立即调用
+      // 如果您想实现宽限期，需要手动处理
     },
     onIncident: async (
       env: any,
@@ -148,59 +124,17 @@ const workerConfig: WorkerConfig = {
       timeNow: number,
       reason: string
     ) => {
-      // This callback will be called EVERY 1 MINTUE if there's an on-going incident for any monitor
-      // Write any TypeScript code here
+      // 如果任何监控项正在发生事件，此回调将每分钟调用一次
+      // 在此编写任何 TypeScript 代码
     },
   },
 }
 
-// You can define multiple maintenances here
-// During maintenance, an alert will be shown at status page
-// Also, related downtime notifications will be skipped (if any)
-// Of course, you can leave it empty if you don't need this feature
-// const maintenances: MaintenanceConfig[] = []
-const maintenances: MaintenanceConfig[] = [
-  {
-    // [Optional] Monitor IDs to be affected by this maintenance
-    monitors: ['foo_monitor', 'bar_monitor'],
-    // [Optional] default to "Scheduled Maintenance" if not specified
-    title: 'Test Maintenance',
-    // Description of the maintenance, will be shown at status page
-    body: 'This is a test maintenance, server software upgrade',
-    // Start time of the maintenance, in UNIX timestamp or ISO 8601 format
-    start: '2025-04-27T00:00:00+08:00',
-    // [Optional] end time of the maintenance, in UNIX timestamp or ISO 8601 format
-    // if not specified, the maintenance will be considered as on-going
-    end: '2025-04-30T00:00:00+08:00',
-    // [Optional] color of the maintenance alert at status page, default to "yellow"
-    color: 'blue',
-  },
-  // As this config file is a TypeScript file, you can even use IIFE to generate scheduled maintenances
-  // The following example shows a scheduled maintenance from 2 AM to 4 AM on the 15th of every month (UTC+8)
-  // This COULD BE DANGEROUS, as generating too many maintenance entries can lead to performance problems
-  // Undeterministic outputs may also lead to bugs or unexpected behavior
-  // If you don't know how to DEBUG, use this approach WITH CAUTION
-  ...(function () {
-    const schedules = []
-    const today = new Date()
+// 您可以在此定义多个维护计划
+// 在维护期间，状态页面将显示提醒
+// 此外，相关的故障通知将被跳过（如果有的话）
+// 当然，如果您不需要此功能，可以留空
+const maintenances: MaintenanceConfig[] = []
 
-    for (let i = -1; i <= 1; i++) {
-      // JavaScript's Date object will automatically handle year rollovers
-      const date = new Date(today.getFullYear(), today.getMonth() + i, 15)
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-
-      schedules.push({
-        title: `${year}/${parseInt(month)} - Test scheduled maintenance`,
-        monitors: ['foo_monitor'],
-        body: 'Monthly scheduled maintenance',
-        start: `${year}-${month}-15T02:00:00.000+08:00`,
-        end: `${year}-${month}-15T04:00:00.000+08:00`,
-      })
-    }
-    return schedules
-  })(),
-]
-
-// Don't forget this, otherwise compilation fails.
+// 不要忘记这个，否则编译会失败
 export { maintenances, pageConfig, workerConfig }
