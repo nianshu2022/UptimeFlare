@@ -1,5 +1,5 @@
 import { MaintenanceConfig, MonitorTarget } from '@/types/config'
-import { Center, Container, Title, Collapse, Button, Box, ActionIcon } from '@mantine/core'
+import { Center, Container, Title, Collapse, Button, Box, ActionIcon, Transition } from '@mantine/core'
 import { IconCircleCheck, IconAlertCircle, IconRefresh } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import MaintenanceAlert from './MaintenanceAlert'
@@ -44,6 +44,7 @@ export default function OverallStatus({
   const [currentTime, setCurrentTime] = useState(Math.round(Date.now() / 1000))
   const isWindowVisible = useWindowVisibility()
   const [expandUpcoming, setExpandUpcoming] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   // 格式化相对时间
   const formatRelativeTime = (seconds: number): string => {
@@ -98,11 +99,46 @@ export default function OverallStatus({
     }))
 
   return (
-    <Container size="md" mt="xl">
-      <Center>{icon}</Center>
-      <Title mt="sm" style={{ textAlign: 'center' }} order={1}>
+    <Container size="md" mt="xl" style={{ transition: 'all 0.3s ease' }}>
+      <Center>
+        <div style={{ 
+          transition: 'transform 0.3s ease, opacity 0.3s ease',
+          animation: 'fadeIn 0.5s ease-in'
+        }}>
+          {icon}
+        </div>
+      </Center>
+      <Title 
+        mt="sm" 
+        style={{ 
+          textAlign: 'center',
+          transition: 'all 0.3s ease',
+          animation: 'fadeInUp 0.5s ease-in'
+        }} 
+        order={1}
+      >
         {statusString}
       </Title>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
       <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
         <Title style={{ textAlign: 'center', color: '#70778c' }} order={5}>
           最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
@@ -119,12 +155,35 @@ export default function OverallStatus({
           variant="subtle"
           color="gray"
           size="sm"
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            setIsRefreshing(true)
+            window.location.reload()
+          }}
           title="刷新页面"
+          loading={isRefreshing}
+          style={{
+            transition: 'transform 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'rotate(90deg)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'rotate(0deg)'
+          }}
         >
-          <IconRefresh size={16} />
+          <IconRefresh size={16} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
         </ActionIcon>
       </Box>
+      <style jsx>{`
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
 
       {/* Upcoming Maintenance */}
       {upcomingMaintenances.length > 0 && (

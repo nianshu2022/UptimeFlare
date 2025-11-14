@@ -89,9 +89,32 @@ export default function MonitorList({
               {monitors
                 .filter((monitor) => group[groupName].includes(monitor.id))
                 .sort((a, b) => group[groupName].indexOf(a.id) - group[groupName].indexOf(b.id))
-                .map((monitor) => (
-                  <div key={monitor.id}>
-                    <Card.Section ml="xs" mr="xs">
+                .map((monitor, index) => (
+                  <div 
+                    key={monitor.id}
+                    style={{
+                      transition: 'all 0.3s ease',
+                      animation: `fadeInUp 0.4s ease-in ${index * 0.1}s both`
+                    }}
+                  >
+                    <Card.Section 
+                      ml="xs" 
+                      mr="xs"
+                      style={{
+                        padding: '16px',
+                        borderRadius: '8px',
+                        transition: 'background-color 0.2s ease, transform 0.2s ease',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.02)'
+                        e.currentTarget.style.transform = 'translateY(-2px)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                        e.currentTarget.style.transform = 'translateY(0)'
+                      }}
+                    >
                       <MonitorDetail monitor={monitor} state={state} />
                     </Card.Section>
                   </div>
@@ -111,9 +134,32 @@ export default function MonitorList({
         if (!aDown && bDown) return 1
         return 0
       })
-      .map((monitor) => (
-        <div key={monitor.id}>
-          <Card.Section ml="xs" mr="xs">
+      .map((monitor, index) => (
+        <div 
+          key={monitor.id}
+          style={{
+            transition: 'all 0.3s ease',
+            animation: `fadeInUp 0.4s ease-in ${index * 0.1}s both`
+          }}
+        >
+          <Card.Section 
+            ml="xs" 
+            mr="xs"
+            style={{
+              padding: '16px',
+              borderRadius: '8px',
+              transition: 'background-color 0.2s ease, transform 0.2s ease',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.02)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
             <MonitorDetail monitor={monitor} state={state} />
           </Card.Section>
         </div>
@@ -130,9 +176,32 @@ export default function MonitorList({
         mr="md"
         mt="xl"
         withBorder={!groupedMonitor}
-        style={{ width: groupedMonitor ? '897px' : '865px' }}
+        style={{ 
+          width: groupedMonitor ? '897px' : '865px',
+          maxWidth: '100%',
+          transition: 'box-shadow 0.3s ease, transform 0.2s ease',
+          animation: 'fadeInUp 0.5s ease-in'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.12)'
+        }}
       >
         {content}
+        <style jsx global>{`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
       </Card>
     </Center>
   )

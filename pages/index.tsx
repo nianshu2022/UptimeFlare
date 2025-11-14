@@ -49,23 +49,33 @@ export default function Home({
         <link rel="icon" href={pageConfig.favicon ?? '/favicon.png'} />
       </Head>
 
-      <main className={inter.className}>
+      <main className={inter.className} style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%)' }}>
         <Header />
 
         {state == undefined ? (
-          <Center>
-            <Text fw={700}>
+          <Center style={{ padding: '60px 20px' }}>
+            <Text fw={700} size="lg" style={{ color: '#dc2626' }}>
               监控状态未定义，请检查 Worker 的状态和 KV 绑定！
             </Text>
           </Center>
         ) : (
-          <div>
+          <div style={{ animation: 'fadeIn 0.5s ease-in' }}>
             <OverallStatus state={state} monitors={monitors} maintenances={maintenances} />
             <MonitorList monitors={monitors} state={state} />
           </div>
         )}
 
         <Footer />
+        <style jsx>{`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+        `}</style>
       </main>
     </>
   )

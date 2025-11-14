@@ -136,6 +136,53 @@ export default function MonitorDetail({
   const currentError = isCurrentlyDown ? lastIncident.error.slice(-1)[0] : null
   const latestLatency = state.latency[monitor.id]?.recent?.slice(-1)[0]
 
+  // 优化错误信息显示
+  const formatError = (error: string): { message: string; description?: string } => {
+    if (!error) return { message: '' }
+    
+    // 处理 "Expected codes: 2xx, Got: XXX" 格式
+    const expectedMatch = error.match(/Expected codes: (?:2xx|\[.*?\]), Got: (\d+)/)
+    if (expectedMatch) {
+      const statusCode = parseInt(expectedMatch[1])
+      let description = ''
+      
+      // HTTP 状态码说明
+      const statusDescriptions: { [key: number]: string } = {
+        400: '请求错误',
+        401: '未授权',
+        403: '禁止访问',
+        404: '未找到',
+        500: '服务器内部错误',
+        502: '网关错误',
+        503: '服务不可用',
+        504: '网关超时',
+        521: 'Cloudflare: 网站服务器未连接',
+        522: 'Cloudflare: 连接超时',
+        523: 'Cloudflare: 源站不可达',
+        524: 'Cloudflare: 超时',
+        525: 'Cloudflare: SSL 握手失败',
+        526: 'Cloudflare: 无效的 SSL 证书',
+      }
+      
+      description = statusDescriptions[statusCode] || `HTTP ${statusCode}`
+      
+      return {
+        message: `HTTP ${statusCode}`,
+        description: description
+      }
+    }
+    
+    // 如果已经是 HTTP 开头的格式，直接返回
+    if (error.startsWith('HTTP ')) {
+      return { message: error }
+    }
+    
+    // 其他错误格式
+    return { message: error }
+  }
+  
+  const formattedError = currentError ? formatError(currentError) : null
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -147,18 +194,31 @@ export default function MonitorDetail({
           )}
           
           {/* 显示当前状态和错误信息 */}
-          {isCurrentlyDown && currentError && (
-            <Text 
-              size="sm" 
-              style={{ 
-                color: '#dc2626', 
-                marginTop: '4px',
-                display: 'block',
-                fontWeight: 500
-              }}
-            >
-              ⚠️ {currentError.includes('HTTP') ? currentError : `错误: ${currentError}`}
-            </Text>
+          {isCurrentlyDown && formattedError && (
+            <div style={{ marginTop: '4px' }}>
+              <Text 
+                size="sm" 
+                style={{ 
+                  color: '#dc2626', 
+                  display: 'block',
+                  fontWeight: 500
+                }}
+              >
+                ⚠️ {formattedError.message}
+              </Text>
+              {formattedError.description && (
+                <Text 
+                  size="xs" 
+                  style={{ 
+                    color: '#9ca3af', 
+                    display: 'block',
+                    marginTop: '2px'
+                  }}
+                >
+                  {formattedError.description}
+                </Text>
+              )}
+            </div>
           )}
           
           {/* 显示响应时间 */}
