@@ -61,7 +61,6 @@ const workerConfig: WorkerConfig = {
       method: 'GET',
       // `target` is a valid URL
       target: 'https://mv.nianshu2022.cn/',
-  ],
   // [Optional] Notification settings
   notification: {
     // [Optional] Notification webhook settings, if not specified, no notification will be sent
