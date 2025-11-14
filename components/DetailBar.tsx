@@ -125,17 +125,19 @@ export default function DetailBar({
         events={{ hover: true, focus: false, touch: true }}
         label={
           Number.isNaN(Number(dayPercent)) ? (
-            '无数据'
+            <div style={{ color: '#b0b8c4', fontFamily: 'monospace', fontSize: '12px' }}>无数据</div>
           ) : (
-            <>
+            <div style={{ color: '#ffffff', fontFamily: 'monospace', fontSize: '12px' }}>
               <div>{dayPercent + '% - ' + new Date(dayStart * 1000).toLocaleDateString('zh-CN')}</div>
               {dayDownTime > 0 && (
-                <div>{`故障时长: ${moment.preciseDiff(
-                  moment(0),
-                  moment(dayDownTime * 1000)
-                )} (点击查看详情)`}</div>
+                <div style={{ color: '#ff3366', marginTop: '4px' }}>
+                  {`故障时长: ${moment.preciseDiff(
+                    moment(0),
+                    moment(dayDownTime * 1000)
+                  )} (点击查看详情)`}
+                </div>
               )}
-            </>
+            </div>
           )
         }
       >
@@ -147,6 +149,19 @@ export default function DetailBar({
             borderRadius: '2px',
             marginLeft: '1px',
             marginRight: '1px',
+            transition: 'all 0.2s ease',
+            boxShadow: `0 0 8px ${getColor(dayPercent, false)}`,
+            cursor: dayDownTime > 0 ? 'pointer' : 'default',
+          }}
+          onMouseEnter={(e) => {
+            if (dayDownTime > 0) {
+              e.currentTarget.style.boxShadow = `0 0 15px ${getColor(dayPercent, false)}, 0 0 25px ${getColor(dayPercent, false)}`
+              e.currentTarget.style.transform = 'scaleY(1.2)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = `0 0 8px ${getColor(dayPercent, false)}`
+            e.currentTarget.style.transform = 'scaleY(1)'
           }}
           onClick={() => {
             if (dayDownTime > 0) {
@@ -164,30 +179,57 @@ export default function DetailBar({
                       key={index} 
                       style={{ 
                         marginBottom: '16px',
-                        padding: '12px',
-                        backgroundColor: '#f5f5f5',
-                        borderRadius: '6px',
-                        borderLeft: '4px solid #e53e3e'
+                        padding: '16px',
+                        background: 'rgba(15, 22, 41, 0.8)',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255, 51, 102, 0.4)',
+                        borderLeft: '4px solid #ff3366',
+                        boxShadow: '0 4px 20px rgba(255, 51, 102, 0.2)'
                       }}
                     >
-                      <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#c53030' }}>
+                      <div style={{ 
+                        fontWeight: 'bold', 
+                        marginBottom: '12px', 
+                        color: '#ff3366',
+                        textShadow: '0 0 10px #ff3366',
+                        fontSize: '16px',
+                        fontFamily: 'monospace',
+                        letterSpacing: '1px'
+                      }}>
                         🔴 事件 #{index + 1}
                       </div>
-                      <div style={{ marginBottom: '4px' }}>
-                        <span style={{ fontWeight: 'bold' }}>开始时间：</span>
-                        {reason.start}
+                      <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
+                        <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>开始时间：</span>
+                        <span style={{ fontFamily: 'monospace', marginLeft: '8px' }}>{reason.start}</span>
                       </div>
-                      <div style={{ marginBottom: '4px' }}>
-                        <span style={{ fontWeight: 'bold' }}>结束时间：</span>
-                        {reason.end}
+                      <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
+                        <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>结束时间：</span>
+                        <span style={{ fontFamily: 'monospace', marginLeft: '8px' }}>{reason.end}</span>
                       </div>
-                      <div style={{ marginBottom: '4px' }}>
-                        <span style={{ fontWeight: 'bold' }}>持续时长：</span>
-                        <span style={{ color: '#c53030' }}>{reason.duration}</span>
+                      <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
+                        <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>持续时长：</span>
+                        <span style={{ 
+                          color: '#ff3366', 
+                          fontFamily: 'monospace',
+                          textShadow: '0 0 8px #ff3366',
+                          marginLeft: '8px'
+                        }}>{reason.duration}</span>
                       </div>
-                      <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e0e0e0' }}>
-                        <span style={{ fontWeight: 'bold' }}>错误信息：</span>
-                        <span style={{ color: '#c53030', fontFamily: 'monospace' }}>{reason.error}</span>
+                      <div style={{ 
+                        marginTop: '12px', 
+                        paddingTop: '12px', 
+                        borderTop: '1px solid rgba(0, 255, 255, 0.2)'
+                      }}>
+                        <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>错误信息：</span>
+                        <div style={{ 
+                          color: '#ff3366', 
+                          fontFamily: 'monospace',
+                          marginTop: '8px',
+                          padding: '8px',
+                          background: 'rgba(0, 0, 0, 0.3)',
+                          borderRadius: '4px',
+                          border: '1px solid rgba(255, 51, 102, 0.3)'
+                        }}>{reason.error}</div>
                       </div>
                     </div>
                   ))}
@@ -208,6 +250,34 @@ export default function DetailBar({
         onClose={() => setModalOpened(false)}
         title={modalTitle}
         size={'40em'}
+        styles={{
+          modal: {
+            background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 100%)',
+            border: '1px solid rgba(0, 255, 255, 0.3)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 255, 255, 0.2)',
+          },
+          title: {
+            color: '#ffffff',
+            fontFamily: 'monospace',
+            fontWeight: 700,
+            letterSpacing: '1px',
+            textShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
+          },
+          close: {
+            color: '#ffffff',
+            '&:hover': {
+              background: 'rgba(0, 255, 255, 0.2)',
+              color: '#00ffff',
+            }
+          },
+          header: {
+            background: 'transparent',
+            borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
+          },
+          body: {
+            background: 'transparent',
+          }
+        }}
       >
         {modelContent}
       </Modal>

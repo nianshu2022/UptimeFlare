@@ -21,11 +21,11 @@ function countDownCount(state: MonitorState, ids: string[]) {
 function getStatusTextColor(state: MonitorState, ids: string[]) {
   let downCount = countDownCount(state, ids)
   if (downCount === 0) {
-    return '#059669'
+    return '#00ff88'
   } else if (downCount === ids.length) {
-    return '#df484a'
+    return '#ff3366'
   } else {
-    return '#f29030'
+    return '#ffaa00'
   }
 }
 
@@ -56,9 +56,33 @@ export default function MonitorList({
       <Accordion
         multiple
         defaultValue={Object.keys(group)}
-        variant="contained"
+        variant="default"
         value={expandedGroups}
         onChange={(values) => setExpandedGroups(values)}
+        styles={{
+          item: {
+            background: 'transparent',
+            border: '1px solid rgba(0, 255, 255, 0.2)',
+            borderRadius: '8px',
+            marginBottom: '12px',
+            transition: 'all 0.3s ease',
+          },
+          control: {
+            background: 'rgba(10, 14, 39, 0.5)',
+            padding: '16px',
+            borderRadius: '8px',
+            '&:hover': {
+              background: 'rgba(15, 22, 41, 0.8)',
+            }
+          },
+          panel: {
+            padding: '8px 16px 16px 16px',
+            background: 'transparent',
+          },
+          label: {
+            color: '#ffffff',
+          }
+        }}
       >
         {Object.keys(group).map((groupName) => (
           <Accordion.Item key={groupName} value={groupName}>
@@ -71,13 +95,16 @@ export default function MonitorList({
                   alignItems: 'center',
                 }}
               >
-                <div>{groupName}</div>
+                <div style={{ color: '#ffffff', fontWeight: 600, letterSpacing: '1px' }}>{groupName}</div>
                 <Text
-                  fw={500}
+                  fw={600}
                   style={{
                     display: 'inline',
                     paddingRight: '5px',
                     color: getStatusTextColor(state, group[groupName]),
+                    textShadow: `0 0 10px ${getStatusTextColor(state, group[groupName])}`,
+                    fontFamily: 'monospace',
+                    letterSpacing: '1px'
                   }}
                 >
                   {group[groupName].length - countDownCount(state, group[groupName])}/
@@ -101,18 +128,27 @@ export default function MonitorList({
                       ml="xs" 
                       mr="xs"
                       style={{
-                        padding: '16px',
+                        padding: '20px',
                         borderRadius: '8px',
-                        transition: 'background-color 0.2s ease, transform 0.2s ease',
-                        cursor: 'pointer'
+                        marginBottom: '12px',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer',
+                        background: 'rgba(10, 14, 39, 0.5)',
+                        border: '1px solid rgba(0, 255, 255, 0.1)',
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.02)'
+                        e.currentTarget.style.backgroundColor = 'rgba(15, 22, 41, 0.8)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.4)'
                         e.currentTarget.style.transform = 'translateY(-2px)'
+                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 255, 255, 0.2)'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent'
+                        e.currentTarget.style.backgroundColor = 'rgba(10, 14, 39, 0.5)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.1)'
                         e.currentTarget.style.transform = 'translateY(0)'
+                        e.currentTarget.style.boxShadow = 'none'
                       }}
                     >
                       <MonitorDetail monitor={monitor} state={state} />
@@ -146,18 +182,27 @@ export default function MonitorList({
             ml="xs" 
             mr="xs"
             style={{
-              padding: '16px',
+              padding: '20px',
               borderRadius: '8px',
-              transition: 'background-color 0.2s ease, transform 0.2s ease',
-              cursor: 'pointer'
+              marginBottom: '12px',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer',
+              background: 'rgba(10, 14, 39, 0.5)',
+              border: '1px solid rgba(0, 255, 255, 0.1)',
+              position: 'relative',
+              overflow: 'hidden'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.02)'
+              e.currentTarget.style.backgroundColor = 'rgba(15, 22, 41, 0.8)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.4)'
               e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 255, 255, 0.2)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
+              e.currentTarget.style.backgroundColor = 'rgba(10, 14, 39, 0.5)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.1)'
               e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = 'none'
             }}
           >
             <MonitorDetail monitor={monitor} state={state} />
@@ -169,24 +214,34 @@ export default function MonitorList({
   return (
     <Center>
       <Card
-        shadow="sm"
+        className="tech-card"
+        shadow="none"
         padding="lg"
         radius="md"
         ml="md"
         mr="md"
         mt="xl"
-        withBorder={!groupedMonitor}
+        withBorder={false}
         style={{ 
           width: groupedMonitor ? '897px' : '865px',
           maxWidth: '100%',
-          transition: 'box-shadow 0.3s ease, transform 0.2s ease',
-          animation: 'fadeInUp 0.5s ease-in'
+          transition: 'all 0.3s ease',
+          animation: 'fadeInUp 0.5s ease-in',
+          background: 'rgba(15, 22, 41, 0.8)',
+          border: '1px solid rgba(0, 255, 255, 0.2)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.1) inset',
+          position: 'relative'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)'
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 255, 255, 0.2) inset, 0 0 20px rgba(0, 255, 255, 0.3)'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.5)'
+          e.currentTarget.style.transform = 'translateY(-2px)'
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.12)'
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.1) inset'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+          e.currentTarget.style.transform = 'translateY(0)'
         }}
       >
         {content}

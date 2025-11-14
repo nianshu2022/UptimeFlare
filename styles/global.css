@@ -1,0 +1,224 @@
+/* 科技感全局样式 */
+
+:root {
+  --tech-bg-primary: #0a0e27;
+  --tech-bg-secondary: #0f1629;
+  --tech-bg-card: rgba(15, 22, 41, 0.8);
+  --tech-border: rgba(0, 255, 255, 0.2);
+  --tech-border-hover: rgba(0, 255, 255, 0.5);
+  --tech-glow: rgba(0, 255, 255, 0.6);
+  --tech-text-primary: #ffffff;
+  --tech-text-secondary: #b0b8c4;
+  --tech-success: #00ff88;
+  --tech-error: #ff3366;
+  --tech-warning: #ffaa00;
+  --tech-info: #00aaff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--tech-bg-primary);
+  color: var(--tech-text-primary);
+  overflow-x: hidden;
+}
+
+/* 科技感背景网格 */
+.tech-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: 
+    linear-gradient(to right, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+
+/* 科技感卡片 */
+.tech-card {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 255, 255, 0.1) inset;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.tech-card:hover {
+  border-color: var(--tech-border-hover);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(0, 255, 255, 0.2) inset,
+    0 0 20px rgba(0, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.tech-card:hover::before {
+  left: 100%;
+}
+
+/* 科技感按钮 */
+.tech-button {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 170, 255, 0.1));
+  border: 1px solid var(--tech-border);
+  color: var(--tech-text-primary);
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.tech-button:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 170, 255, 0.2));
+  border-color: var(--tech-glow);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.tech-button:hover::before {
+  left: 100%;
+}
+
+/* 发光效果 */
+.tech-glow {
+  box-shadow: 0 0 20px var(--tech-glow);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--tech-glow);
+  }
+  50% {
+    box-shadow: 0 0 30px var(--tech-glow), 0 0 40px var(--tech-glow);
+  }
+}
+
+/* 状态指示器 */
+.tech-status-online {
+  color: var(--tech-success);
+  text-shadow: 0 0 10px var(--tech-success);
+}
+
+.tech-status-offline {
+  color: var(--tech-error);
+  text-shadow: 0 0 10px var(--tech-error);
+}
+
+.tech-status-warning {
+  color: var(--tech-warning);
+  text-shadow: 0 0 10px var(--tech-warning);
+}
+
+/* 科技感分割线 */
+.tech-divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--tech-border),
+    transparent
+  );
+  margin: 24px 0;
+}
+
+/* 科技感滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--tech-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--tech-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--tech-glow);
+}
+
+/* 数据流动画 */
+@keyframes dataFlow {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.data-flow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--tech-glow),
+    transparent
+  );
+  animation: dataFlow 3s linear infinite;
+}
+

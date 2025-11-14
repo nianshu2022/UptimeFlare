@@ -99,11 +99,12 @@ export default function OverallStatus({
     }))
 
   return (
-    <Container size="md" mt="xl" style={{ transition: 'all 0.3s ease' }}>
+    <Container size="md" mt="xl" style={{ transition: 'all 0.3s ease', position: 'relative', zIndex: 1 }}>
       <Center>
         <div style={{ 
           transition: 'transform 0.3s ease, opacity 0.3s ease',
-          animation: 'fadeIn 0.5s ease-in'
+          animation: 'fadeIn 0.5s ease-in',
+          filter: 'drop-shadow(0 0 20px rgba(0, 255, 255, 0.5))'
         }}>
           {icon}
         </div>
@@ -113,7 +114,11 @@ export default function OverallStatus({
         style={{ 
           textAlign: 'center',
           transition: 'all 0.3s ease',
-          animation: 'fadeInUp 0.5s ease-in'
+          animation: 'fadeInUp 0.5s ease-in',
+          color: '#ffffff',
+          textShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+          fontWeight: 700,
+          letterSpacing: '2px'
         }} 
         order={1}
       >
@@ -139,8 +144,26 @@ export default function OverallStatus({
           }
         }
       `}</style>
-      <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
-        <Title style={{ textAlign: 'center', color: '#70778c' }} order={5}>
+      <Box style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        gap: '12px', 
+        marginTop: '16px',
+        padding: '16px',
+        background: 'rgba(15, 22, 41, 0.5)',
+        borderRadius: '8px',
+        border: '1px solid rgba(0, 255, 255, 0.2)',
+        backdropFilter: 'blur(10px)'
+      }}>
+        <Title style={{ 
+          textAlign: 'center', 
+          color: '#b0b8c4',
+          fontSize: '14px',
+          fontWeight: 500,
+          fontFamily: 'monospace',
+          letterSpacing: '1px'
+        }} order={5}>
           最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
           {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
             year: 'numeric',
@@ -153,7 +176,6 @@ export default function OverallStatus({
         </Title>
         <ActionIcon
           variant="subtle"
-          color="gray"
           size="sm"
           onClick={() => {
             setIsRefreshing(true)
@@ -162,13 +184,18 @@ export default function OverallStatus({
           title="刷新页面"
           loading={isRefreshing}
           style={{
-            transition: 'transform 0.2s ease',
+            transition: 'all 0.3s ease',
+            background: 'rgba(0, 255, 255, 0.1)',
+            border: '1px solid rgba(0, 255, 255, 0.3)',
+            color: '#00ffff',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'rotate(90deg)'
+            e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.5)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'rotate(0deg)'
+            e.currentTarget.style.boxShadow = 'none'
           }}
         >
           <IconRefresh size={16} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />

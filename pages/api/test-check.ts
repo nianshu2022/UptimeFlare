@@ -258,7 +258,7 @@ export default async function handler(req: NextRequest): Promise<Response> {
                   true,
                   lastIncident.start[0],
                   currentTimeSecond,
-                  'OK',
+                  '服务已恢复正常',
                   workerConfig.notification?.timeZone ?? 'Asia/Shanghai'
                 )
 

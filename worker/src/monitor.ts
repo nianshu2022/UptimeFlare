@@ -27,7 +27,7 @@ async function httpResponseBasicCheck(
           monitor.responseKeyword
         }, not found in response (truncated to 100 chars): ${responseBody.slice(0, 100)}`
       )
-      return "HTTP response doesn't contain the configured keyword"
+      return "HTTP 响应中不包含配置的关键词"
     }
 
     // MUST NOT contain responseForbiddenKeyword
@@ -40,7 +40,7 @@ async function httpResponseBasicCheck(
           monitor.responseForbiddenKeyword
         }, found in response (truncated to 100 chars): ${responseBody.slice(0, 100)}`
       )
-      return 'HTTP response contains the configured forbidden keyword'
+      return 'HTTP 响应中包含配置的禁止关键词'
     }
   }
 
@@ -214,7 +214,7 @@ export async function getStatusWithGlobalPing(
         console.log(
           `${monitor.name} TLS certificate not trusted: ${measurementResult.results[0].result.tls.error}`
         )
-        err = 'TLS certificate not trusted: ' + measurementResult.results[0].result.tls.error
+        err = 'TLS 证书不受信任: ' + measurementResult.results[0].result.tls.error
       }
 
       return {
@@ -229,11 +229,11 @@ export async function getStatusWithGlobalPing(
   } catch (e: any) {
     console.log(`Globalping ${monitor.name} errored with ${e}`)
     return {
-      location: 'ERROR',
+      location: '错误',
       status: {
         ping: e.toString().toLowerCase().includes('timeout') ? monitor.timeout ?? 10000 : 0,
         up: false,
-        err: 'Globalping error: ' + e.toString(),
+        err: 'Globalping 错误: ' + e.toString(),
       },
     }
   }
@@ -314,10 +314,26 @@ export async function getStatus(
       if (e.name === 'AbortError') {
         status.ping = monitor.timeout || 10000
         status.up = false
-        status.err = `Timeout after ${status.ping}ms`
+        status.err = `超时，耗时 ${status.ping}ms`
       } else {
         status.up = false
-        status.err = e.name + ': ' + e.message
+        // 翻译常见的错误类型名称
+        let errorName = e.name
+        const errorNameMap: { [key: string]: string } = {
+          'TypeError': '类型错误',
+          'NetworkError': '网络错误',
+          'DNS': 'DNS 错误',
+          'ECONNREFUSED': '连接被拒绝',
+          'ENOTFOUND': '域名未找到',
+          'ETIMEDOUT': '连接超时',
+          'Connection': '连接错误',
+          'FetchError': '请求错误',
+          'SyntaxError': '语法错误',
+        }
+        if (errorNameMap[errorName]) {
+          errorName = errorNameMap[errorName]
+        }
+        status.err = `${errorName}: ${e.message}`
       }
     }
   }

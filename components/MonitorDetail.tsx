@@ -15,24 +15,51 @@ export default function MonitorDetail({
 }) {
   if (!state.latency[monitor.id])
     return (
-      <>
-        <Text mt="sm" fw={700}>
+      <div style={{ 
+        padding: '20px',
+        background: 'rgba(10, 14, 39, 0.5)',
+        borderRadius: '8px',
+        border: '1px solid rgba(255, 51, 102, 0.3)'
+      }}>
+        <Text mt="sm" fw={700} style={{ 
+          color: '#ffffff', 
+          fontSize: '18px', 
+          letterSpacing: '1px',
+          fontFamily: 'monospace'
+        }}>
           {monitor.name}
         </Text>
-        <Text mt="sm" fw={700}>
+        <Text mt="sm" fw={500} style={{ 
+          color: '#ff3366', 
+          fontSize: '14px',
+          fontFamily: 'monospace',
+          textShadow: '0 0 8px rgba(255, 51, 102, 0.5)'
+        }}>
           暂无数据，请确保已使用最新配置部署 Worker 并检查 Worker 状态！
         </Text>
-      </>
+      </div>
     )
 
   let statusIcon =
     state.incident[monitor.id].slice(-1)[0].end === undefined ? (
       <IconAlertCircle
-        style={{ width: '1.25em', height: '1.25em', color: '#b91c1c', marginRight: '3px' }}
+        style={{ 
+          width: '1.25em', 
+          height: '1.25em', 
+          color: '#ff3366', 
+          marginRight: '3px',
+          filter: 'drop-shadow(0 0 8px #ff3366)'
+        }}
       />
     ) : (
       <IconCircleCheck
-        style={{ width: '1.25em', height: '1.25em', color: '#059669', marginRight: '3px' }}
+        style={{ 
+          width: '1.25em', 
+          height: '1.25em', 
+          color: '#00ff88', 
+          marginRight: '3px',
+          filter: 'drop-shadow(0 0 8px #00ff88)'
+        }}
       />
     )
 
@@ -47,8 +74,9 @@ export default function MonitorDetail({
         style={{
           width: '1.25em',
           height: '1.25em',
-          color: '#fab005',
+          color: '#ffaa00',
           marginRight: '3px',
+          filter: 'drop-shadow(0 0 8px #ffaa00)'
         }}
       />
     )
@@ -113,12 +141,33 @@ export default function MonitorDetail({
 
   // Conditionally render monitor name with or without hyperlink based on monitor.url presence
   const monitorNameElement = (
-    <Text mt="sm" fw={700} style={{ display: 'inline-flex', alignItems: 'center' }}>
+    <Text mt="sm" fw={700} style={{ 
+      display: 'inline-flex', 
+      alignItems: 'center',
+      color: '#ffffff',
+      fontSize: '18px',
+      letterSpacing: '1px',
+      fontFamily: 'monospace'
+    }}>
       {monitor.statusPageLink ? (
         <a
           href={monitor.statusPageLink}
           target="_blank"
-          style={{ display: 'inline-flex', alignItems: 'center', color: 'inherit' }}
+          style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            color: '#ffffff',
+            textDecoration: 'none',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#00ffff'
+            e.currentTarget.style.textShadow = '0 0 10px rgba(0, 255, 255, 0.5)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#ffffff'
+            e.currentTarget.style.textShadow = 'none'
+          }}
         >
           {statusIcon} {monitor.name}
         </a>
@@ -183,6 +232,56 @@ export default function MonitorDetail({
   
   const formattedError = currentError ? formatError(currentError) : null
 
+  // 格式化位置显示
+  const formatLocation = (loc: string): string => {
+    if (!loc) return '未知'
+    
+    // Cloudflare 数据中心代码到地名的映射
+    const locationMap: { [key: string]: string } = {
+      'TPE': '台北',
+      'HKG': '香港',
+      'SIN': '新加坡',
+      'NRT': '东京',
+      'ICN': '首尔',
+      'BKK': '曼谷',
+      'KUL': '吉隆坡',
+      'HND': '东京',
+      'SYD': '悉尼',
+      'MEL': '墨尔本',
+      'AKL': '奥克兰',
+      'FRA': '法兰克福',
+      'LHR': '伦敦',
+      'CDG': '巴黎',
+      'AMS': '阿姆斯特丹',
+      'MAD': '马德里',
+      'IAD': '华盛顿',
+      'ORD': '芝加哥',
+      'DFW': '达拉斯',
+      'SFO': '旧金山',
+      'LAX': '洛杉矶',
+      'SEA': '西雅图',
+      'JFK': '纽约',
+      'YYZ': '多伦多',
+      'YVR': '温哥华',
+      'GRU': '圣保罗',
+      'EZE': '布宜诺斯艾利斯',
+    }
+    
+    // 如果包含斜杠，说明是 "国家/城市" 格式（Globalping）
+    if (loc.includes('/')) {
+      return loc
+    }
+    
+    // 如果是三字母代码，查找映射
+    const upperLoc = loc.toUpperCase()
+    if (locationMap[upperLoc]) {
+      return locationMap[upperLoc]
+    }
+    
+    // 否则直接返回原值
+    return loc
+  }
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -195,13 +294,22 @@ export default function MonitorDetail({
           
           {/* 显示当前状态和错误信息 */}
           {isCurrentlyDown && formattedError && (
-            <div style={{ marginTop: '4px' }}>
+            <div style={{ 
+              marginTop: '8px',
+              padding: '8px 12px',
+              background: 'rgba(255, 51, 102, 0.1)',
+              borderRadius: '6px',
+              border: '1px solid rgba(255, 51, 102, 0.3)'
+            }}>
               <Text 
                 size="sm" 
                 style={{ 
-                  color: '#dc2626', 
+                  color: '#ff3366', 
                   display: 'block',
-                  fontWeight: 500
+                  fontWeight: 600,
+                  fontFamily: 'monospace',
+                  textShadow: '0 0 8px rgba(255, 51, 102, 0.5)',
+                  letterSpacing: '0.5px'
                 }}
               >
                 ⚠️ {formattedError.message}
@@ -210,9 +318,11 @@ export default function MonitorDetail({
                 <Text 
                   size="xs" 
                   style={{ 
-                    color: '#9ca3af', 
+                    color: '#b0b8c4', 
                     display: 'block',
-                    marginTop: '2px'
+                    marginTop: '4px',
+                    fontFamily: 'monospace',
+                    fontSize: '12px'
                   }}
                 >
                   {formattedError.description}
@@ -223,20 +333,39 @@ export default function MonitorDetail({
           
           {/* 显示响应时间 */}
           {!isCurrentlyDown && latestLatency && (
-            <Text 
-              size="sm" 
-              style={{ 
-                color: '#059669', 
-                marginTop: '4px',
-                display: 'block'
-              }}
-            >
-              ✓ 响应时间: {latestLatency.ping}ms · 位置: {latestLatency.loc}
-            </Text>
+            <div style={{ 
+              marginTop: '8px',
+              padding: '8px 12px',
+              background: 'rgba(0, 255, 136, 0.1)',
+              borderRadius: '6px',
+              border: '1px solid rgba(0, 255, 136, 0.3)'
+            }}>
+              <Text 
+                size="sm" 
+                style={{ 
+                  color: '#00ff88', 
+                  display: 'block',
+                  fontWeight: 600,
+                  fontFamily: 'monospace',
+                  textShadow: '0 0 8px rgba(0, 255, 136, 0.5)',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                ✓ 响应时间: {latestLatency.ping}ms · 位置: {formatLocation(latestLatency.loc)}
+              </Text>
+            </div>
           )}
         </div>
 
-        <Text mt="sm" fw={700} style={{ display: 'inline', color: getColor(uptimePercent, true), whiteSpace: 'nowrap' }}>
+        <Text mt="sm" fw={700} style={{ 
+          display: 'inline', 
+          color: getColor(uptimePercent, true), 
+          whiteSpace: 'nowrap',
+          textShadow: `0 0 10px ${getColor(uptimePercent, true)}`,
+          fontFamily: 'monospace',
+          letterSpacing: '1px',
+          fontSize: '16px'
+        }}>
           总体可用率: {uptimePercent}%
         </Text>
       </div>

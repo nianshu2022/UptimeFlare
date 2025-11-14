@@ -5,13 +5,13 @@ import { MonitorState, MonitorTarget } from '@/types/config'
 import { KVNamespace } from '@cloudflare/workers-types'
 import { maintenances, pageConfig, workerConfig } from '@/uptime.config'
 import OverallStatus from '@/components/OverallStatus'
-import Header from '@/components/Header'
 import MonitorList from '@/components/MonitorList'
 import { Center, Text } from '@mantine/core'
 import MonitorDetail from '@/components/MonitorDetail'
-import Footer from '@/components/Footer'
+import '@/styles/global.css'
 
 export const runtime = 'experimental-edge'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home({
@@ -20,8 +20,6 @@ export default function Home({
 }: {
   state: string
   monitors: MonitorTarget[]
-  tooltip?: string
-  statusPageLink?: string
 }) {
   let state
   if (stateStr !== undefined) {
@@ -49,30 +47,39 @@ export default function Home({
         <link rel="icon" href={pageConfig.favicon ?? '/favicon.png'} />
       </Head>
 
-      <main className={inter.className} style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%)' }}>
-        <Header />
-
+      <main className={inter.className} style={{ 
+        minHeight: '100vh', 
+        background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 50%, #0a0e27 100%)',
+        paddingTop: '40px',
+        paddingBottom: '40px',
+        position: 'relative',
+        zIndex: 1
+      }}>
+        <div className="tech-background" />
         {state == undefined ? (
-          <Center style={{ padding: '60px 20px' }}>
-            <Text fw={700} size="lg" style={{ color: '#dc2626' }}>
-              监控状态未定义，请检查 Worker 的状态和 KV 绑定！
-            </Text>
+          <Center style={{ padding: '60px 20px', position: 'relative', zIndex: 1 }}>
+            <div className="tech-card" style={{ maxWidth: '600px', textAlign: 'center' }}>
+              <Text fw={700} size="lg" className="tech-status-offline">
+                监控状态未定义，请检查 Worker 的状态和 KV 绑定！
+              </Text>
+            </div>
           </Center>
         ) : (
-          <div style={{ animation: 'fadeIn 0.5s ease-in' }}>
+          <div style={{ animation: 'fadeIn 0.5s ease-in', position: 'relative', zIndex: 1 }}>
             <OverallStatus state={state} monitors={monitors} maintenances={maintenances} />
             <MonitorList monitors={monitors} state={state} />
           </div>
         )}
 
-        <Footer />
         <style jsx>{`
           @keyframes fadeIn {
             from {
               opacity: 0;
+              transform: translateY(20px);
             }
             to {
               opacity: 1;
+              transform: translateY(0);
             }
           }
         `}</style>

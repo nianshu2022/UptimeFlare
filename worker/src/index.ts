@@ -176,7 +176,7 @@ const Worker = {
             console.log('Falling back to local check...')
             status = await getStatus(monitor)
           } else {
-            status = { ping: 0, up: false, err: 'Unknown check proxy error' }
+            status = { ping: 0, up: false, err: '检查代理未知错误' }
           }
         }
       } else {
@@ -211,7 +211,7 @@ const Worker = {
           try {
             // 状态变化（从故障恢复），立即发送通知
             console.log(`Service ${monitor.name} recovered, sending notification immediately`)
-            await formatAndNotify(monitor, true, lastIncident.start[0], currentTimeSecond, 'OK')
+            await formatAndNotify(monitor, true, lastIncident.start[0], currentTimeSecond, '服务已恢复正常')
 
             console.log('Calling config onStatusChange callback...')
             await workerConfig.callbacks?.onStatusChange?.(
@@ -220,7 +220,7 @@ const Worker = {
               true,
               lastIncident.start[0],
               currentTimeSecond,
-              'OK'
+              '服务已恢复正常'
             )
           } catch (e) {
             console.log('Error calling callback: ')
