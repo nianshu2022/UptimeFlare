@@ -1,6 +1,6 @@
 import { MaintenanceConfig, MonitorTarget } from '@/types/config'
-import { Center, Container, Title, Collapse, Button, Box } from '@mantine/core'
-import { IconCircleCheck, IconAlertCircle, IconPlus, IconMinus } from '@tabler/icons-react'
+import { Center, Container, Title, Collapse, Button, Box, ActionIcon } from '@mantine/core'
+import { IconCircleCheck, IconAlertCircle, IconRefresh } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import MaintenanceAlert from './MaintenanceAlert'
 import { pageConfig } from '@/uptime.config'
@@ -45,6 +45,23 @@ export default function OverallStatus({
   const isWindowVisible = useWindowVisibility()
   const [expandUpcoming, setExpandUpcoming] = useState(false)
 
+  // 格式化相对时间
+  const formatRelativeTime = (seconds: number): string => {
+    if (seconds < 60) {
+      return `${seconds} 秒前`
+    } else if (seconds < 3600) {
+      const minutes = Math.floor(seconds / 60)
+      return `${minutes} 分钟前`
+    } else if (seconds < 86400) {
+      const hours = Math.floor(seconds / 3600)
+      const minutes = Math.floor((seconds % 3600) / 60)
+      return minutes > 0 ? `${hours} 小时 ${minutes} 分钟前` : `${hours} 小时前`
+    } else {
+      const days = Math.floor(seconds / 86400)
+      return `${days} 天前`
+    }
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isWindowVisible) return
@@ -86,12 +103,28 @@ export default function OverallStatus({
       <Title mt="sm" style={{ textAlign: 'center' }} order={1}>
         {statusString}
       </Title>
-      <Title mt="sm" style={{ textAlign: 'center', color: '#70778c' }} order={5}>
-        最后更新: {' '}
-        {`${new Date(state.lastUpdate * 1000).toLocaleString('zh-CN')} (${
-          currentTime - state.lastUpdate
-        } 秒前)`}
-      </Title>
+      <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+        <Title style={{ textAlign: 'center', color: '#70778c' }} order={5}>
+          最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
+          {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          })}
+        </Title>
+        <ActionIcon
+          variant="subtle"
+          color="gray"
+          size="sm"
+          onClick={() => window.location.reload()}
+          title="刷新页面"
+        >
+          <IconRefresh size={16} />
+        </ActionIcon>
+      </Box>
 
       {/* Upcoming Maintenance */}
       {upcomingMaintenances.length > 0 && (

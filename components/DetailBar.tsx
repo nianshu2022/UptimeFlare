@@ -37,7 +37,7 @@ export default function DetailBar({
     const dayMonitorTime = overlapLen(dayStart, dayEnd, montiorStartTime, currentTime)
     let dayDownTime = 0
 
-    let incidentReasons: string[] = []
+    let incidentReasons: Array<{ start: string; end: string; duration: string; error: string }> = []
 
     for (let incident of state.incident[monitor.id]) {
       const incidentStart = incident.start[0]
@@ -56,15 +56,61 @@ export default function DetailBar({
           partEnd = Math.min(partEnd, dayEnd)
 
           if (overlapLen(dayStart, dayEnd, partStart, partEnd) > 0) {
-            const startStr = new Date(partStart * 1000).toLocaleTimeString([], {
+            const startDate = new Date(partStart * 1000)
+            const endDate = new Date(partEnd * 1000)
+            
+            // 格式化开始时间
+            const startStr = startDate.toLocaleString('zh-CN', {
+              month: '2-digit',
+              day: '2-digit',
               hour: '2-digit',
               minute: '2-digit',
+              second: '2-digit',
+              hour12: false,
             })
-            const endStr = new Date(partEnd * 1000).toLocaleTimeString([], {
+            
+            // 格式化结束时间
+            const endStr = endDate.toLocaleString('zh-CN', {
+              month: '2-digit',
+              day: '2-digit',
               hour: '2-digit',
               minute: '2-digit',
+              second: '2-digit',
+              hour12: false,
             })
-            incidentReasons.push(`[${startStr}-${endStr}] ${incident.error[i]}`)
+            
+            // 计算持续时长
+            const durationSeconds = partEnd - partStart
+            const durationMinutes = Math.floor(durationSeconds / 60)
+            const durationHours = Math.floor(durationMinutes / 60)
+            
+            let durationText = ''
+            if (durationHours > 0) {
+              durationText = `${durationHours}小时${durationMinutes % 60}分钟`
+            } else if (durationMinutes > 0) {
+              durationText = `${durationMinutes}分钟`
+            } else {
+              durationText = `${durationSeconds}秒`
+            }
+            
+            // 统一错误信息格式
+            let errorText = incident.error[i]
+            // 如果错误信息包含 "Expected codes"，提取更简洁的信息
+            if (errorText.includes('Expected codes')) {
+              const match = errorText.match(/Got: (\d+)/)
+              if (match) {
+                errorText = `HTTP ${match[1]}`
+              }
+            }
+            // 如果错误信息以 "HTTP" 开头，保持原样
+            // 否则原样显示
+            
+            incidentReasons.push({
+              start: startStr,
+              end: endStr,
+              duration: durationText,
+              error: errorText,
+            })
           }
         }
       }
@@ -105,14 +151,47 @@ export default function DetailBar({
           onClick={() => {
             if (dayDownTime > 0) {
               setModalTitle(
-                `🚨 ${monitor.name} 在 ${new Date(dayStart * 1000).toLocaleDateString('zh-CN')} 的事件`
+                `🚨 ${monitor.name} 在 ${new Date(dayStart * 1000).toLocaleDateString('zh-CN', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })} 的事件详情`
               )
               setModelContent(
-                <>
-                  {incidentReasons.map((reason, index) => (
-                    <div key={index}>{reason}</div>
+                <div style={{ lineHeight: '1.8' }}>
+                  {[...incidentReasons].reverse().map((reason, index) => (
+                    <div 
+                      key={index} 
+                      style={{ 
+                        marginBottom: '16px',
+                        padding: '12px',
+                        backgroundColor: '#f5f5f5',
+                        borderRadius: '6px',
+                        borderLeft: '4px solid #e53e3e'
+                      }}
+                    >
+                      <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#c53030' }}>
+                        🔴 事件 #{index + 1}
+                      </div>
+                      <div style={{ marginBottom: '4px' }}>
+                        <span style={{ fontWeight: 'bold' }}>开始时间：</span>
+                        {reason.start}
+                      </div>
+                      <div style={{ marginBottom: '4px' }}>
+                        <span style={{ fontWeight: 'bold' }}>结束时间：</span>
+                        {reason.end}
+                      </div>
+                      <div style={{ marginBottom: '4px' }}>
+                        <span style={{ fontWeight: 'bold' }}>持续时长：</span>
+                        <span style={{ color: '#c53030' }}>{reason.duration}</span>
+                      </div>
+                      <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e0e0e0' }}>
+                        <span style={{ fontWeight: 'bold' }}>错误信息：</span>
+                        <span style={{ color: '#c53030', fontFamily: 'monospace' }}>{reason.error}</span>
+                      </div>
+                    </div>
                   ))}
-                </>
+                </div>
               )
               setModalOpened(true)
             }

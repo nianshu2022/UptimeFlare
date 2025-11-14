@@ -130,16 +130,53 @@ export default function MonitorDetail({
     </Text>
   )
 
+  // 获取当前状态和错误信息
+  const lastIncident = state.incident[monitor.id].slice(-1)[0]
+  const isCurrentlyDown = lastIncident.end === undefined
+  const currentError = isCurrentlyDown ? lastIncident.error.slice(-1)[0] : null
+  const latestLatency = state.latency[monitor.id]?.recent?.slice(-1)[0]
+
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        {monitor.tooltip ? (
-          <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
-        ) : (
-          monitorNameElement
-        )}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ flex: 1 }}>
+          {monitor.tooltip ? (
+            <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
+          ) : (
+            monitorNameElement
+          )}
+          
+          {/* 显示当前状态和错误信息 */}
+          {isCurrentlyDown && currentError && (
+            <Text 
+              size="sm" 
+              style={{ 
+                color: '#dc2626', 
+                marginTop: '4px',
+                display: 'block',
+                fontWeight: 500
+              }}
+            >
+              ⚠️ {currentError.includes('HTTP') ? currentError : `错误: ${currentError}`}
+            </Text>
+          )}
+          
+          {/* 显示响应时间 */}
+          {!isCurrentlyDown && latestLatency && (
+            <Text 
+              size="sm" 
+              style={{ 
+                color: '#059669', 
+                marginTop: '4px',
+                display: 'block'
+              }}
+            >
+              ✓ 响应时间: {latestLatency.ping}ms · 位置: {latestLatency.loc}
+            </Text>
+          )}
+        </div>
 
-        <Text mt="sm" fw={700} style={{ display: 'inline', color: getColor(uptimePercent, true) }}>
+        <Text mt="sm" fw={700} style={{ display: 'inline', color: getColor(uptimePercent, true), whiteSpace: 'nowrap' }}>
           总体可用率: {uptimePercent}%
         </Text>
       </div>

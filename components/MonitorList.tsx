@@ -102,14 +102,22 @@ export default function MonitorList({
       </Accordion>
     )
   } else {
-    // Ungrouped monitors
-    content = monitors.map((monitor) => (
-      <div key={monitor.id}>
-        <Card.Section ml="xs" mr="xs">
-          <MonitorDetail monitor={monitor} state={state} />
-        </Card.Section>
-      </div>
-    ))
+    // Ungrouped monitors - 按状态排序：故障的在前
+    content = [...monitors]
+      .sort((a, b) => {
+        const aDown = state.incident[a.id]?.slice(-1)[0]?.end === undefined
+        const bDown = state.incident[b.id]?.slice(-1)[0]?.end === undefined
+        if (aDown && !bDown) return -1
+        if (!aDown && bDown) return 1
+        return 0
+      })
+      .map((monitor) => (
+        <div key={monitor.id}>
+          <Card.Section ml="xs" mr="xs">
+            <MonitorDetail monitor={monitor} state={state} />
+          </Card.Section>
+        </div>
+      ))
   }
 
   return (
