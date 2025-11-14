@@ -102,12 +102,16 @@ export async function getServerSideProps() {
     return {
       id: monitor.id,
       name: monitor.name,
+      target: monitor.target,
+      method: monitor.method,
       // @ts-ignore
       tooltip: monitor?.tooltip,
       // @ts-ignore
       statusPageLink: monitor?.statusPageLink,
       // @ts-ignore
       hideLatencyChart: monitor?.hideLatencyChart,
+      // @ts-ignore
+      domainExpiryCheck: monitor?.domainExpiryCheck,
     }
   })
 

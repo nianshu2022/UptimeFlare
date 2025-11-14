@@ -379,76 +379,83 @@ export default function MonitorDetail({
 
       {domainExpiryElement}
 
-      {/* 证书有效期信息（如果HTTPS监控） */}
-      {monitor.target && typeof monitor.target === 'string' && monitor.target.toLowerCase().startsWith('https://') && (
-        (() => {
-          // 确保证书信息始终显示
-          const certInfo = state.certificateExpiry?.[monitor.id]
-          
-          if (certInfo && certInfo.expiryDate && certInfo.expiryDate > 0) {
-            // 有证书信息，显示到期日期
-            const expiryDate = new Date(certInfo.expiryDate * 1000)
-            const daysRemaining = certInfo.daysRemaining || 0
-            const expiryDateStr = expiryDate.toLocaleDateString('zh-CN', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            })
+      {/* 证书有效期信息（如果HTTPS监控）- 始终显示 */}
+      {(() => {
+        // 检查是否为HTTPS监控
+        const isHttps = monitor.target && typeof monitor.target === 'string' && (
+          monitor.target.toLowerCase().startsWith('https://') || 
+          monitor.target.toLowerCase().startsWith('http://') && monitor.method === 'HTTPS'
+        )
+        
+        if (!isHttps) {
+          return null
+        }
 
-            let badgeColor = 'green'
-            let badgeText = `证书到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
+        const certInfo = state.certificateExpiry?.[monitor.id]
+        
+        if (certInfo && certInfo.expiryDate && certInfo.expiryDate > 0) {
+          // 有证书信息，显示到期日期
+          const expiryDate = new Date(certInfo.expiryDate * 1000)
+          const daysRemaining = certInfo.daysRemaining || 0
+          const expiryDateStr = expiryDate.toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          })
 
-            if (daysRemaining <= 0) {
-              badgeColor = 'red'
-              badgeText = `证书已过期: ${expiryDateStr}！请立即更新`
-            } else if (daysRemaining <= 7) {
-              badgeColor = 'red'
-              badgeText = `证书即将过期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
-            } else if (daysRemaining <= 30) {
-              badgeColor = 'yellow'
-              badgeText = `证书即将到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
-            }
+          let badgeColor = 'green'
+          let badgeText = `证书到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
 
-            return (
-              <Badge
-                key="certificate-expiry"
-                color={badgeColor}
-                variant="light"
-                leftSection={<IconCertificate size={12} />}
-                style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
-              >
-                {badgeText}
-              </Badge>
-            )
-          } else if (certInfo && certInfo.error) {
-            // 显示证书查询错误
-            return (
-              <Badge
-                key="certificate-error"
-                color="gray"
-                variant="light"
-                leftSection={<IconCertificate size={12} />}
-                style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
-              >
-                证书信息查询失败: {certInfo.error}
-              </Badge>
-            )
-          } else {
-            // 如果还没有证书信息，始终显示待检查提示
-            return (
-              <Badge
-                key="certificate-pending"
-                color="blue"
-                variant="light"
-                leftSection={<IconCertificate size={12} />}
-                style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
-              >
-                证书信息待检查（Worker需实现证书检查功能）
-              </Badge>
-            )
+          if (daysRemaining <= 0) {
+            badgeColor = 'red'
+            badgeText = `证书已过期: ${expiryDateStr}！请立即更新`
+          } else if (daysRemaining <= 7) {
+            badgeColor = 'red'
+            badgeText = `证书即将过期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
+          } else if (daysRemaining <= 30) {
+            badgeColor = 'yellow'
+            badgeText = `证书即将到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
           }
-        })()
-      )}
+
+          return (
+            <Badge
+              key="certificate-expiry"
+              color={badgeColor}
+              variant="light"
+              leftSection={<IconCertificate size={12} />}
+              style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
+            >
+              {badgeText}
+            </Badge>
+          )
+        } else if (certInfo && certInfo.error) {
+          // 显示证书查询错误
+          return (
+            <Badge
+              key="certificate-error"
+              color="gray"
+              variant="light"
+              leftSection={<IconCertificate size={12} />}
+              style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
+            >
+              证书信息查询失败: {certInfo.error}
+            </Badge>
+          )
+        } else {
+          // 如果还没有证书信息，始终显示待检查提示
+          return (
+            <Badge
+              key="certificate-pending"
+              color="blue"
+              variant="light"
+              leftSection={<IconCertificate size={12} />}
+              style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
+            >
+              🔒 证书信息待检查
+            </Badge>
+          )
+        }
+      })()}
 
       {!monitor.hideLatencyChart && (
         <Collapse in={chartExpanded}>
