@@ -1,4 +1,5 @@
 import { workerConfig } from '@/uptime.config'
+// @ts-ignore - Next.js runtime
 import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
@@ -97,7 +98,7 @@ async function sendDingtalkNotification(message: string, webhook: any): Promise<
 
     // 替换消息中的 $MSG
     let payload = JSON.parse(JSON.stringify(webhook.payload))
-    function replaceMsg(obj: any) {
+    const replaceMsg = (obj: any) => {
       for (const key in obj) {
         if (obj[key] === '$MSG') {
           obj[key] = message
@@ -137,8 +138,9 @@ async function sendDingtalkNotification(message: string, webhook: any): Promise<
 }
 
 export default async function handler(req: NextRequest): Promise<Response> {
+  // @ts-ignore - Edge Runtime has process.env
   const { UPTIMEFLARE_STATE } = process.env as unknown as {
-    UPTIMEFLARE_STATE: KVNamespace
+    UPTIMEFLARE_STATE?: any
   }
 
   if (!UPTIMEFLARE_STATE) {
