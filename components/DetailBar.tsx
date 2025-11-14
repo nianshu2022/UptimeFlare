@@ -349,8 +349,8 @@ export default function DetailBar({
         style={{
           display: 'flex',
           flexWrap: 'nowrap',
-          marginTop: '10px',
-          marginBottom: '5px',
+          marginTop: '0',
+          marginBottom: '0',
         }}
         visibleFrom="540"
         ref={barRef}

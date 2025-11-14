@@ -288,123 +288,101 @@ export default function MonitorDetail({
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1 }}>
-          {monitor.tooltip ? (
-            <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
-          ) : (
-            monitorNameElement
-          )}
-          
-          {/* 显示当前状态和错误信息 */}
-          {isCurrentlyDown && formattedError && (
-            <div style={{ 
-              marginTop: '8px',
-              padding: '8px 12px',
-              background: 'rgba(255, 51, 102, 0.1)',
-              borderRadius: '6px',
-              border: '1px solid rgba(255, 51, 102, 0.3)'
-            }}>
-              <Text 
-                size="sm" 
-                style={{ 
-                  color: '#ff3366', 
-                  display: 'block',
-                  fontWeight: 600,
-                  fontFamily: 'monospace',
-                  textShadow: '0 0 8px rgba(255, 51, 102, 0.5)',
-                  letterSpacing: '0.5px'
-                }}
-              >
-                ⚠️ {formattedError.message}
-              </Text>
-              {formattedError.description && (
-                <Text 
-                  size="xs" 
-                  style={{ 
-                    color: '#b0b8c4', 
-                    display: 'block',
-                    marginTop: '4px',
-                    fontFamily: 'monospace',
-                    fontSize: '12px'
-                  }}
-                >
-                  {formattedError.description}
-                </Text>
-              )}
-            </div>
-          )}
-          
-          {/* 显示响应时间 */}
-          {!isCurrentlyDown && latestLatency && (
-            <div style={{ 
-              marginTop: '8px',
-              padding: '8px 12px',
-              background: 'rgba(0, 255, 136, 0.1)',
-              borderRadius: '6px',
-              border: '1px solid rgba(0, 255, 136, 0.3)'
-            }}>
-              <Text 
-                size="sm" 
-                style={{ 
-                  color: '#00ff88', 
-                  display: 'block',
-                  fontWeight: 600,
-                  fontFamily: 'monospace',
-                  textShadow: '0 0 8px rgba(0, 255, 136, 0.5)',
-                  letterSpacing: '0.5px'
-                }}
-              >
-                ✓ 响应时间: {latestLatency.ping}ms · 位置: {formatLocation(latestLatency.loc)}
-              </Text>
-            </div>
-          )}
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 auto', minWidth: '200px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {monitor.tooltip ? (
+              <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
+            ) : (
+              monitorNameElement
+            )}
+            
+            {/* 显示当前状态和错误信息（内联显示） */}
+            {isCurrentlyDown && formattedError && (
+              <span style={{ 
+                padding: '4px 8px',
+                background: 'rgba(255, 51, 102, 0.1)',
+                borderRadius: '4px',
+                border: '1px solid rgba(255, 51, 102, 0.3)',
+                fontSize: '12px',
+                fontFamily: 'monospace',
+                color: '#ff3366',
+                fontWeight: 600,
+                textShadow: '0 0 8px rgba(255, 51, 102, 0.5)',
+                letterSpacing: '0.5px',
+                whiteSpace: 'nowrap'
+              }}>
+                ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
+              </span>
+            )}
+            
+            {/* 显示响应时间（内联显示） */}
+            {!isCurrentlyDown && latestLatency && (
+              <span style={{ 
+                padding: '4px 8px',
+                background: 'rgba(0, 255, 136, 0.1)',
+                borderRadius: '4px',
+                border: '1px solid rgba(0, 255, 136, 0.3)',
+                fontSize: '12px',
+                fontFamily: 'monospace',
+                color: '#00ff88',
+                fontWeight: 600,
+                textShadow: '0 0 8px rgba(0, 255, 136, 0.5)',
+                letterSpacing: '0.5px',
+                whiteSpace: 'nowrap'
+              }}>
+                ✓ {latestLatency.ping}ms · {formatLocation(latestLatency.loc)}
+              </span>
+            )}
 
-        <Text 
-          mt="sm" 
-          fw={700} 
-          style={{ 
-            display: 'inline', 
-            color: getColor(uptimePercent, true), 
-            whiteSpace: 'nowrap',
-            textShadow: `0 0 10px ${getColor(uptimePercent, true)}`,
-            fontFamily: 'monospace',
-            letterSpacing: '1px',
-            fontSize: '16px',
-            cursor: !monitor.hideLatencyChart ? 'pointer' : 'default',
-            userSelect: 'none',
-            transition: 'all 0.2s ease',
-            opacity: !monitor.hideLatencyChart ? 1 : 1
-          }}
-          onClick={() => {
-            if (!monitor.hideLatencyChart) {
-              setChartExpanded(!chartExpanded)
-            }
-          }}
-          onMouseEnter={(e) => {
-            if (!monitor.hideLatencyChart) {
-              e.currentTarget.style.opacity = '0.8'
-              e.currentTarget.style.transform = 'scale(1.05)'
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!monitor.hideLatencyChart) {
-              e.currentTarget.style.opacity = '1'
-              e.currentTarget.style.transform = 'scale(1)'
-            }
-          }}
-        >
-          总体可用率: {uptimePercent}%
-        </Text>
+            <Text 
+              fw={700} 
+              style={{ 
+                display: 'inline', 
+                color: getColor(uptimePercent, true), 
+                whiteSpace: 'nowrap',
+                textShadow: `0 0 10px ${getColor(uptimePercent, true)}`,
+                fontFamily: 'monospace',
+                letterSpacing: '1px',
+                fontSize: '16px',
+                cursor: !monitor.hideLatencyChart ? 'pointer' : 'default',
+                userSelect: 'none',
+                transition: 'all 0.2s ease',
+                marginLeft: 'auto'
+              }}
+              onClick={() => {
+                if (!monitor.hideLatencyChart) {
+                  setChartExpanded(!chartExpanded)
+                }
+              }}
+              onMouseEnter={(e) => {
+                if (!monitor.hideLatencyChart) {
+                  e.currentTarget.style.opacity = '0.8'
+                  e.currentTarget.style.transform = 'scale(1.05)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!monitor.hideLatencyChart) {
+                  e.currentTarget.style.opacity = '1'
+                  e.currentTarget.style.transform = 'scale(1)'
+                }
+              }}
+            >
+              总体可用率: {uptimePercent}%
+            </Text>
+          </div>
+
+          {/* DetailBar在同一行显示 */}
+          <DetailBar monitor={monitor} state={state} />
+        </div>
       </div>
 
       {domainExpiryElement}
 
       {/* 证书有效期信息（如果HTTPS监控） */}
-      {monitor.target && typeof monitor.target === 'string' && monitor.target.toLowerCase().startsWith('https://') && state.certificateExpiry?.[monitor.id] && (
+      {monitor.target && typeof monitor.target === 'string' && monitor.target.toLowerCase().startsWith('https://') && (
         (() => {
-          const certInfo = state.certificateExpiry[monitor.id]
+          const certInfo = state.certificateExpiry?.[monitor.id]
           if (certInfo && certInfo.expiryDate && certInfo.expiryDate > 0) {
             const expiryDate = new Date(certInfo.expiryDate * 1000)
             const daysRemaining = certInfo.daysRemaining || 0
@@ -434,7 +412,7 @@ export default function MonitorDetail({
                 color={badgeColor}
                 variant="light"
                 leftSection={<IconCertificate size={12} />}
-                style={{ marginTop: '8px' }}
+                style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
               >
                 {badgeText}
               </Badge>
@@ -447,9 +425,22 @@ export default function MonitorDetail({
                 color="gray"
                 variant="light"
                 leftSection={<IconCertificate size={12} />}
-                style={{ marginTop: '8px' }}
+                style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
               >
                 证书信息查询失败: {certInfo.error}
+              </Badge>
+            )
+          } else if (!certInfo) {
+            // 如果还没有证书信息，显示待检查提示
+            return (
+              <Badge
+                key="certificate-pending"
+                color="gray"
+                variant="light"
+                leftSection={<IconCertificate size={12} />}
+                style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
+              >
+                证书信息待检查
               </Badge>
             )
           }
@@ -457,7 +448,6 @@ export default function MonitorDetail({
         })()
       )}
 
-      <DetailBar monitor={monitor} state={state} />
       {!monitor.hideLatencyChart && (
         <Collapse in={chartExpanded}>
           <DetailChart monitor={monitor} state={state} />

@@ -157,7 +157,7 @@ export default function OverallStatus({
         backdropFilter: 'blur(10px)',
         marginLeft: 'auto',
         marginRight: 'auto',
-        maxWidth: '865px'
+        maxWidth: '820px'
       }}>
         <Title style={{ 
           textAlign: 'center', 

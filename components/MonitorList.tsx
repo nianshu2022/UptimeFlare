@@ -223,7 +223,7 @@ export default function MonitorList({
         mt="xl"
         withBorder={false}
         style={{ 
-          width: groupedMonitor ? '897px' : '865px',
+          width: groupedMonitor ? '850px' : '820px',
           maxWidth: '100%',
           transition: 'all 0.3s ease',
           animation: 'fadeInUp 0.5s ease-in',
