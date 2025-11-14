@@ -137,4 +137,14 @@ export type MonitorState = {
       error?: string // 错误信息（如果有）
     }
   >
+  // SSL证书到期信息
+  certificateExpiry?: Record<
+    string,
+    {
+      expiryDate: number // 到期时间戳（秒）
+      daysRemaining: number // 剩余天数
+      lastChecked: number // 最后检查时间戳（秒）
+      error?: string // 错误信息（如果有）
+    }
+  >
 }

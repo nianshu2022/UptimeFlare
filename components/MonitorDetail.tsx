@@ -1,10 +1,11 @@
-import { Text, Tooltip, Badge } from '@mantine/core'
+import { Text, Tooltip, Badge, Collapse } from '@mantine/core'
 import { MonitorState, MonitorTarget } from '@/types/config'
-import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconCalendar } from '@tabler/icons-react'
+import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconCalendar, IconCertificate } from '@tabler/icons-react'
 import DetailChart from './DetailChart'
 import DetailBar from './DetailBar'
 import { getColor } from '@/util/color'
 import { maintenances } from '@/uptime.config'
+import { useState } from 'react'
 
 export default function MonitorDetail({
   monitor,
@@ -13,6 +14,8 @@ export default function MonitorDetail({
   monitor: MonitorTarget
   state: MonitorState
 }) {
+  const [chartExpanded, setChartExpanded] = useState(false)
+  
   if (!state.latency[monitor.id])
     return (
       <div style={{ 
@@ -141,14 +144,38 @@ export default function MonitorDetail({
 
   // Conditionally render monitor name with or without hyperlink based on monitor.url presence
   const monitorNameElement = (
-    <Text mt="sm" fw={700} style={{ 
-      display: 'inline-flex', 
-      alignItems: 'center',
-      color: '#ffffff',
-      fontSize: '18px',
-      letterSpacing: '1px',
-      fontFamily: 'monospace'
-    }}>
+    <Text 
+      mt="sm" 
+      fw={700} 
+      style={{ 
+        display: 'inline-flex', 
+        alignItems: 'center',
+        color: '#ffffff',
+        fontSize: '18px',
+        letterSpacing: '1px',
+        fontFamily: 'monospace',
+        cursor: 'pointer',
+        userSelect: 'none',
+        transition: 'all 0.2s ease'
+      }}
+      onClick={() => {
+        if (!monitor.hideLatencyChart) {
+          setChartExpanded(!chartExpanded)
+        }
+      }}
+      onMouseEnter={(e) => {
+        if (!monitor.hideLatencyChart) {
+          e.currentTarget.style.color = '#00ffff'
+          e.currentTarget.style.textShadow = '0 0 10px rgba(0, 255, 255, 0.5)'
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!monitor.statusPageLink) {
+          e.currentTarget.style.color = '#ffffff'
+          e.currentTarget.style.textShadow = 'none'
+        }
+      }}
+    >
       {monitor.statusPageLink ? (
         <a
           href={monitor.statusPageLink}
@@ -372,8 +399,52 @@ export default function MonitorDetail({
 
       {domainExpiryElement}
 
+      {/* 证书有效期信息（如果HTTPS监控） */}
+      {monitor.target.toLowerCase().startsWith('https://') && state.certificateExpiry?.[monitor.id] && (
+        (() => {
+          const certInfo = state.certificateExpiry[monitor.id]
+          if (certInfo.expiryDate > 0) {
+            const expiryDate = new Date(certInfo.expiryDate * 1000)
+            const daysRemaining = certInfo.daysRemaining
+            const expiryDateStr = expiryDate.toLocaleDateString('zh-CN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            })
+
+            let badgeColor = 'green'
+            let badgeText = `证书到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
+
+            if (daysRemaining <= 0) {
+              badgeColor = 'red'
+              badgeText = `证书已过期: ${expiryDateStr}！请立即更新`
+            } else if (daysRemaining <= 7) {
+              badgeColor = 'red'
+              badgeText = `证书即将过期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
+            } else if (daysRemaining <= 30) {
+              badgeColor = 'yellow'
+              badgeText = `证书即将到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
+            }
+
+            return (
+              <Badge
+                color={badgeColor}
+                variant="light"
+                leftSection={<IconCertificate size={12} />}
+                style={{ marginTop: '8px' }}
+              >
+                {badgeText}
+              </Badge>
+            )
+          }
+          return null
+        })()
+      )}
+
       <DetailBar monitor={monitor} state={state} />
-      {!monitor.hideLatencyChart && <DetailChart monitor={monitor} state={state} />}
+      <Collapse in={chartExpanded}>
+        {!monitor.hideLatencyChart && <DetailChart monitor={monitor} state={state} />}
+      </Collapse>
     </>
   )
 }

@@ -154,7 +154,10 @@ export default function OverallStatus({
         background: 'rgba(15, 22, 41, 0.5)',
         borderRadius: '8px',
         border: '1px solid rgba(0, 255, 255, 0.2)',
-        backdropFilter: 'blur(10px)'
+        backdropFilter: 'blur(10px)',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        maxWidth: '865px'
       }}>
         <Title style={{ 
           textAlign: 'center', 
