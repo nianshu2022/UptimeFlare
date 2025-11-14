@@ -324,3 +324,133 @@ export async function getStatus(
 
   return status
 }
+
+/**
+ * 从URL中提取域名
+ */
+function extractDomain(target: string): string | null {
+  try {
+    // 如果target是URL，提取域名
+    let url: URL
+    if (target.startsWith('http://') || target.startsWith('https://')) {
+      url = new URL(target)
+    } else {
+      // 尝试添加https://前缀
+      url = new URL('https://' + target)
+    }
+    return url.hostname.replace(/^www\./, '') // 移除www前缀
+  } catch (e) {
+    console.log(`Failed to parse domain from target: ${target}, error: ${e}`)
+    return null
+  }
+}
+
+/**
+ * 查询域名到期信息
+ * 使用免费的WHOIS API服务
+ */
+export async function getDomainExpiry(
+  monitor: MonitorTarget
+): Promise<{ expiryDate: number; daysRemaining: number; error?: string } | null> {
+  const domain = extractDomain(monitor.target)
+  if (!domain) {
+    return { expiryDate: 0, daysRemaining: -1, error: '无法解析域名' }
+  }
+
+  try {
+    console.log(`Checking domain expiry for: ${domain}`)
+
+    // 使用多个免费的WHOIS API服务，按优先级尝试
+    const apiEndpoints: Array<{ url: string; parser: (data: any) => Date | null }> = []
+    
+    // 优先使用配置的API密钥
+    if (monitor.domainExpiryWhoisApiKey) {
+      apiEndpoints.push({
+        url: `https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=${monitor.domainExpiryWhoisApiKey}&domainName=${domain}&outputFormat=JSON`,
+        parser: (data: any) => {
+          if (data.WhoisRecord?.expiresDate) {
+            return new Date(data.WhoisRecord.expiresDate)
+          }
+          return null
+        },
+      })
+    }
+
+    // 备用：使用whoisjson.com的免费API（有一定限制）
+    apiEndpoints.push({
+      url: `https://api.whoisjson.com/v1/whois?domain=${domain}`,
+      parser: (data: any) => {
+        if (data.expires_date) {
+          return new Date(data.expires_date)
+        }
+        return null
+      },
+    })
+
+    let expiryDate: Date | null = null
+    let error: string | null = null
+
+    for (const endpoint of apiEndpoints) {
+      try {
+        console.log(`Trying WHOIS API: ${endpoint.url}`)
+        const response = await fetchTimeout(endpoint.url, monitor.timeout || 10000, {
+          headers: {
+            'User-Agent': 'UptimeFlare/1.0 (+https://github.com/lyc8503/UptimeFlare)',
+          },
+        })
+
+        if (!response.ok) {
+          console.log(`WHOIS API returned status ${response.status}`)
+          if (response.status === 429) {
+            error = 'API请求频率限制，请稍后重试'
+          }
+          continue
+        }
+
+        const data = await response.json()
+
+        // 使用解析器函数解析响应
+        expiryDate = endpoint.parser(data)
+
+        if (expiryDate && !isNaN(expiryDate.getTime())) {
+          console.log(`Found expiry date: ${expiryDate.toISOString()}`)
+          break
+        } else {
+          console.log(`Failed to parse expiry date from API response: ${JSON.stringify(data).slice(0, 200)}`)
+        }
+      } catch (e: any) {
+        console.log(`Error with WHOIS API ${endpoint.url}: ${e.message}`)
+        error = e.message
+        continue
+      }
+    }
+
+    if (!expiryDate || isNaN(expiryDate.getTime())) {
+      // 如果所有API都失败，返回错误信息
+      const errorMessage = error
+        ? `无法获取域名到期信息: ${error}`
+        : '无法获取域名到期信息，建议配置WHOIS API密钥以获得更可靠的结果（可选：whoisxmlapi.com）'
+      return {
+        expiryDate: 0,
+        daysRemaining: -1,
+        error: errorMessage,
+      }
+    }
+
+    const now = new Date()
+    const daysRemaining = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
+    return {
+      expiryDate: Math.floor(expiryDate.getTime() / 1000), // 转换为秒级时间戳
+      daysRemaining,
+      error: error || undefined,
+    }
+  } catch (e: any) {
+    console.log(`Error checking domain expiry for ${domain}: ${e.message}`)
+    return {
+      expiryDate: 0,
+      daysRemaining: -1,
+      error: `查询域名到期信息时出错: ${e.message}`,
+    }
+  }
+}

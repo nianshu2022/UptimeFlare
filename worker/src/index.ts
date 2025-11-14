@@ -1,7 +1,7 @@
 import { DurableObject } from 'cloudflare:workers'
 import { MonitorState, MonitorTarget } from '../../types/config'
 import { maintenances, workerConfig } from '../../uptime.config'
-import { getStatus, getStatusWithGlobalPing } from './monitor'
+import { getStatus, getStatusWithGlobalPing, getDomainExpiry } from './monitor'
 import { formatStatusChangeNotification, getWorkerLocation, webhookNotify } from './util'
 
 export interface Env {
@@ -73,9 +73,13 @@ const Worker = {
         overallDown: 0,
         incident: {},
         latency: {},
+        domainExpiry: {},
       } as MonitorState)
     state.overallDown = 0
     state.overallUp = 0
+    if (!state.domainExpiry) {
+      state.domainExpiry = {}
+    }
 
     let statusChanged = false
     const currentTimeSecond = Math.round(Date.now() / 1000)
@@ -327,6 +331,77 @@ const Worker = {
       state.incident[monitor.id] = incidentList
 
       statusChanged ||= monitorStatusChanged
+
+      // 检查域名到期（如果启用了域名到期监控）
+      if (monitor.domainExpiryCheck) {
+        try {
+          const warningDays = monitor.domainExpiryWarningDays || 30
+          const shouldCheckExpiry =
+            !state.domainExpiry[monitor.id] ||
+            currentTimeSecond - state.domainExpiry[monitor.id].lastChecked >= 24 * 60 * 60 // 每24小时检查一次
+
+          if (shouldCheckExpiry) {
+            console.log(`Checking domain expiry for ${monitor.name}...`)
+            const expiryInfo = await getDomainExpiry(monitor)
+
+            if (expiryInfo && expiryInfo.expiryDate > 0) {
+              const expiryEntry = state.domainExpiry[monitor.id] || {
+                expiryDate: expiryInfo.expiryDate,
+                daysRemaining: expiryInfo.daysRemaining,
+                warningSent: false,
+                lastChecked: currentTimeSecond,
+              }
+
+              expiryEntry.expiryDate = expiryInfo.expiryDate
+              expiryEntry.daysRemaining = expiryInfo.daysRemaining
+              expiryEntry.lastChecked = currentTimeSecond
+
+              // 如果域名即将到期且未发送过警告，发送通知
+              if (
+                expiryEntry.daysRemaining > 0 &&
+                expiryEntry.daysRemaining <= warningDays &&
+                !expiryEntry.warningSent
+              ) {
+                const expiryDateFormatted = new Date(expiryEntry.expiryDate * 1000).toLocaleDateString(
+                  'zh-CN'
+                )
+                const warningReason = `域名即将在 ${expiryEntry.daysRemaining} 天后到期（${expiryDateFormatted}）`
+                console.log(`Domain expiry warning for ${monitor.name}: ${warningReason}`)
+
+                // 发送域名到期警告通知
+                await formatAndNotify(monitor, false, currentTimeSecond, currentTimeSecond, warningReason)
+
+                // 标记警告已发送
+                expiryEntry.warningSent = true
+                statusChanged = true
+              } else if (expiryEntry.daysRemaining <= 0 && !expiryEntry.warningSent) {
+                // 域名已到期
+                const expiryDateFormatted = new Date(expiryEntry.expiryDate * 1000).toLocaleDateString(
+                  'zh-CN'
+                )
+                const expiredReason = `域名已到期（${expiryDateFormatted}），请尽快续费！`
+                console.log(`Domain expired for ${monitor.name}: ${expiredReason}`)
+
+                await formatAndNotify(monitor, false, currentTimeSecond, currentTimeSecond, expiredReason)
+                expiryEntry.warningSent = true
+                statusChanged = true
+              } else if (expiryEntry.daysRemaining > warningDays && expiryEntry.warningSent) {
+                // 如果域名已续费（剩余天数超过警告阈值），重置警告状态
+                expiryEntry.warningSent = false
+                statusChanged = true
+              }
+
+              state.domainExpiry[monitor.id] = expiryEntry
+            } else if (expiryInfo && expiryInfo.error) {
+              console.log(
+                `Failed to get domain expiry info for ${monitor.name}: ${expiryInfo.error}`
+              )
+            }
+          }
+        } catch (e) {
+          console.log(`Error checking domain expiry for ${monitor.name}: ${e}`)
+        }
+      }
     }
 
     console.log(

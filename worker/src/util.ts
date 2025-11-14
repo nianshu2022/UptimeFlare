@@ -78,6 +78,33 @@ function templateWebhookPlayload(payload: any, message: string) {
   }
 }
 
+/**
+ * 钉钉加签计算
+ * 算法：使用 HmacSHA256 对 timestamp + '\n' + secret 进行加密，然后 Base64 编码
+ */
+async function calculateDingtalkSign(secret: string, timestamp: number): Promise<string> {
+  const stringToSign = `${timestamp}\n${secret}`
+  
+  // 将密钥和消息转换为 ArrayBuffer
+  const keyData = new TextEncoder().encode(secret)
+  const messageData = new TextEncoder().encode(stringToSign)
+  
+  // 使用 Web Crypto API 计算 HMAC-SHA256
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData)
+  
+  // Base64 编码，并进行 URL 安全处理
+  const base64Signature = btoa(String.fromCharCode(...new Uint8Array(signature)))
+  return encodeURIComponent(base64Signature)
+}
+
 async function webhookNotify(webhook: WebhookConfig, message: string) {
   if (Array.isArray(webhook)) {
     for (const w of webhook) {
@@ -97,6 +124,18 @@ async function webhookNotify(webhook: WebhookConfig, message: string) {
       JSON.stringify(webhook.payload)
     )
     templateWebhookPlayload(payloadTemplated, message)
+    
+    // 如果是钉钉加签，计算签名并添加到URL
+    if (webhook.dingtalkSecret && webhook.url.includes('oapi.dingtalk.com')) {
+      const timestamp = Date.now()
+      const sign = await calculateDingtalkSign(webhook.dingtalkSecret, timestamp)
+      const urlObj = new URL(url)
+      urlObj.searchParams.set('timestamp', timestamp.toString())
+      urlObj.searchParams.set('sign', sign)
+      url = urlObj.toString()
+      console.log(`Dingtalk signature calculated: timestamp=${timestamp}, sign=${sign}`)
+    }
+    
     let body = undefined
 
     switch (webhook.payloadType) {

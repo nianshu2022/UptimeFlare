@@ -45,6 +45,10 @@ export type MonitorTarget = {
   responseForbiddenKeyword?: string
   checkProxy?: string
   checkProxyFallback?: boolean
+  // 域名到期监控相关配置
+  domainExpiryCheck?: boolean
+  domainExpiryWarningDays?: number // 提前多少天警告域名即将到期，默认30天
+  domainExpiryWhoisApiKey?: string // WHOIS API密钥（可选，如果不提供则使用免费API）
 }
 
 export type WorkerConfig<TEnv = Env> = {
@@ -70,6 +74,8 @@ type SingleWebhook = {
   payloadType: 'param' | 'json' | 'x-www-form-urlencoded'
   payload: any
   timeout?: number
+  // [可选] 钉钉加签密钥，如果提供，将自动计算签名并添加到URL中
+  dingtalkSecret?: string
 }
 
 export type WebhookConfig = SingleWebhook | SingleWebhook[]
@@ -118,6 +124,16 @@ export type MonitorState = {
         ping: number
         time: number
       }[] // all data in 90 days, 1 hour interval
+    }
+  >
+  // 域名到期信息
+  domainExpiry?: Record<
+    string,
+    {
+      expiryDate: number // 到期时间戳（秒）
+      daysRemaining: number // 剩余天数
+      warningSent: boolean // 是否已发送警告
+      lastChecked: number // 最后检查时间戳（秒）
     }
   >
 }
