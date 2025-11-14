@@ -382,8 +382,11 @@ export default function MonitorDetail({
       {/* 证书有效期信息（如果HTTPS监控） */}
       {monitor.target && typeof monitor.target === 'string' && monitor.target.toLowerCase().startsWith('https://') && (
         (() => {
+          // 确保证书信息始终显示
           const certInfo = state.certificateExpiry?.[monitor.id]
+          
           if (certInfo && certInfo.expiryDate && certInfo.expiryDate > 0) {
+            // 有证书信息，显示到期日期
             const expiryDate = new Date(certInfo.expiryDate * 1000)
             const daysRemaining = certInfo.daysRemaining || 0
             const expiryDateStr = expiryDate.toLocaleDateString('zh-CN', {
@@ -430,21 +433,20 @@ export default function MonitorDetail({
                 证书信息查询失败: {certInfo.error}
               </Badge>
             )
-          } else if (!certInfo) {
-            // 如果还没有证书信息，显示待检查提示
+          } else {
+            // 如果还没有证书信息，始终显示待检查提示
             return (
               <Badge
                 key="certificate-pending"
-                color="gray"
+                color="blue"
                 variant="light"
                 leftSection={<IconCertificate size={12} />}
                 style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
               >
-                证书信息待检查
+                证书信息待检查（Worker需实现证书检查功能）
               </Badge>
             )
           }
-          return null
         })()
       )}
 

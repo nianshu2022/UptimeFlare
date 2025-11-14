@@ -51,6 +51,8 @@ export default function Home({
         background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 50%, #0a0e27 100%)',
         paddingTop: '40px',
         paddingBottom: '40px',
+        paddingLeft: '10px',
+        paddingRight: '10px',
         position: 'relative',
         zIndex: 1
       }}>

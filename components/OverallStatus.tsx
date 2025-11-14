@@ -99,7 +99,7 @@ export default function OverallStatus({
     }))
 
   return (
-    <Container size="md" mt="xl" style={{ transition: 'all 0.3s ease', position: 'relative', zIndex: 1 }}>
+    <Container size="md" mt="xl" style={{ transition: 'all 0.3s ease', position: 'relative', zIndex: 1, maxWidth: '100%', paddingLeft: '0', paddingRight: '0' }}>
       <Center>
         <div style={{ 
           transition: 'transform 0.3s ease, opacity 0.3s ease',
@@ -157,7 +157,8 @@ export default function OverallStatus({
         backdropFilter: 'blur(10px)',
         marginLeft: 'auto',
         marginRight: 'auto',
-        maxWidth: '820px'
+        width: '92%',
+        maxWidth: '1400px'
       }}>
         <Title style={{ 
           textAlign: 'center', 

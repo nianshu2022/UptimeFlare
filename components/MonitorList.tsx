@@ -218,20 +218,20 @@ export default function MonitorList({
         shadow="none"
         padding="lg"
         radius="md"
-        ml="md"
-        mr="md"
         mt="xl"
         withBorder={false}
         style={{ 
-          width: groupedMonitor ? '850px' : '820px',
-          maxWidth: '100%',
+          width: groupedMonitor ? '92%' : '92%',
+          maxWidth: '1400px',
           transition: 'all 0.3s ease',
           animation: 'fadeInUp 0.5s ease-in',
           background: 'rgba(15, 22, 41, 0.8)',
           border: '1px solid rgba(0, 255, 255, 0.2)',
           backdropFilter: 'blur(10px)',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.1) inset',
-          position: 'relative'
+          position: 'relative',
+          marginLeft: 'auto',
+          marginRight: 'auto'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 255, 255, 0.2) inset, 0 0 20px rgba(0, 255, 255, 0.3)'
