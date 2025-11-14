@@ -10,6 +10,52 @@ export interface Env {
 }
 
 const Worker = {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url)
+    
+    // 添加测试端点：GET /test-check
+    if (url.pathname === '/test-check' && request.method === 'GET') {
+      console.log('Manual test check triggered via HTTP')
+      
+      // 创建一个假的 ScheduledEvent 来触发检查
+      const fakeEvent = {
+        type: 'scheduled' as const,
+        scheduledTime: Date.now(),
+        cron: '* * * * *',
+      } as ScheduledEvent
+      
+      try {
+        await Worker.scheduled(fakeEvent, env, ctx)
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            message: '检查已触发，请查看日志或等待通知',
+            timestamp: new Date().toISOString()
+          }),
+          {
+            headers: { 'Content-Type': 'application/json' },
+            status: 200,
+          }
+        )
+      } catch (e: any) {
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: e.message || String(e),
+            timestamp: new Date().toISOString()
+          }),
+          {
+            headers: { 'Content-Type': 'application/json' },
+            status: 500,
+          }
+        )
+      }
+    }
+    
+    // 默认返回 404
+    return new Response('Not Found', { status: 404 })
+  },
+
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
     const workerLocation = (await getWorkerLocation()) || 'ERROR'
     console.log(`Running scheduled event on ${workerLocation}...`)
@@ -213,22 +259,29 @@ const Worker = {
 
         const currentIncident = state.incident[monitor.id].slice(-1)[0]
         try {
-          if (
-            // monitor status changed AND...
+          // 计算故障持续时间（秒）
+          const incidentDuration = currentTimeSecond - currentIncident.start[0]
+          const gracePeriodSeconds = (workerConfig.notification?.gracePeriod ?? 0) * 60
+          
+          // 判断是否应该发送通知：
+          // 1. 如果宽限期为 0，立即发送（状态变化时）
+          // 2. 如果宽限期 > 0，需要满足宽限期要求
+          const shouldNotify =
+            // 状态变化且宽限期为 0，立即发送
+            (monitorStatusChanged && gracePeriodSeconds === 0) ||
+            // 或者状态变化且已经满足宽限期要求
             (monitorStatusChanged &&
-              // grace period not set OR ...
-              (workerConfig.notification?.gracePeriod === undefined ||
-                // have sent a notification for DOWN status
-                currentTimeSecond - currentIncident.start[0] >=
-                  (workerConfig.notification.gracePeriod + 1) * 60 - 30)) ||
-            // grace period is set AND...
-            (workerConfig.notification?.gracePeriod !== undefined &&
-              // grace period is met
-              currentTimeSecond - currentIncident.start[0] >=
-                workerConfig.notification.gracePeriod * 60 - 30 &&
-              currentTimeSecond - currentIncident.start[0] <
-                workerConfig.notification.gracePeriod * 60 + 30)
-          ) {
+              gracePeriodSeconds > 0 &&
+              incidentDuration >= gracePeriodSeconds - 30) ||
+            // 或者在宽限期窗口内（用于持续故障的通知）
+            (gracePeriodSeconds > 0 &&
+              incidentDuration >= gracePeriodSeconds - 30 &&
+              incidentDuration < gracePeriodSeconds + 30)
+          
+          if (shouldNotify) {
+            console.log(
+              `Should notify for ${monitor.name}: monitorStatusChanged=${monitorStatusChanged}, gracePeriod=${workerConfig.notification?.gracePeriod}, incidentDuration=${incidentDuration}s`
+            )
             if (
               currentIncident.start[0] !== currentTimeSecond &&
               workerConfig.notification?.skipErrorChangeNotification
@@ -237,6 +290,7 @@ const Worker = {
                 'Skipping notification for following error reason change due to user config'
               )
             } else {
+              console.log(`Sending notification for ${monitor.name} (DOWN)`)
               await formatAndNotify(
                 monitor,
                 false,
@@ -253,6 +307,9 @@ const Worker = {
               }s, changed ${monitorStatusChanged}), skipping webhook DOWN notification for ${
                 monitor.name
               }`
+            )
+            console.log(
+              `Debug: monitorStatusChanged=${monitorStatusChanged}, gracePeriodSeconds=${gracePeriodSeconds}, incidentDuration=${incidentDuration}`
             )
           }
 
