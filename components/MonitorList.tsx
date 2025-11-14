@@ -71,9 +71,6 @@ export default function MonitorList({
             background: 'rgba(10, 14, 39, 0.5)',
             padding: '16px',
             borderRadius: '8px',
-            '&:hover': {
-              background: 'rgba(15, 22, 41, 0.8)',
-            }
           },
           panel: {
             padding: '8px 16px 16px 16px',
@@ -82,6 +79,9 @@ export default function MonitorList({
           label: {
             color: '#ffffff',
           }
+        }}
+        classNames={{
+          control: 'tech-accordion-control'
         }}
       >
         {Object.keys(group).map((groupName) => (

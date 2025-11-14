@@ -110,11 +110,10 @@ export default function IncidentsPage() {
                     background: 'rgba(15, 22, 41, 0.8)',
                     border: '1px solid rgba(0, 255, 255, 0.2)',
                     color: '#ffffff',
-                    '&:focus': {
-                      borderColor: 'rgba(0, 255, 255, 0.5)',
-                      boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)',
-                    }
                   }
+                }}
+                classNames={{
+                  input: 'tech-select-input'
                 }}
               />
             </Group>

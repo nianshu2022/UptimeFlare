@@ -228,3 +228,14 @@ body {
   color: #00ffff !important;
 }
 
+/* Accordion 控制按钮悬停效果 */
+.tech-accordion-control:hover {
+  background: rgba(15, 22, 41, 0.8) !important;
+}
+
+/* Select 输入框焦点效果 */
+.tech-select-input:focus {
+  border-color: rgba(0, 255, 255, 0.5) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+}
+
