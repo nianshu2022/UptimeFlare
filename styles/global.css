@@ -41,10 +41,20 @@ body {
   height: 100%;
   z-index: 0;
   background: 
-    linear-gradient(to right, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
   background-size: 50px 50px;
   pointer-events: none;
+  animation: gridPulse 4s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* 科技感卡片 */
@@ -192,13 +202,16 @@ body {
   background: var(--tech-glow);
 }
 
-/* 数据流动画 */
+/* 数据流动画 - 波浪线效果 */
 @keyframes dataFlow {
   0% {
     transform: translateX(-100%);
     opacity: 0;
   }
-  50% {
+  10% {
+    opacity: 1;
+  }
+  90% {
     opacity: 1;
   }
   100% {
@@ -214,18 +227,63 @@ body {
   width: 100%;
   height: 2px;
   background: linear-gradient(
-    to right,
-    transparent,
-    var(--tech-glow),
-    transparent
+    90deg,
+    transparent 0%,
+    rgba(0, 255, 255, 0) 20%,
+    var(--tech-glow) 50%,
+    rgba(0, 255, 255, 0) 80%,
+    transparent 100%
   );
   animation: dataFlow 3s linear infinite;
+  filter: blur(1px);
+}
+
+/* 波浪线流动效果 - 增强版 */
+.tech-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 255, 255, 0.3) 25%,
+    rgba(0, 255, 255, 0.8) 50%,
+    rgba(0, 255, 255, 0.3) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: waveFlow 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tech-card:hover::after {
+  opacity: 1;
+}
+
+@keyframes waveFlow {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* Modal 关闭按钮悬停效果 */
+.tech-modal-close {
+  border: 1px solid rgba(0, 255, 255, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
 .tech-modal-close:hover {
-  background: rgba(0, 255, 255, 0.2) !important;
+  background: rgba(0, 255, 255, 0.3) !important;
   color: #00ffff !important;
+  border-color: rgba(0, 255, 255, 0.6) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5) !important;
 }
 
 /* Accordion 控制按钮悬停效果 */
@@ -237,5 +295,17 @@ body {
 .tech-select-input:focus {
   border-color: rgba(0, 255, 255, 0.5) !important;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+}
+
+/* Pagination 分页控件样式 */
+.tech-pagination-control[data-active] {
+  background: rgba(0, 255, 255, 0.3) !important;
+  border-color: rgba(0, 255, 255, 0.5) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4) !important;
+}
+
+.tech-pagination-control:hover {
+  background: rgba(15, 22, 41, 1) !important;
+  border-color: rgba(0, 255, 255, 0.4) !important;
 }
 

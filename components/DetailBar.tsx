@@ -1,10 +1,12 @@
 import { MonitorState, MonitorTarget } from '@/types/config'
 import { getColor } from '@/util/color'
-import { Box, Tooltip, Modal } from '@mantine/core'
+import { Box, Tooltip, Modal, Pagination, Center } from '@mantine/core'
 import { useResizeObserver } from '@mantine/hooks'
 import { useState } from 'react'
 const moment = require('moment')
 require('moment-precise-range-plugin')
+
+const ITEMS_PER_PAGE = 10
 
 export default function DetailBar({
   monitor,
@@ -16,7 +18,8 @@ export default function DetailBar({
   const [barRef, barRect] = useResizeObserver()
   const [modalOpened, setModalOpened] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
-  const [modelContent, setModelContent] = useState(<div />)
+  const [incidentReasonsList, setIncidentReasonsList] = useState<Array<{ start: string; end: string; duration: string; error: string }>>([])
+  const [currentPage, setCurrentPage] = useState(1)
 
   const overlapLen = (x1: number, x2: number, y1: number, y2: number) => {
     return Math.max(0, Math.min(x2, y2) - Math.max(x1, y1))
@@ -172,69 +175,9 @@ export default function DetailBar({
                   day: 'numeric',
                 })} 的事件详情`
               )
-              setModelContent(
-                <div style={{ lineHeight: '1.8' }}>
-                  {[...incidentReasons].reverse().map((reason, index) => (
-                    <div 
-                      key={index} 
-                      style={{ 
-                        marginBottom: '16px',
-                        padding: '16px',
-                        background: 'rgba(15, 22, 41, 0.8)',
-                        borderRadius: '8px',
-                        border: '1px solid rgba(255, 51, 102, 0.4)',
-                        borderLeft: '4px solid #ff3366',
-                        boxShadow: '0 4px 20px rgba(255, 51, 102, 0.2)'
-                      }}
-                    >
-                      <div style={{ 
-                        fontWeight: 'bold', 
-                        marginBottom: '12px', 
-                        color: '#ff3366',
-                        textShadow: '0 0 10px #ff3366',
-                        fontSize: '16px',
-                        fontFamily: 'monospace',
-                        letterSpacing: '1px'
-                      }}>
-                        🔴 事件 #{index + 1}
-                      </div>
-                      <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
-                        <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>开始时间：</span>
-                        <span style={{ fontFamily: 'monospace', marginLeft: '8px' }}>{reason.start}</span>
-                      </div>
-                      <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
-                        <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>结束时间：</span>
-                        <span style={{ fontFamily: 'monospace', marginLeft: '8px' }}>{reason.end}</span>
-                      </div>
-                      <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
-                        <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>持续时长：</span>
-                        <span style={{ 
-                          color: '#ff3366', 
-                          fontFamily: 'monospace',
-                          textShadow: '0 0 8px #ff3366',
-                          marginLeft: '8px'
-                        }}>{reason.duration}</span>
-                      </div>
-                      <div style={{ 
-                        marginTop: '12px', 
-                        paddingTop: '12px', 
-                        borderTop: '1px solid rgba(0, 255, 255, 0.2)'
-                      }}>
-                        <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>错误信息：</span>
-                        <div style={{ 
-                          color: '#ff3366', 
-                          fontFamily: 'monospace',
-                          marginTop: '8px',
-                          padding: '8px',
-                          background: 'rgba(0, 0, 0, 0.3)',
-                          borderRadius: '4px',
-                          border: '1px solid rgba(255, 51, 102, 0.3)'
-                        }}>{reason.error}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )
+              const reversedReasons = [...incidentReasons].reverse()
+              setIncidentReasonsList(reversedReasons)
+              setCurrentPage(1) // 打开 Modal 时重置到第一页
               setModalOpened(true)
             }
           }}
@@ -247,7 +190,10 @@ export default function DetailBar({
     <>
       <Modal
         opened={modalOpened}
-        onClose={() => setModalOpened(false)}
+        onClose={() => {
+          setModalOpened(false)
+          setCurrentPage(1) // 关闭 Modal 时重置页码
+        }}
         title={modalTitle}
         size={'40em'}
         styles={{
@@ -265,6 +211,7 @@ export default function DetailBar({
           },
           close: {
             color: '#ffffff',
+            background: 'rgba(0, 0, 0, 0.3)',
           },
           header: {
             background: 'transparent',
@@ -274,8 +221,103 @@ export default function DetailBar({
             background: 'transparent',
           }
         }}
+        classNames={{
+          close: 'tech-modal-close'
+        }}
       >
-        {modelContent}
+        <div style={{ lineHeight: '1.8' }}>
+          {(() => {
+            const totalPages = Math.ceil(incidentReasonsList.length / ITEMS_PER_PAGE)
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+            const endIndex = startIndex + ITEMS_PER_PAGE
+            const paginatedReasons = incidentReasonsList.slice(startIndex, endIndex)
+            const globalIndex = startIndex // 用于显示正确的序号
+            
+            return (
+              <>
+                {paginatedReasons.map((reason, index) => (
+                  <div 
+                    key={index} 
+                    style={{ 
+                      marginBottom: '16px',
+                      padding: '16px',
+                      background: 'rgba(15, 22, 41, 0.8)',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255, 51, 102, 0.4)',
+                      borderLeft: '4px solid #ff3366',
+                      boxShadow: '0 4px 20px rgba(255, 51, 102, 0.2)'
+                    }}
+                  >
+                    <div style={{ 
+                      fontWeight: 'bold', 
+                      marginBottom: '12px', 
+                      color: '#ff3366',
+                      textShadow: '0 0 10px #ff3366',
+                      fontSize: '16px',
+                      fontFamily: 'monospace',
+                      letterSpacing: '1px'
+                    }}>
+                      🔴 事件 #{globalIndex + index + 1}
+                    </div>
+                    <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
+                      <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>开始时间：</span>
+                      <span style={{ fontFamily: 'monospace', marginLeft: '8px' }}>{reason.start}</span>
+                    </div>
+                    <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
+                      <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>结束时间：</span>
+                      <span style={{ fontFamily: 'monospace', marginLeft: '8px' }}>{reason.end}</span>
+                    </div>
+                    <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
+                      <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>持续时长：</span>
+                      <span style={{ 
+                        color: '#ff3366', 
+                        fontFamily: 'monospace',
+                        textShadow: '0 0 8px #ff3366',
+                        marginLeft: '8px'
+                      }}>{reason.duration}</span>
+                    </div>
+                    <div style={{ 
+                      marginTop: '12px', 
+                      paddingTop: '12px', 
+                      borderTop: '1px solid rgba(0, 255, 255, 0.2)'
+                    }}>
+                      <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>错误信息：</span>
+                      <div style={{ 
+                        color: '#ff3366', 
+                        fontFamily: 'monospace',
+                        marginTop: '8px',
+                        padding: '8px',
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        borderRadius: '4px',
+                        border: '1px solid rgba(255, 51, 102, 0.3)'
+                      }}>{reason.error}</div>
+                    </div>
+                  </div>
+                ))}
+                {totalPages > 1 && (
+                  <Center mt="xl">
+                    <Pagination
+                      total={totalPages}
+                      value={currentPage}
+                      onChange={setCurrentPage}
+                      size="sm"
+                      styles={{
+                        control: {
+                          background: 'rgba(15, 22, 41, 0.8)',
+                          border: '1px solid rgba(0, 255, 255, 0.2)',
+                          color: '#ffffff',
+                        }
+                      }}
+                      classNames={{
+                        control: 'tech-pagination-control'
+                      }}
+                    />
+                  </Center>
+                )}
+              </>
+            )
+          })()}
+        </div>
       </Modal>
       <Box
         style={{

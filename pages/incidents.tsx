@@ -3,13 +3,15 @@ import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import { MaintenanceConfig, MonitorTarget } from '@/types/config'
 import { maintenances, pageConfig, workerConfig } from '@/uptime.config'
-import { Box, Button, Center, Container, Group, Select } from '@mantine/core'
+import { Box, Button, Center, Container, Group, Select, Pagination } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import MaintenanceAlert from '@/components/MaintenanceAlert'
 import NoIncidentsAlert from '@/components/NoIncidents'
 
 export const runtime = 'experimental-edge'
 const inter = Inter({ subsets: ['latin'] })
+
+const ITEMS_PER_PAGE = 10
 
 function getSelectedMonth() {
   const hash = window.location.hash.replace('#', '')
@@ -53,17 +55,31 @@ function getPrevNextMonth(monthStr: string) {
 export default function IncidentsPage() {
   const [selectedMonitor, setSelectedMonitor] = useState<string | null>('')
   const [selectedMonth, setSelectedMonth] = useState(getSelectedMonth())
+  const [activePage, setActivePage] = useState(1)
 
   useEffect(() => {
-    const onHashChange = () => setSelectedMonth(getSelectedMonth())
+    const onHashChange = () => {
+      setSelectedMonth(getSelectedMonth())
+      setActivePage(1) // 切换月份时重置到第一页
+    }
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
+
+  useEffect(() => {
+    setActivePage(1) // 切换监控项时重置到第一页
+  }, [selectedMonitor])
 
   const filteredIncidents = filterIncidentsByMonth(maintenances, selectedMonth)
   const monitorFilteredIncidents = selectedMonitor
     ? filteredIncidents.filter((i) => i.monitors.find((e) => e.id === selectedMonitor))
     : filteredIncidents
+
+  // 分页计算
+  const totalPages = Math.ceil(monitorFilteredIncidents.length / ITEMS_PER_PAGE)
+  const startIndex = (activePage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const paginatedIncidents = monitorFilteredIncidents.slice(startIndex, endIndex)
 
   const { prev, next } = getPrevNextMonth(selectedMonth)
 
@@ -120,9 +136,31 @@ export default function IncidentsPage() {
               {monitorFilteredIncidents.length === 0 ? (
                 <NoIncidentsAlert />
               ) : (
-                monitorFilteredIncidents.map((incident, i) => (
-                  <MaintenanceAlert key={i} maintenance={incident} />
-                ))
+                <>
+                  {paginatedIncidents.map((incident, i) => (
+                    <MaintenanceAlert key={i} maintenance={incident} />
+                  ))}
+                  {totalPages > 1 && (
+                    <Center mt="xl" mb="md">
+                      <Pagination
+                        total={totalPages}
+                        value={activePage}
+                        onChange={setActivePage}
+                        size="md"
+                        styles={{
+                          control: {
+                            background: 'rgba(15, 22, 41, 0.8)',
+                            border: '1px solid rgba(0, 255, 255, 0.2)',
+                            color: '#ffffff',
+                          }
+                        }}
+                        classNames={{
+                          control: 'tech-pagination-control'
+                        }}
+                      />
+                    </Center>
+                  )}
+                </>
               )}
             </Box>
             <Group justify="space-between" mt="md">
