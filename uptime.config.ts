@@ -81,9 +81,9 @@ const workerConfig: WorkerConfig = {
       // `method` 应该是一个有效的 HTTP 方法
       method: 'GET',
       // `target` 是一个有效的 URL
-      target: 'https://111.nianshu2022.cn/',
+      target: 'https://cs.nianshu2022.cn/',
       // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
-      statusPageLink: 'https://111.nianshu2022.cn/',
+      statusPageLink: 'https://cs.nianshu2022.cn/',
       // [可选] 启用域名到期监控
       domainExpiryCheck: true,
       // [可选] 提前多少天警告域名即将到期，默认30天
