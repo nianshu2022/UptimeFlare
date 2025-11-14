@@ -74,7 +74,6 @@ export default function MaintenanceAlert({
             ...{
               top: 10,
               fontSize: '0.85rem',
-              borderRadius: 6,
               marginBottom: 12,
               padding: '12px',
               background: 'rgba(0, 0, 0, 0.2)',
