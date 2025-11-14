@@ -81,11 +81,14 @@ function templateWebhookPlayload(payload: any, message: string) {
 /**
  * 钉钉加签计算
  * 算法：使用 HmacSHA256 对 timestamp + '\n' + secret 进行加密，然后 Base64 编码
+ * 参考：https://open.dingtalk.com/document/robots/customize-robot-security-settings
  */
 async function calculateDingtalkSign(secret: string, timestamp: number): Promise<string> {
+  // 签名字符串：timestamp + '\n' + secret（使用完整的 secret，包括 SEC 前缀）
   const stringToSign = `${timestamp}\n${secret}`
   
   // 将密钥和消息转换为 ArrayBuffer
+  // HMAC 的密钥是 secret，消息是 stringToSign
   const keyData = new TextEncoder().encode(secret)
   const messageData = new TextEncoder().encode(stringToSign)
   
@@ -100,10 +103,12 @@ async function calculateDingtalkSign(secret: string, timestamp: number): Promise
   
   const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData)
   
-  // Base64 编码，并进行 URL 安全处理
+  // Base64 编码（不需要 URL 编码，因为 Base64 字符集本身就是 URL 安全的）
   // 使用 Array.from() 将 Uint8Array 转换为数组，避免迭代器问题
   const signatureArray = Array.from(new Uint8Array(signature))
   const base64Signature = btoa(String.fromCharCode(...signatureArray))
+  
+  // 钉钉要求对 Base64 结果进行 URL 编码
   return encodeURIComponent(base64Signature)
 }
 
@@ -174,12 +179,34 @@ async function webhookNotify(webhook: WebhookConfig, message: string) {
     )
     const resp = await fetchTimeout(url, webhook.timeout ?? 5000, { method, headers, body })
 
+    const responseText = await resp.text()
     if (!resp.ok) {
       console.log(
-        'Error calling webhook server, code: ' + resp.status + ', response: ' + (await resp.text())
+        `Error calling webhook server, code: ${resp.status}, response: ${responseText}`
       )
+      // 如果是钉钉，打印更详细的错误信息
+      if (webhook.url.includes('oapi.dingtalk.com')) {
+        try {
+          const errorData = JSON.parse(responseText)
+          console.log(`Dingtalk error details: ${JSON.stringify(errorData)}`)
+        } catch (e) {
+          // 不是 JSON，直接打印文本
+        }
+      }
     } else {
-      console.log('Webhook notification sent successfully, code: ' + resp.status)
+      console.log(`Webhook notification sent successfully, code: ${resp.status}`)
+      // 钉钉成功响应通常是 JSON
+      if (webhook.url.includes('oapi.dingtalk.com')) {
+        try {
+          const successData = JSON.parse(responseText)
+          console.log(`Dingtalk response: ${JSON.stringify(successData)}`)
+          if (successData.errcode !== 0) {
+            console.log(`Dingtalk returned error code: ${successData.errcode}, message: ${successData.errmsg}`)
+          }
+        } catch (e) {
+          // 不是 JSON，忽略
+        }
+      }
     }
   } catch (e) {
     console.log('Error calling webhook server: ' + e)
