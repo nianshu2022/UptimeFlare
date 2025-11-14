@@ -144,47 +144,19 @@ export default function MonitorDetail({
 
   // Conditionally render monitor name with or without hyperlink based on monitor.url presence
   const monitorNameElement = (
-    <Text 
-      mt="sm" 
-      fw={700} 
-      style={{ 
-        display: 'inline-flex', 
-        alignItems: 'center',
-        color: '#ffffff',
-        fontSize: '18px',
-        letterSpacing: '1px',
-        fontFamily: 'monospace',
-        cursor: 'pointer',
-        userSelect: 'none',
-        transition: 'all 0.2s ease'
-      }}
-      onClick={() => {
-        if (!monitor.hideLatencyChart) {
-          setChartExpanded(!chartExpanded)
-        }
-      }}
-      onMouseEnter={(e) => {
-        if (!monitor.hideLatencyChart) {
-          e.currentTarget.style.color = '#00ffff'
-          e.currentTarget.style.textShadow = '0 0 10px rgba(0, 255, 255, 0.5)'
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!monitor.statusPageLink) {
-          e.currentTarget.style.color = '#ffffff'
-          e.currentTarget.style.textShadow = 'none'
-        }
-      }}
-    >
+    <Text mt="sm" fw={700} style={{ 
+      display: 'inline-flex', 
+      alignItems: 'center',
+      color: '#ffffff',
+      fontSize: '18px',
+      letterSpacing: '1px',
+      fontFamily: 'monospace'
+    }}>
       {monitor.statusPageLink ? (
         <a
           href={monitor.statusPageLink}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => {
-            // 如果有statusPageLink，只允许链接跳转，不展开图表
-            e.stopPropagation()
-          }}
           style={{ 
             display: 'inline-flex', 
             alignItems: 'center', 
@@ -389,15 +361,40 @@ export default function MonitorDetail({
           )}
         </div>
 
-        <Text mt="sm" fw={700} style={{ 
-          display: 'inline', 
-          color: getColor(uptimePercent, true), 
-          whiteSpace: 'nowrap',
-          textShadow: `0 0 10px ${getColor(uptimePercent, true)}`,
-          fontFamily: 'monospace',
-          letterSpacing: '1px',
-          fontSize: '16px'
-        }}>
+        <Text 
+          mt="sm" 
+          fw={700} 
+          style={{ 
+            display: 'inline', 
+            color: getColor(uptimePercent, true), 
+            whiteSpace: 'nowrap',
+            textShadow: `0 0 10px ${getColor(uptimePercent, true)}`,
+            fontFamily: 'monospace',
+            letterSpacing: '1px',
+            fontSize: '16px',
+            cursor: !monitor.hideLatencyChart ? 'pointer' : 'default',
+            userSelect: 'none',
+            transition: 'all 0.2s ease',
+            opacity: !monitor.hideLatencyChart ? 1 : 1
+          }}
+          onClick={() => {
+            if (!monitor.hideLatencyChart) {
+              setChartExpanded(!chartExpanded)
+            }
+          }}
+          onMouseEnter={(e) => {
+            if (!monitor.hideLatencyChart) {
+              e.currentTarget.style.opacity = '0.8'
+              e.currentTarget.style.transform = 'scale(1.05)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!monitor.hideLatencyChart) {
+              e.currentTarget.style.opacity = '1'
+              e.currentTarget.style.transform = 'scale(1)'
+            }
+          }}
+        >
           总体可用率: {uptimePercent}%
         </Text>
       </div>
@@ -440,6 +437,19 @@ export default function MonitorDetail({
                 style={{ marginTop: '8px' }}
               >
                 {badgeText}
+              </Badge>
+            )
+          } else if (certInfo && certInfo.error) {
+            // 显示证书查询错误
+            return (
+              <Badge
+                key="certificate-error"
+                color="gray"
+                variant="light"
+                leftSection={<IconCertificate size={12} />}
+                style={{ marginTop: '8px' }}
+              >
+                证书信息查询失败: {certInfo.error}
               </Badge>
             )
           }
