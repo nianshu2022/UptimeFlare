@@ -221,11 +221,17 @@ export default async function handler(req: NextRequest): Promise<Response> {
         } else {
           // 服务异常
           if (lastIncident.end !== undefined) {
+            // 从正常变为故障，创建新的 incident
             state.incident[monitor.id].push({
               start: [currentTimeSecond],
               end: undefined,
               error: [status.err],
             })
+            monitorStatusChanged = true
+          } else if (lastIncident.error.slice(-1)[0] !== status.err) {
+            // 故障持续，但错误信息变化
+            lastIncident.start.push(currentTimeSecond)
+            lastIncident.error.push(status.err)
             monitorStatusChanged = true
           }
         }
@@ -233,15 +239,25 @@ export default async function handler(req: NextRequest): Promise<Response> {
         const currentIncident = state.incident[monitor.id].slice(-1)[0]
 
         // 检查是否应该发送通知
-        if (!status.up && monitorStatusChanged) {
+        // 对于测试端点，如果是故障状态且宽限期为0，即使状态没变化也发送一次通知
+        if (!status.up) {
+          if (!monitorStatusChanged) {
+            monitorResult.debug = `状态未变化（之前已经是故障状态）`
+          }
+          
           // 计算故障持续时间
           const incidentDuration = currentTimeSecond - currentIncident.start[0]
           const gracePeriodSeconds = (workerConfig.notification?.gracePeriod ?? 0) * 60
 
-          // 宽限期为 0 时立即发送
-          const shouldNotify = gracePeriodSeconds === 0 || incidentDuration >= gracePeriodSeconds
+          // 宽限期为 0 时立即发送，或者状态变化时立即发送
+          // 对于测试端点，如果宽限期为 0，即使状态没变化也发送一次（用于测试）
+          const shouldNotify = gracePeriodSeconds === 0 || 
+                               (monitorStatusChanged && incidentDuration >= gracePeriodSeconds)
 
-          if (shouldNotify && workerConfig.notification?.webhook) {
+          monitorResult.debug = `monitorStatusChanged=${monitorStatusChanged}, gracePeriod=${gracePeriodSeconds}s, incidentDuration=${incidentDuration}s, shouldNotify=${shouldNotify}, hasWebhook=${!!workerConfig.notification?.webhook}`
+          
+          if (shouldNotify) {
+            if (workerConfig.notification?.webhook) {
             try {
               const notification = formatNotification(
                 monitor,
@@ -258,16 +274,17 @@ export default async function handler(req: NextRequest): Promise<Response> {
               if (sent) {
                 monitorResult.message = `✅ 通知已发送: ${monitor.name}`
               } else {
-                monitorResult.error = '钉钉通知发送失败'
+                monitorResult.error = '钉钉通知发送失败，请检查钉钉配置'
               }
             } catch (e: any) {
-              monitorResult.error = `Failed to send notification: ${e.message}`
+              monitorResult.error = `发送通知时出错: ${e.message}`
               console.error(`Error sending notification for ${monitor.name}:`, e)
             }
-          } else if (shouldNotify && !workerConfig.notification?.webhook) {
-            monitorResult.error = 'Webhook not configured'
+            } else {
+              monitorResult.error = 'Webhook 未配置'
+            }
           } else {
-            monitorResult.error = `Grace period not met (${incidentDuration}s < ${gracePeriodSeconds}s)`
+            monitorResult.error = `宽限期未满足 (${incidentDuration}s >= ${gracePeriodSeconds}s) 且状态未变化`
           }
         }
 

@@ -33,7 +33,7 @@ export default function Home({
   if (monitorId) {
     const monitor = monitors.find((monitor) => monitor.id === monitorId)
     if (!monitor || !state) {
-      return <Text fw={700}>Monitor with id {monitorId} not found!</Text>
+      return <Text fw={700}>未找到 ID 为 {monitorId} 的监控项！</Text>
     }
     return (
       <div style={{ maxWidth: '810px' }}>
@@ -55,8 +55,7 @@ export default function Home({
         {state == undefined ? (
           <Center>
             <Text fw={700}>
-              Monitor State is not defined now, please check your worker&apos;s status and KV
-              binding!
+              监控状态未定义，请检查 Worker 的状态和 KV 绑定！
             </Text>
           </Center>
         ) : (

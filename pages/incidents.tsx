@@ -70,7 +70,7 @@ export default function IncidentsPage() {
   const { prev, next } = getPrevNextMonth(selectedMonth)
 
   const monitorOptions = [
-    { value: '', label: 'All' },
+    { value: '', label: '全部' },
     ...workerConfig.monitors.map((monitor) => ({
       value: monitor.id,
       label: monitor.name,
@@ -94,7 +94,7 @@ export default function IncidentsPage() {
           <Container size="md" style={{ width: '100%' }}>
             <Group justify="end" mb="md">
               <Select
-                placeholder="Select monitor"
+                placeholder="选择监控项"
                 data={monitorOptions}
                 value={selectedMonitor}
                 onChange={setSelectedMonitor}
@@ -113,13 +113,13 @@ export default function IncidentsPage() {
             </Box>
             <Group justify="space-between" mt="md">
               <Button variant="default" onClick={() => (window.location.hash = prev)}>
-                ← Backwards
+                ← 上一个月
               </Button>
               <Box style={{ alignSelf: 'center', fontWeight: 500, fontSize: 18 }}>
                 {selectedMonth}
               </Box>
               <Button variant="default" onClick={() => (window.location.hash = next)}>
-                Forward →
+                下一个月 →
               </Button>
             </Group>
           </Container>

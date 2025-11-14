@@ -18,7 +18,7 @@ export default function Header({ style }: { style?: React.CSSProperties }) {
     )
   }
 
-  const links = [{ label: 'Incidents', link: '/incidents' }, ...(pageConfig.links || [])]
+  const links = [{ label: '事件记录', link: '/incidents' }, ...(pageConfig.links || [])]
 
   return (
     <header className={classes.header} style={style}>

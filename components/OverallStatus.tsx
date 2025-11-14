@@ -30,16 +30,14 @@ export default function OverallStatus({
   let statusString = ''
   let icon = <IconAlertCircle style={{ width: 64, height: 64, color: '#b91c1c' }} />
   if (state.overallUp === 0 && state.overallDown === 0) {
-    statusString = 'No data yet'
+    statusString = '暂无数据'
   } else if (state.overallUp === 0) {
-    statusString = 'All systems not operational'
+    statusString = '所有系统不可用'
   } else if (state.overallDown === 0) {
-    statusString = 'All systems operational'
+    statusString = '所有系统正常运行'
     icon = <IconCircleCheck style={{ width: 64, height: 64, color: '#059669' }} />
   } else {
-    statusString = `Some systems not operational (${state.overallDown} out of ${
-      state.overallUp + state.overallDown
-    })`
+    statusString = `部分系统不可用 (${state.overallDown}/${state.overallUp + state.overallDown})`
   }
 
   const [openTime] = useState(Math.round(Date.now() / 1000))
@@ -89,24 +87,22 @@ export default function OverallStatus({
         {statusString}
       </Title>
       <Title mt="sm" style={{ textAlign: 'center', color: '#70778c' }} order={5}>
-        Last updated on:{' '}
-        {`${new Date(state.lastUpdate * 1000).toLocaleString()} (${
+        最后更新: {' '}
+        {`${new Date(state.lastUpdate * 1000).toLocaleString('zh-CN')} (${
           currentTime - state.lastUpdate
-        } sec ago)`}
+        } 秒前)`}
       </Title>
 
       {/* Upcoming Maintenance */}
       {upcomingMaintenances.length > 0 && (
         <>
           <Title mt="4px" style={{ textAlign: 'center', color: '#70778c' }} order={5}>
-            {`${upcomingMaintenances.length} upcoming ${
-              upcomingMaintenances.length === 1 ? 'maintenance' : 'maintenances'
-            }`}{' '}
+            {`${upcomingMaintenances.length} 个即将到来的维护`}{' '}
             <span
               style={{ textDecoration: 'underline', cursor: 'pointer' }}
               onClick={() => setExpandUpcoming(!expandUpcoming)}
             >
-              {expandUpcoming ? '[Hide]' : '[Show]'}
+              {expandUpcoming ? '[隐藏]' : '[显示]'}
             </span>
           </Title>
 

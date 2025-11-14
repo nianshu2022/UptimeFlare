@@ -26,7 +26,7 @@ export default function MaintenanceAlert({
             fontWeight: 700,
           }}
         >
-          {(upcoming ? '[Upcoming] ' : '') + (maintenance.title || 'Scheduled Maintenance')}
+          {(upcoming ? '[即将到来] ' : '') + (maintenance.title || '计划维护')}
         </span>
       }
       color={
@@ -61,14 +61,14 @@ export default function MaintenanceAlert({
           }}
         >
           <div style={{ textAlign: 'right', fontWeight: 'bold' }}>
-            {upcoming ? 'Scheduled for:' : 'From:'}
+            {upcoming ? '计划时间:' : '开始时间:'}
           </div>
-          <div>{new Date(maintenance.start).toLocaleString()}</div>
+          <div>{new Date(maintenance.start).toLocaleString('zh-CN')}</div>
           <div style={{ textAlign: 'right', fontWeight: 'bold' }}>
-            {upcoming ? 'Expected end:' : 'To:'}
+            {upcoming ? '预计结束:' : '结束时间:'}
           </div>
           <div>
-            {maintenance.end ? new Date(maintenance.end).toLocaleString() : 'Until further notice'}
+            {maintenance.end ? new Date(maintenance.end).toLocaleString('zh-CN') : '另行通知'}
           </div>
         </div>
       </div>
@@ -77,11 +77,11 @@ export default function MaintenanceAlert({
       {maintenance.monitors && maintenance.monitors.length > 0 && (
         <>
           <Text mt="xs">
-            <b>Affected components:</b>
+            <b>受影响的组件:</b>
           </Text>
           <List size="sm" withPadding>
             {maintenance.monitors.map((comp, compIdx) => (
-              <List.Item key={compIdx}>{comp?.name ?? '[ERR: MONITOR ID NOT FOUND]'}</List.Item>
+              <List.Item key={compIdx}>{comp?.name ?? '[错误: 未找到监控项]'}</List.Item>
             ))}
           </List>
         </>
