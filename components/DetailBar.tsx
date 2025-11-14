@@ -251,7 +251,7 @@ export default function DetailBar({
         title={modalTitle}
         size={'40em'}
         styles={{
-          modal: {
+          content: {
             background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 100%)',
             border: '1px solid rgba(0, 255, 255, 0.3)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 255, 255, 0.2)',
