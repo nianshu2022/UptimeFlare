@@ -8,7 +8,6 @@ import OverallStatus from '@/components/OverallStatus'
 import MonitorList from '@/components/MonitorList'
 import { Center, Text } from '@mantine/core'
 import MonitorDetail from '@/components/MonitorDetail'
-import '@/styles/global.css'
 
 export const runtime = 'experimental-edge'
 

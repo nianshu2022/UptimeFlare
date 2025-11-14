@@ -7,7 +7,6 @@ import { Box, Button, Center, Container, Group, Select } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import MaintenanceAlert from '@/components/MaintenanceAlert'
 import NoIncidentsAlert from '@/components/NoIncidents'
-import '@/styles/global.css'
 
 export const runtime = 'experimental-edge'
 const inter = Inter({ subsets: ['latin'] })
