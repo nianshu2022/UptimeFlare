@@ -225,7 +225,7 @@ export default function DetailBar({
           close: 'tech-modal-close'
         }}
       >
-        <div style={{ lineHeight: '1.8' }}>
+        <div>
           {(() => {
             const totalPages = Math.ceil(incidentReasonsList.length / ITEMS_PER_PAGE)
             const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
@@ -235,65 +235,91 @@ export default function DetailBar({
             
             return (
               <>
-                {paginatedReasons.map((reason, index) => (
-                  <div 
-                    key={index} 
-                    style={{ 
-                      marginBottom: '16px',
-                      padding: '16px',
-                      background: 'rgba(15, 22, 41, 0.8)',
-                      borderRadius: '8px',
-                      border: '1px solid rgba(255, 51, 102, 0.4)',
-                      borderLeft: '4px solid #ff3366',
-                      boxShadow: '0 4px 20px rgba(255, 51, 102, 0.2)'
-                    }}
-                  >
-                    <div style={{ 
-                      fontWeight: 'bold', 
-                      marginBottom: '12px', 
-                      color: '#ff3366',
-                      textShadow: '0 0 10px #ff3366',
-                      fontSize: '16px',
-                      fontFamily: 'monospace',
-                      letterSpacing: '1px'
-                    }}>
-                      🔴 事件 #{globalIndex + index + 1}
-                    </div>
-                    <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
-                      <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>开始时间：</span>
-                      <span style={{ fontFamily: 'monospace', marginLeft: '8px' }}>{reason.start}</span>
-                    </div>
-                    <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
-                      <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>结束时间：</span>
-                      <span style={{ fontFamily: 'monospace', marginLeft: '8px' }}>{reason.end}</span>
-                    </div>
-                    <div style={{ marginBottom: '8px', color: '#b0b8c4' }}>
-                      <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>持续时长：</span>
-                      <span style={{ 
-                        color: '#ff3366', 
-                        fontFamily: 'monospace',
-                        textShadow: '0 0 8px #ff3366',
-                        marginLeft: '8px'
-                      }}>{reason.duration}</span>
-                    </div>
-                    <div style={{ 
-                      marginTop: '12px', 
-                      paddingTop: '12px', 
-                      borderTop: '1px solid rgba(0, 255, 255, 0.2)'
-                    }}>
-                      <span style={{ fontWeight: 'bold', color: '#ffffff', fontFamily: 'monospace' }}>错误信息：</span>
+                {/* 列表表头 */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '60px 1fr 1fr 120px 2fr',
+                  gap: '12px',
+                  padding: '12px 16px',
+                  background: 'rgba(0, 255, 255, 0.1)',
+                  borderRadius: '6px',
+                  marginBottom: '12px',
+                  border: '1px solid rgba(0, 255, 255, 0.2)',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#00ffff',
+                  fontFamily: 'monospace',
+                  letterSpacing: '1px'
+                }}>
+                  <div>序号</div>
+                  <div>开始时间</div>
+                  <div>结束时间</div>
+                  <div>持续时长</div>
+                  <div>错误信息</div>
+                </div>
+
+                {/* 列表内容 */}
+                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                  {paginatedReasons.map((reason, index) => (
+                    <div 
+                      key={index} 
+                      style={{ 
+                        display: 'grid',
+                        gridTemplateColumns: '60px 1fr 1fr 120px 2fr',
+                        gap: '12px',
+                        padding: '12px 16px',
+                        marginBottom: '8px',
+                        background: 'rgba(15, 22, 41, 0.6)',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(255, 51, 102, 0.3)',
+                        borderLeft: '3px solid #ff3366',
+                        transition: 'all 0.2s ease',
+                        fontSize: '12px',
+                        fontFamily: 'monospace'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(15, 22, 41, 0.9)'
+                        e.currentTarget.style.borderColor = 'rgba(255, 51, 102, 0.5)'
+                        e.currentTarget.style.transform = 'translateX(2px)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(15, 22, 41, 0.6)'
+                        e.currentTarget.style.borderColor = 'rgba(255, 51, 102, 0.3)'
+                        e.currentTarget.style.transform = 'translateX(0)'
+                      }}
+                    >
                       <div style={{ 
-                        color: '#ff3366', 
-                        fontFamily: 'monospace',
-                        marginTop: '8px',
-                        padding: '8px',
-                        background: 'rgba(0, 0, 0, 0.3)',
-                        borderRadius: '4px',
-                        border: '1px solid rgba(255, 51, 102, 0.3)'
-                      }}>{reason.error}</div>
+                        color: '#ff3366',
+                        fontWeight: 600,
+                        textShadow: '0 0 8px #ff3366'
+                      }}>
+                        #{globalIndex + index + 1}
+                      </div>
+                      <div style={{ color: '#b0b8c4' }}>
+                        {reason.start}
+                      </div>
+                      <div style={{ color: '#b0b8c4' }}>
+                        {reason.end}
+                      </div>
+                      <div style={{ 
+                        color: '#ff3366',
+                        fontWeight: 600,
+                        textShadow: '0 0 8px #ff3366'
+                      }}>
+                        {reason.duration}
+                      </div>
+                      <div style={{ 
+                        color: '#ff3366',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {reason.error}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
                 {totalPages > 1 && (
                   <Center mt="xl">
                     <Pagination
