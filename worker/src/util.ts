@@ -101,7 +101,9 @@ async function calculateDingtalkSign(secret: string, timestamp: number): Promise
   const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData)
   
   // Base64 编码，并进行 URL 安全处理
-  const base64Signature = btoa(String.fromCharCode(...new Uint8Array(signature)))
+  // 使用 Array.from() 将 Uint8Array 转换为数组，避免迭代器问题
+  const signatureArray = Array.from(new Uint8Array(signature))
+  const base64Signature = btoa(String.fromCharCode(...signatureArray))
   return encodeURIComponent(base64Signature)
 }
 
