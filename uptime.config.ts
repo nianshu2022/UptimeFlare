@@ -136,7 +136,8 @@ const workerConfig: WorkerConfig = {
     // [可选] 发送通知前的宽限期（分钟）
     // 只有在初始失败后，监控项持续故障 N 次连续检查后才会发送通知
     // 如果未指定，通知将立即发送
-    gracePeriod: 5,
+    // 临时设置为 0 以便测试，测试完成后可以改回 5
+    gracePeriod: 0,
     // [可选] 对指定 id 的监控项禁用通知
     skipNotificationIds: [],
     // [可选] 在事件期间抑制错误原因更改的额外通知，默认为 false
