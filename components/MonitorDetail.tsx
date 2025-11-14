@@ -180,6 +180,11 @@ export default function MonitorDetail({
         <a
           href={monitor.statusPageLink}
           target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            // 如果有statusPageLink，只允许链接跳转，不展开图表
+            e.stopPropagation()
+          }}
           style={{ 
             display: 'inline-flex', 
             alignItems: 'center', 
@@ -400,12 +405,12 @@ export default function MonitorDetail({
       {domainExpiryElement}
 
       {/* 证书有效期信息（如果HTTPS监控） */}
-      {monitor.target.toLowerCase().startsWith('https://') && state.certificateExpiry?.[monitor.id] && (
+      {monitor.target && typeof monitor.target === 'string' && monitor.target.toLowerCase().startsWith('https://') && state.certificateExpiry?.[monitor.id] && (
         (() => {
           const certInfo = state.certificateExpiry[monitor.id]
-          if (certInfo.expiryDate > 0) {
+          if (certInfo && certInfo.expiryDate && certInfo.expiryDate > 0) {
             const expiryDate = new Date(certInfo.expiryDate * 1000)
-            const daysRemaining = certInfo.daysRemaining
+            const daysRemaining = certInfo.daysRemaining || 0
             const expiryDateStr = expiryDate.toLocaleDateString('zh-CN', {
               year: 'numeric',
               month: '2-digit',
@@ -428,6 +433,7 @@ export default function MonitorDetail({
 
             return (
               <Badge
+                key="certificate-expiry"
                 color={badgeColor}
                 variant="light"
                 leftSection={<IconCertificate size={12} />}
@@ -442,9 +448,11 @@ export default function MonitorDetail({
       )}
 
       <DetailBar monitor={monitor} state={state} />
-      <Collapse in={chartExpanded}>
-        {!monitor.hideLatencyChart && <DetailChart monitor={monitor} state={state} />}
-      </Collapse>
+      {!monitor.hideLatencyChart && (
+        <Collapse in={chartExpanded}>
+          <DetailChart monitor={monitor} state={state} />
+        </Collapse>
+      )}
     </>
   )
 }
