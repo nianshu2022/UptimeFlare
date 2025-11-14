@@ -134,6 +134,7 @@ export type MonitorState = {
       daysRemaining: number // 剩余天数
       warningSent: boolean // 是否已发送警告
       lastChecked: number // 最后检查时间戳（秒）
+      error?: string // 错误信息（如果有）
     }
   >
 }

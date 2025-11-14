@@ -355,6 +355,8 @@ const Worker = {
               expiryEntry.expiryDate = expiryInfo.expiryDate
               expiryEntry.daysRemaining = expiryInfo.daysRemaining
               expiryEntry.lastChecked = currentTimeSecond
+              // 清除之前的错误信息
+              delete expiryEntry.error
 
               // 如果域名即将到期且未发送过警告，发送通知
               if (
@@ -396,6 +398,17 @@ const Worker = {
               console.log(
                 `Failed to get domain expiry info for ${monitor.name}: ${expiryInfo.error}`
               )
+              // 保存错误信息到 state，以便前端显示
+              const expiryEntry = state.domainExpiry[monitor.id] || {
+                expiryDate: 0,
+                daysRemaining: -1,
+                warningSent: false,
+                lastChecked: currentTimeSecond,
+              }
+              expiryEntry.error = expiryInfo.error
+              expiryEntry.lastChecked = currentTimeSecond
+              state.domainExpiry[monitor.id] = expiryEntry
+              statusChanged = true
             }
           }
         } catch (e) {
