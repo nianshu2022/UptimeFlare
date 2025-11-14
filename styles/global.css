@@ -222,3 +222,9 @@ body {
   animation: dataFlow 3s linear infinite;
 }
 
+/* Modal 关闭按钮悬停效果 */
+.tech-modal-close:hover {
+  background: rgba(0, 255, 255, 0.2) !important;
+  color: #00ffff !important;
+}
+

@@ -265,10 +265,6 @@ export default function DetailBar({
           },
           close: {
             color: '#ffffff',
-            '&:hover': {
-              background: 'rgba(0, 255, 255, 0.2)',
-              color: '#00ffff',
-            }
           },
           header: {
             background: 'transparent',
