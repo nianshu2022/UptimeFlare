@@ -209,19 +209,9 @@ const Worker = {
           lastIncident.end = currentTimeSecond
           monitorStatusChanged = true
           try {
-            if (
-              // grace period not set OR ...
-              workerConfig.notification?.gracePeriod === undefined ||
-              // only when we have sent a notification for DOWN status, we will send a notification for UP status (within 30 seconds of possible drift)
-              currentTimeSecond - lastIncident.start[0] >=
-                (workerConfig.notification.gracePeriod + 1) * 60 - 30
-            ) {
-              await formatAndNotify(monitor, true, lastIncident.start[0], currentTimeSecond, 'OK')
-            } else {
-              console.log(
-                `grace period (${workerConfig.notification?.gracePeriod}m) not met, skipping webhook UP notification for ${monitor.name}`
-              )
-            }
+            // 状态变化（从故障恢复），立即发送通知
+            console.log(`Service ${monitor.name} recovered, sending notification immediately`)
+            await formatAndNotify(monitor, true, lastIncident.start[0], currentTimeSecond, 'OK')
 
             console.log('Calling config onStatusChange callback...')
             await workerConfig.callbacks?.onStatusChange?.(
@@ -264,15 +254,14 @@ const Worker = {
           const gracePeriodSeconds = (workerConfig.notification?.gracePeriod ?? 0) * 60
           
           // 判断是否应该发送通知：
-          // 1. 如果宽限期为 0，立即发送（状态变化时）
-          // 2. 如果宽限期 > 0，需要满足宽限期要求
+          // 1. 如果状态变化（从正常变为故障），立即发送通知（用户需求1）
+          // 2. 如果宽限期为 0，立即发送（首次检测到故障）
+          // 3. 如果宽限期 > 0，需要满足宽限期要求
           const shouldNotify =
-            // 状态变化且宽限期为 0，立即发送
-            (monitorStatusChanged && gracePeriodSeconds === 0) ||
-            // 或者状态变化且已经满足宽限期要求
-            (monitorStatusChanged &&
-              gracePeriodSeconds > 0 &&
-              incidentDuration >= gracePeriodSeconds - 30) ||
+            // 状态变化（新故障），立即发送
+            (monitorStatusChanged) ||
+            // 或者宽限期为 0 且是首次检测（故障持续时间很短，说明是新故障）
+            (gracePeriodSeconds === 0 && incidentDuration < 60) ||
             // 或者在宽限期窗口内（用于持续故障的通知）
             (gracePeriodSeconds > 0 &&
               incidentDuration >= gracePeriodSeconds - 30 &&

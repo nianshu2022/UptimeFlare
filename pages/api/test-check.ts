@@ -36,25 +36,57 @@ async function checkMonitor(monitor: any): Promise<{ ping: number; up: boolean; 
 
 // 格式化通知消息
 function formatNotification(monitor: any, isUp: boolean, timeIncidentStart: number, timeNow: number, reason: string, timeZone: string): string {
-  const dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'numeric',
+  // 使用中文日期格式
+  const dateFormatter = new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: false,
     timeZone: timeZone,
   })
 
-  const downtimeDuration = Math.round((timeNow - timeIncidentStart) / 60)
   const timeNowFormatted = dateFormatter.format(new Date(timeNow * 1000))
   const timeIncidentStartFormatted = dateFormatter.format(new Date(timeIncidentStart * 1000))
+  
+  // 计算故障时长（秒）
+  const downtimeSeconds = timeNow - timeIncidentStart
+  const downtimeMinutes = Math.floor(downtimeSeconds / 60)
+  const downtimeHours = Math.floor(downtimeMinutes / 60)
+  const downtimeDays = Math.floor(downtimeHours / 24)
+  
+  // 格式化故障时长
+  let downtimeText = ''
+  if (downtimeDays > 0) {
+    downtimeText = `${downtimeDays}天${downtimeHours % 24}小时${downtimeMinutes % 60}分钟`
+  } else if (downtimeHours > 0) {
+    downtimeText = `${downtimeHours}小时${downtimeMinutes % 60}分钟`
+  } else if (downtimeMinutes > 0) {
+    downtimeText = `${downtimeMinutes}分钟`
+  } else {
+    downtimeText = `${downtimeSeconds}秒`
+  }
 
   if (isUp) {
-    return `✅ ${monitor.name} 已恢复！\n服务在故障 ${downtimeDuration} 分钟后恢复正常。`
+    return `✅ 【服务恢复】${monitor.name}\n\n` +
+           `🕐 故障开始时间：${timeIncidentStartFormatted}\n` +
+           `🕐 恢复时间：${timeNowFormatted}\n` +
+           `⏱️ 故障持续时间：${downtimeText}\n` +
+           `\n服务已恢复正常运行！`
   } else if (timeNow == timeIncidentStart) {
-    return `🔴 ${monitor.name} 当前不可用\n服务在 ${timeNowFormatted} 无法访问。\n问题: ${reason || '未指定'}`
+    return `🔴 【服务故障】${monitor.name}\n\n` +
+           `🕐 故障时间：${timeNowFormatted}\n` +
+           `❌ 错误信息：${reason || '未知错误'}\n` +
+           `\n服务当前不可用，请及时处理！`
   } else {
-    return `🔴 ${monitor.name} 仍然不可用\n服务自 ${timeIncidentStartFormatted} 起不可用 (${downtimeDuration} 分钟)。\n问题: ${reason || '未指定'}`
+    return `🔴 【服务持续故障】${monitor.name}\n\n` +
+           `🕐 故障开始时间：${timeIncidentStartFormatted}\n` +
+           `🕐 当前时间：${timeNowFormatted}\n` +
+           `⏱️ 故障持续时间：${downtimeText}\n` +
+           `❌ 错误信息：${reason || '未知错误'}\n` +
+           `\n服务仍未恢复正常，请尽快处理！`
   }
 }
 
@@ -215,8 +247,34 @@ export default async function handler(req: NextRequest): Promise<Response> {
         if (status.up) {
           // 服务正常
           if (lastIncident.end === undefined) {
+            // 状态变化（从故障恢复），立即发送通知
             lastIncident.end = currentTimeSecond
             monitorStatusChanged = true
+            
+            if (workerConfig.notification?.webhook) {
+              try {
+                const notification = formatNotification(
+                  monitor,
+                  true,
+                  lastIncident.start[0],
+                  currentTimeSecond,
+                  'OK',
+                  workerConfig.notification?.timeZone ?? 'Asia/Shanghai'
+                )
+
+                const sent = await sendDingtalkNotification(notification, workerConfig.notification.webhook)
+                monitorResult.notificationSent = sent
+                monitorResult.notificationMessage = notification
+                if (sent) {
+                  monitorResult.message = `✅ 恢复通知已发送: ${monitor.name}`
+                } else {
+                  monitorResult.error = '钉钉通知发送失败，请检查钉钉配置'
+                }
+              } catch (e: any) {
+                monitorResult.error = `发送恢复通知时出错: ${e.message}`
+                console.error(`Error sending recovery notification for ${monitor.name}:`, e)
+              }
+            }
           }
         } else {
           // 服务异常
@@ -249,10 +307,19 @@ export default async function handler(req: NextRequest): Promise<Response> {
           const incidentDuration = currentTimeSecond - currentIncident.start[0]
           const gracePeriodSeconds = (workerConfig.notification?.gracePeriod ?? 0) * 60
 
-          // 宽限期为 0 时立即发送，或者状态变化时立即发送
-          // 对于测试端点，如果宽限期为 0，即使状态没变化也发送一次（用于测试）
-          const shouldNotify = gracePeriodSeconds === 0 || 
-                               (monitorStatusChanged && incidentDuration >= gracePeriodSeconds)
+          // 判断是否应该发送通知：
+          // 1. 如果状态变化（从正常变为故障），立即发送通知
+          // 2. 如果宽限期为 0 且是首次检测（故障持续时间很短），立即发送
+          // 3. 如果宽限期 > 0，需要满足宽限期要求
+          const shouldNotify =
+            // 状态变化（新故障），立即发送
+            (monitorStatusChanged) ||
+            // 或者宽限期为 0 且是首次检测（故障持续时间很短，说明是新故障）
+            (gracePeriodSeconds === 0 && incidentDuration < 60) ||
+            // 或者在宽限期窗口内（用于持续故障的通知）
+            (gracePeriodSeconds > 0 &&
+              incidentDuration >= gracePeriodSeconds - 30 &&
+              incidentDuration < gracePeriodSeconds + 30)
 
           monitorResult.debug = `monitorStatusChanged=${monitorStatusChanged}, gracePeriod=${gracePeriodSeconds}s, incidentDuration=${incidentDuration}s, shouldNotify=${shouldNotify}, hasWebhook=${!!workerConfig.notification?.webhook}`
           

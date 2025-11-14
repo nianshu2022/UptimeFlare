@@ -36,33 +36,57 @@ function formatStatusChangeNotification(
   reason: string,
   timeZone: string
 ) {
-  const dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'numeric',
+  // 使用中文日期格式
+  const dateFormatter = new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: false,
     timeZone: timeZone,
   })
 
-  let downtimeDuration = Math.round((timeNow - timeIncidentStart) / 60)
   const timeNowFormatted = dateFormatter.format(new Date(timeNow * 1000))
   const timeIncidentStartFormatted = dateFormatter.format(new Date(timeIncidentStart * 1000))
+  
+  // 计算故障时长（秒）
+  const downtimeSeconds = timeNow - timeIncidentStart
+  const downtimeMinutes = Math.floor(downtimeSeconds / 60)
+  const downtimeHours = Math.floor(downtimeMinutes / 60)
+  const downtimeDays = Math.floor(downtimeHours / 24)
+  
+  // 格式化故障时长
+  let downtimeText = ''
+  if (downtimeDays > 0) {
+    downtimeText = `${downtimeDays}天${downtimeHours % 24}小时${downtimeMinutes % 60}分钟`
+  } else if (downtimeHours > 0) {
+    downtimeText = `${downtimeHours}小时${downtimeMinutes % 60}分钟`
+  } else if (downtimeMinutes > 0) {
+    downtimeText = `${downtimeMinutes}分钟`
+  } else {
+    downtimeText = `${downtimeSeconds}秒`
+  }
 
   if (isUp) {
-    return `✅ ${monitor.name} is up! \nThe service is up again after being down for ${downtimeDuration} minutes.`
+    return `✅ 【服务恢复】${monitor.name}\n\n` +
+           `🕐 故障开始时间：${timeIncidentStartFormatted}\n` +
+           `🕐 恢复时间：${timeNowFormatted}\n` +
+           `⏱️ 故障持续时间：${downtimeText}\n` +
+           `\n服务已恢复正常运行！`
   } else if (timeNow == timeIncidentStart) {
-    return `🔴 ${
-      monitor.name
-    } is currently down. \nService is unavailable at ${timeNowFormatted}. \nIssue: ${
-      reason || 'unspecified'
-    }`
+    return `🔴 【服务故障】${monitor.name}\n\n` +
+           `🕐 故障时间：${timeNowFormatted}\n` +
+           `❌ 错误信息：${reason || '未知错误'}\n` +
+           `\n服务当前不可用，请及时处理！`
   } else {
-    return `🔴 ${
-      monitor.name
-    } is still down. \nService is unavailable since ${timeIncidentStartFormatted} (${downtimeDuration} minutes). \nIssue: ${
-      reason || 'unspecified'
-    }`
+    return `🔴 【服务持续故障】${monitor.name}\n\n` +
+           `🕐 故障开始时间：${timeIncidentStartFormatted}\n` +
+           `🕐 当前时间：${timeNowFormatted}\n` +
+           `⏱️ 故障持续时间：${downtimeText}\n` +
+           `❌ 错误信息：${reason || '未知错误'}\n` +
+           `\n服务仍未恢复正常，请尽快处理！`
   }
 }
 
