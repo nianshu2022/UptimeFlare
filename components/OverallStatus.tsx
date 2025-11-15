@@ -344,7 +344,7 @@ export default function OverallStatus({
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
             marginBottom: '4px'
           }}>
-            {avgLatency}ms
+            {avgLatency}毫秒
           </Text>
           <Text style={{ 
             fontSize: '13px', 
@@ -506,7 +506,16 @@ export default function OverallStatus({
                     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
                     wordBreak: 'break-word'
                   }}>
-                    {incident.error.length > 50 ? incident.error.substring(0, 50) + '...' : incident.error}
+                    {(() => {
+                      // 格式化错误信息显示
+                      let errorText = incident.error || '未知错误'
+                      // 如果是占位符或无意义的文本，替换为更有意义的描述
+                      if (errorText.toLowerCase() === 'dummy' || errorText.trim() === '' || errorText === '未知错误') {
+                        errorText = incident.isActive ? '服务异常（进行中）' : '服务异常（已恢复）'
+                      }
+                      // 截断过长的文本
+                      return errorText.length > 50 ? errorText.substring(0, 50) + '...' : errorText
+                    })()}
                   </Text>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>

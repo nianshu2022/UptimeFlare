@@ -62,19 +62,6 @@ const workerConfig: WorkerConfig = {
       // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
       statusPageLink: 'https://time.nianshu2022.cn/',
     },
-    // 每日推送 监控
-    {
-      // `id` 应该是唯一的，如果 `id` 保持不变，历史记录将被保留
-      id: 'daily_push_monitor',
-      // `name` 用于状态页面和回调消息
-      name: '每日推送',
-      // `method` 应该是一个有效的 HTTP 方法
-      method: 'GET',
-      // `target` 是一个有效的 URL
-      target: 'https://za.nianshu2022.cn',
-      // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
-      statusPageLink: 'https://za.nianshu2022.cn',
-    },
     // 01lovehub 监控
     {
       // `id` 应该是唯一的，如果 `id` 保持不变，历史记录将被保留
@@ -87,6 +74,19 @@ const workerConfig: WorkerConfig = {
       target: 'https://zc.nianshu2022.cn',
       // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
       statusPageLink: 'https://zc.nianshu2022.cn',
+    },
+    // 每日推送 监控
+    {
+      // `id` 应该是唯一的，如果 `id` 保持不变，历史记录将被保留
+      id: 'daily_push_monitor',
+      // `name` 用于状态页面和回调消息
+      name: '每日推送',
+      // `method` 应该是一个有效的 HTTP 方法
+      method: 'GET',
+      // `target` 是一个有效的 URL
+      target: 'https://za.nianshu2022.cn',
+      // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
+      statusPageLink: 'https://za.nianshu2022.cn',
     },
     // Nginx 监控
     {

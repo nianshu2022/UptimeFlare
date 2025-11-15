@@ -216,6 +216,7 @@ export default function MonitorDetail({
       'MEL': '墨尔本',
       'AKL': '奥克兰',
       'FRA': '法兰克福',
+      'ZRH': '苏黎世',
       'LHR': '伦敦',
       'CDG': '巴黎',
       'AMS': '阿姆斯特丹',
@@ -294,7 +295,7 @@ export default function MonitorDetail({
               WebkitBackdropFilter: 'blur(10px)',
               boxShadow: '0 2px 8px rgba(48, 209, 88, 0.2), 0 0 0 1px rgba(48, 209, 88, 0.1) inset'
             }}>
-              ✓ {latestLatency.ping}ms · {formatLocation(latestLatency.loc)}
+              ✓ {latestLatency.ping}毫秒 · {formatLocation(latestLatency.loc)}
             </span>
           ) : isCurrentlyDown && formattedError ? (
             <span style={{ 
@@ -352,7 +353,7 @@ export default function MonitorDetail({
 
       </div>
 
-      {/* Response times 图表 */}
+      {/* 响应时间图表 */}
       {!monitor.hideLatencyChart && state.latency[monitor.id]?.recent && state.latency[monitor.id].recent.length > 0 && (
         <>
           {/* DetailBar 显示在图表上方 */}

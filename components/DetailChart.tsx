@@ -87,7 +87,7 @@ export default function DetailChart({
         callbacks: {
           label: (item: any) => {
             if (item.parsed.y) {
-              return `${item.parsed.y}ms (${codeToCountry(item.raw.loc)})`
+              return `${item.parsed.y}毫秒 (${codeToCountry(item.raw.loc)})`
             }
           },
         },
@@ -97,7 +97,7 @@ export default function DetailChart({
       },
       title: {
         display: true,
-        text: 'Response times(ms)',
+        text: '响应时间(毫秒)',
         align: 'start' as const,
         color: '#ffffff',
         font: {
