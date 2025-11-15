@@ -48,8 +48,8 @@ export default function Home({
 
       <main className={inter.className} style={{ 
         minHeight: '100vh', 
-        background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 50%, #1a1f3a 100%)',
-        paddingTop: '60px',
+        background: 'linear-gradient(135deg, #0a0a0f 0%, #151520 30%, #1a1a2e 60%, #151520 100%)',
+        paddingTop: '40px',
         paddingBottom: '60px',
         paddingLeft: '20px',
         paddingRight: '20px',
@@ -57,9 +57,44 @@ export default function Home({
         zIndex: 1,
         overflowX: 'hidden'
       }}>
-        {/* 动态背景层 */}
+        {/* 动态背景层 - 多层光效 */}
         <div className="tech-background" />
         <div className="tech-background-glow" />
+        {/* 浮动粒子效果 */}
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 0,
+          pointerEvents: 'none',
+          overflow: 'hidden'
+        }}>
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                width: Math.random() * 4 + 2 + 'px',
+                height: Math.random() * 4 + 2 + 'px',
+                background: [
+                  'rgba(138, 43, 226, 0.6)',
+                  'rgba(0, 240, 255, 0.6)',
+                  'rgba(255, 0, 255, 0.6)',
+                  'rgba(0, 255, 159, 0.6)'
+                ][Math.floor(Math.random() * 4)],
+                borderRadius: '50%',
+                left: Math.random() * 100 + '%',
+                top: Math.random() * 100 + '%',
+                animation: `float ${15 + Math.random() * 20}s ease-in-out infinite`,
+                animationDelay: Math.random() * 5 + 's',
+                boxShadow: `0 0 ${Math.random() * 10 + 5}px currentColor`,
+                filter: 'blur(1px)'
+              }}
+            />
+          ))}
+        </div>
         {state == undefined ? (
           <Center style={{ padding: '60px 20px', position: 'relative', zIndex: 1 }}>
             <div className="tech-card" style={{ maxWidth: '600px', textAlign: 'center' }}>
@@ -89,11 +124,29 @@ export default function Home({
           @keyframes fadeInContent {
             from {
               opacity: 0;
-              transform: translateY(30px) scale(0.95);
+              transform: translateY(30px) scale(0.95) rotateX(5deg);
             }
             to {
               opacity: 1;
-              transform: translateY(0) scale(1);
+              transform: translateY(0) scale(1) rotateX(0deg);
+            }
+          }
+          @keyframes float {
+            0%, 100% {
+              transform: translate(0, 0) scale(1);
+              opacity: 0.3;
+            }
+            25% {
+              transform: translate(20px, -30px) scale(1.2);
+              opacity: 0.8;
+            }
+            50% {
+              transform: translate(-15px, -50px) scale(0.9);
+              opacity: 0.5;
+            }
+            75% {
+              transform: translate(25px, -20px) scale(1.1);
+              opacity: 0.7;
             }
           }
         `}</style>

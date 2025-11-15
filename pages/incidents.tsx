@@ -100,13 +100,14 @@ export default function IncidentsPage() {
 
       <main className={inter.className} style={{ 
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 50%, #0a0e27 100%)',
+        background: 'linear-gradient(135deg, #0a0a0f 0%, #151520 30%, #1a1a2e 60%, #151520 100%)',
         paddingTop: '40px',
         paddingBottom: '40px',
         position: 'relative',
         zIndex: 1
       }}>
         <div className="tech-background" />
+        <div className="tech-background-glow" />
         <Center style={{ position: 'relative', zIndex: 1 }}>
           <Container size="md" style={{ width: '100%' }}>
             <Group justify="end" mb="md">
@@ -122,9 +123,11 @@ export default function IncidentsPage() {
                 }}
                 styles={{
                   input: {
-                    background: 'rgba(15, 22, 41, 0.8)',
-                    border: '1px solid rgba(0, 255, 255, 0.2)',
+                    background: 'linear-gradient(135deg, rgba(20, 20, 35, 0.9) 0%, rgba(30, 20, 50, 0.85) 100%)',
+                    border: '2px solid rgba(138, 43, 226, 0.4)',
                     color: '#ffffff',
+                    borderRadius: '12px',
+                    backdropFilter: 'blur(20px)'
                   }
                 }}
                 classNames={{
@@ -149,9 +152,12 @@ export default function IncidentsPage() {
                         size="md"
                         styles={{
                           control: {
-                            background: 'rgba(15, 22, 41, 0.8)',
-                            border: '1px solid rgba(0, 255, 255, 0.2)',
+                            background: 'linear-gradient(135deg, rgba(20, 20, 35, 0.9) 0%, rgba(30, 20, 50, 0.85) 100%)',
+                            border: '2px solid rgba(138, 43, 226, 0.4)',
                             color: '#ffffff',
+                            borderRadius: '12px',
+                            backdropFilter: 'blur(20px)',
+                            transition: 'all 0.3s ease'
                           }
                         }}
                         classNames={{
@@ -168,20 +174,39 @@ export default function IncidentsPage() {
                 className="tech-button"
                 onClick={() => (window.location.hash = prev)}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 170, 255, 0.1))',
-                  border: '1px solid rgba(0, 255, 255, 0.2)',
+                  background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 240, 255, 0.2))',
+                  border: '2px solid rgba(138, 43, 226, 0.5)',
                   color: '#ffffff',
+                  borderRadius: '16px',
+                  padding: '12px 24px',
+                  fontWeight: 600,
+                  letterSpacing: '1px',
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  boxShadow: '0 4px 20px rgba(138, 43, 226, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateX(-4px) scale(1.05)'
+                  e.currentTarget.style.boxShadow = '0 8px 30px rgba(138, 43, 226, 0.5)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateX(0) scale(1)'
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(138, 43, 226, 0.3)'
                 }}
               >
                 ← 上一个月
               </Button>
               <Box style={{ 
                 alignSelf: 'center', 
-                fontWeight: 600, 
-                fontSize: 18,
+                fontWeight: 700, 
+                fontSize: 24,
                 color: '#ffffff',
-                textShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
-                letterSpacing: '2px'
+                textShadow: '0 0 20px rgba(138, 43, 226, 0.6), 0 0 40px rgba(0, 240, 255, 0.4)',
+                letterSpacing: '3px',
+                fontFamily: 'monospace',
+                background: 'linear-gradient(135deg, rgba(138, 43, 226, 1), rgba(0, 240, 255, 1))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
               }}>
                 {selectedMonth}
               </Box>
@@ -189,9 +214,23 @@ export default function IncidentsPage() {
                 className="tech-button"
                 onClick={() => (window.location.hash = next)}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 170, 255, 0.1))',
-                  border: '1px solid rgba(0, 255, 255, 0.2)',
+                  background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 240, 255, 0.2))',
+                  border: '2px solid rgba(138, 43, 226, 0.5)',
                   color: '#ffffff',
+                  borderRadius: '16px',
+                  padding: '12px 24px',
+                  fontWeight: 600,
+                  letterSpacing: '1px',
+                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  boxShadow: '0 4px 20px rgba(138, 43, 226, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateX(4px) scale(1.05)'
+                  e.currentTarget.style.boxShadow = '0 8px 30px rgba(138, 43, 226, 0.5)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateX(0) scale(1)'
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(138, 43, 226, 0.3)'
                 }}
               >
                 下一个月 →

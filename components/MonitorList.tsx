@@ -128,28 +128,29 @@ export default function MonitorList({
                       ml="xs" 
                       mr="xs"
                       style={{
-                        padding: '24px',
-                        borderRadius: '12px',
-                        marginBottom: '16px',
-                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        padding: '28px',
+                        borderRadius: '20px',
+                        marginBottom: '20px',
+                        transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
                         cursor: 'pointer',
-                        background: 'linear-gradient(135deg, rgba(15, 22, 41, 0.7) 0%, rgba(26, 31, 58, 0.5) 100%)',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        background: 'linear-gradient(135deg, rgba(20, 20, 35, 0.85) 0%, rgba(30, 20, 50, 0.75) 100%)',
+                        border: '2px solid rgba(138, 43, 226, 0.3)',
                         position: 'relative',
                         overflow: 'hidden',
-                        backdropFilter: 'blur(10px)'
+                        backdropFilter: 'blur(20px) saturate(180%)',
+                        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(138, 43, 226, 0.1) inset'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'linear-gradient(135deg, rgba(15, 22, 41, 0.95) 0%, rgba(26, 31, 58, 0.8) 100%)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.5)'
-                        e.currentTarget.style.transform = 'translateY(-4px) scale(1.01)'
-                        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 255, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1) inset'
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(30, 20, 50, 0.95) 0%, rgba(40, 30, 60, 0.9) 100%)'
+                        e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.8)'
+                        e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)'
+                        e.currentTarget.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 60px rgba(138, 43, 226, 0.4) inset, 0 0 100px rgba(0, 240, 255, 0.2), 0 0 150px rgba(138, 43, 226, 0.3)'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'linear-gradient(135deg, rgba(15, 22, 41, 0.7) 0%, rgba(26, 31, 58, 0.5) 100%)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(20, 20, 35, 0.85) 0%, rgba(30, 20, 50, 0.75) 100%)'
+                        e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.3)'
                         e.currentTarget.style.transform = 'translateY(0) scale(1)'
-                        e.currentTarget.style.boxShadow = 'none'
+                        e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(138, 43, 226, 0.1) inset'
                       }}
                     >
                       <MonitorDetail monitor={monitor} state={state} />
@@ -183,28 +184,29 @@ export default function MonitorList({
             ml="xs" 
             mr="xs"
             style={{
-              padding: '24px',
-              borderRadius: '12px',
-              marginBottom: '16px',
-              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              padding: '28px',
+              borderRadius: '20px',
+              marginBottom: '20px',
+              transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
               cursor: 'pointer',
-              background: 'linear-gradient(135deg, rgba(15, 22, 41, 0.7) 0%, rgba(26, 31, 58, 0.5) 100%)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              background: 'linear-gradient(135deg, rgba(20, 20, 35, 0.85) 0%, rgba(30, 20, 50, 0.75) 100%)',
+              border: '2px solid rgba(138, 43, 226, 0.3)',
               position: 'relative',
               overflow: 'hidden',
-              backdropFilter: 'blur(10px)'
+              backdropFilter: 'blur(20px) saturate(180%)',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(138, 43, 226, 0.1) inset'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'linear-gradient(135deg, rgba(15, 22, 41, 0.95) 0%, rgba(26, 31, 58, 0.8) 100%)'
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.5)'
-              e.currentTarget.style.transform = 'translateY(-4px) scale(1.01)'
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 255, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1) inset'
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(30, 20, 50, 0.95) 0%, rgba(40, 30, 60, 0.9) 100%)'
+              e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.8)'
+              e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)'
+              e.currentTarget.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 60px rgba(138, 43, 226, 0.4) inset, 0 0 100px rgba(0, 240, 255, 0.2), 0 0 150px rgba(138, 43, 226, 0.3)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'linear-gradient(135deg, rgba(15, 22, 41, 0.7) 0%, rgba(26, 31, 58, 0.5) 100%)'
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(20, 20, 35, 0.85) 0%, rgba(30, 20, 50, 0.75) 100%)'
+              e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.3)'
               e.currentTarget.style.transform = 'translateY(0) scale(1)'
-              e.currentTarget.style.boxShadow = 'none'
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(138, 43, 226, 0.1) inset'
             }}
           >
             <MonitorDetail monitor={monitor} state={state} />
@@ -225,27 +227,27 @@ export default function MonitorList({
         style={{ 
           width: groupedMonitor ? '92%' : '92%',
           maxWidth: '1400px',
-          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          animation: 'fadeInUp 0.6s ease-out',
-          background: 'linear-gradient(135deg, rgba(15, 22, 41, 0.9) 0%, rgba(26, 31, 58, 0.7) 100%)',
-          border: '1px solid rgba(0, 255, 255, 0.3)',
-          backdropFilter: 'blur(20px)',
-          boxShadow: '0 12px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 255, 255, 0.15) inset',
+          transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          animation: 'fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          background: 'linear-gradient(135deg, rgba(20, 20, 35, 0.95) 0%, rgba(30, 20, 50, 0.9) 100%)',
+          border: '2px solid rgba(138, 43, 226, 0.4)',
+          backdropFilter: 'blur(30px) saturate(180%)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 50px rgba(138, 43, 226, 0.2) inset, 0 0 100px rgba(0, 240, 255, 0.1)',
           position: 'relative',
           marginLeft: 'auto',
           marginRight: 'auto',
-          borderRadius: '16px',
-          padding: '8px'
+          borderRadius: '24px',
+          padding: '12px'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 16px 64px rgba(0, 0, 0, 0.7), 0 0 60px rgba(0, 255, 255, 0.25) inset, 0 0 40px rgba(0, 255, 255, 0.4)'
-          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.6)'
-          e.currentTarget.style.transform = 'translateY(-4px)'
+          e.currentTarget.style.boxShadow = '0 30px 80px rgba(0, 0, 0, 0.8), 0 0 80px rgba(138, 43, 226, 0.4) inset, 0 0 150px rgba(0, 240, 255, 0.2), 0 0 200px rgba(138, 43, 226, 0.4)'
+          e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.8)'
+          e.currentTarget.style.transform = 'translateY(-6px) scale(1.01)'
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 255, 255, 0.15) inset'
-          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.3)'
-          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 50px rgba(138, 43, 226, 0.2) inset, 0 0 100px rgba(0, 240, 255, 0.1)'
+          e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.4)'
+          e.currentTarget.style.transform = 'translateY(0) scale(1)'
         }}
       >
         {content}
