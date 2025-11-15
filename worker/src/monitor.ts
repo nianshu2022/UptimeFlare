@@ -49,7 +49,7 @@ async function httpResponseBasicCheck(
 
 export async function getStatusWithGlobalPing(
   monitor: MonitorTarget
-): Promise<{ location: string; status: { ping: number; up: boolean; err: string } }> {
+): Promise<{ location: string; status: { ping: number; up: boolean; err: string }; certificateInfo?: { expiryDate?: number; error?: string } }> {
   // TODO: should throw when there's error with globalping API
   try {
     if (monitor.checkProxy === undefined) {
@@ -207,14 +207,40 @@ export async function getStatusWithGlobalPing(
         console.log(`${monitor.name} didn't pass response check: ${err}`)
       }
 
-      if (
-        monitor.target.toLowerCase().startsWith('https') &&
-        !measurementResult.results[0].result.tls.authorized
-      ) {
-        console.log(
-          `${monitor.name} TLS certificate not trusted: ${measurementResult.results[0].result.tls.error}`
-        )
-        err = 'TLS 证书不受信任: ' + measurementResult.results[0].result.tls.error
+      // 提取证书信息（如果HTTPS监控）
+      let certificateInfo: { expiryDate?: number; error?: string } | null = null
+      if (monitor.target.toLowerCase().startsWith('https') && measurementResult.results[0].result.tls) {
+        const tlsInfo = measurementResult.results[0].result.tls
+        if (tlsInfo.authorized && tlsInfo.certificate) {
+          // Globalping可能返回证书信息，尝试提取到期日期
+          try {
+            // 检查是否有validTo字段（证书到期日期，通常是Unix时间戳毫秒）
+            if (tlsInfo.certificate.validTo) {
+              const expiryDateMs = typeof tlsInfo.certificate.validTo === 'number' 
+                ? tlsInfo.certificate.validTo 
+                : new Date(tlsInfo.certificate.validTo).getTime()
+              
+              if (expiryDateMs > 0) {
+                const expiryDateSeconds = Math.floor(expiryDateMs / 1000)
+                const nowSeconds = Math.floor(Date.now() / 1000)
+                const daysRemaining = Math.ceil((expiryDateSeconds - nowSeconds) / (60 * 60 * 24))
+                
+                certificateInfo = {
+                  expiryDate: expiryDateSeconds,
+                }
+                console.log(`${monitor.name} certificate expires in ${daysRemaining} days`)
+              }
+            }
+          } catch (e: any) {
+            console.log(`Failed to parse certificate info for ${monitor.name}: ${e.message}`)
+          }
+        } else if (!tlsInfo.authorized) {
+          console.log(
+            `${monitor.name} TLS certificate not trusted: ${tlsInfo.error}`
+          )
+          err = 'TLS 证书不受信任: ' + tlsInfo.error
+          certificateInfo = { error: 'TLS 证书不受信任: ' + tlsInfo.error }
+        }
       }
 
       return {
@@ -224,6 +250,7 @@ export async function getStatusWithGlobalPing(
           up: err === null,
           err: err ?? '',
         },
+        certificateInfo: certificateInfo || undefined,
       }
     }
   } catch (e: any) {

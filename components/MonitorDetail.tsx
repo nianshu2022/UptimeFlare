@@ -1,11 +1,9 @@
-import { Text, Tooltip, Badge, Collapse } from '@mantine/core'
+import { Text, Tooltip, Badge } from '@mantine/core'
 import { MonitorState, MonitorTarget } from '@/types/config'
 import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconCalendar, IconCertificate } from '@tabler/icons-react'
-import DetailChart from './DetailChart'
 import DetailBar from './DetailBar'
 import { getColor } from '@/util/color'
 import { maintenances } from '@/uptime.config'
-import { useState } from 'react'
 
 export default function MonitorDetail({
   monitor,
@@ -14,7 +12,6 @@ export default function MonitorDetail({
   monitor: MonitorTarget
   state: MonitorState
 }) {
-  const [chartExpanded, setChartExpanded] = useState(false)
   
   if (!state.latency[monitor.id])
     return (
@@ -288,91 +285,72 @@ export default function MonitorDetail({
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 auto', minWidth: '200px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            {monitor.tooltip ? (
-              <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
-            ) : (
-              monitorNameElement
-            )}
-            
-            {/* 显示当前状态和错误信息（内联显示） */}
-            {isCurrentlyDown && formattedError && (
-              <span style={{ 
-                padding: '4px 8px',
-                background: 'rgba(255, 51, 102, 0.1)',
-                borderRadius: '4px',
-                border: '1px solid rgba(255, 51, 102, 0.3)',
-                fontSize: '12px',
-                fontFamily: 'monospace',
-                color: '#ff3366',
-                fontWeight: 600,
-                textShadow: '0 0 8px rgba(255, 51, 102, 0.5)',
-                letterSpacing: '0.5px',
-                whiteSpace: 'nowrap'
-              }}>
-                ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
-              </span>
-            )}
-            
-            {/* 显示响应时间（内联显示） */}
-            {!isCurrentlyDown && latestLatency && (
-              <span style={{ 
-                padding: '4px 8px',
-                background: 'rgba(0, 255, 136, 0.1)',
-                borderRadius: '4px',
-                border: '1px solid rgba(0, 255, 136, 0.3)',
-                fontSize: '12px',
-                fontFamily: 'monospace',
-                color: '#00ff88',
-                fontWeight: 600,
-                textShadow: '0 0 8px rgba(0, 255, 136, 0.5)',
-                letterSpacing: '0.5px',
-                whiteSpace: 'nowrap'
-              }}>
-                ✓ {latestLatency.ping}ms · {formatLocation(latestLatency.loc)}
-              </span>
-            )}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
+        {/* 左侧：监控信息 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: '1 1 auto', minWidth: 0 }}>
+          {monitor.tooltip ? (
+            <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
+          ) : (
+            monitorNameElement
+          )}
+          
+          {/* 显示当前状态和错误信息（内联显示） */}
+          {isCurrentlyDown && formattedError && (
+            <span style={{ 
+              padding: '4px 8px',
+              background: 'rgba(255, 51, 102, 0.1)',
+              borderRadius: '4px',
+              border: '1px solid rgba(255, 51, 102, 0.3)',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              color: '#ff3366',
+              fontWeight: 600,
+              textShadow: '0 0 8px rgba(255, 51, 102, 0.5)',
+              letterSpacing: '0.5px',
+              whiteSpace: 'nowrap'
+            }}>
+              ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
+            </span>
+          )}
+          
+          {/* 显示响应时间（内联显示） */}
+          {!isCurrentlyDown && latestLatency && (
+            <span style={{ 
+              padding: '4px 8px',
+              background: 'rgba(0, 255, 136, 0.1)',
+              borderRadius: '4px',
+              border: '1px solid rgba(0, 255, 136, 0.3)',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              color: '#00ff88',
+              fontWeight: 600,
+              textShadow: '0 0 8px rgba(0, 255, 136, 0.5)',
+              letterSpacing: '0.5px',
+              whiteSpace: 'nowrap'
+            }}>
+              ✓ {latestLatency.ping}ms · {formatLocation(latestLatency.loc)}
+            </span>
+          )}
 
-            <Text 
-              fw={700} 
-              style={{ 
-                display: 'inline', 
-                color: getColor(uptimePercent, true), 
-                whiteSpace: 'nowrap',
-                textShadow: `0 0 10px ${getColor(uptimePercent, true)}`,
-                fontFamily: 'monospace',
-                letterSpacing: '1px',
-                fontSize: '16px',
-                cursor: !monitor.hideLatencyChart ? 'pointer' : 'default',
-                userSelect: 'none',
-                transition: 'all 0.2s ease',
-                marginLeft: 'auto'
-              }}
-              onClick={() => {
-                if (!monitor.hideLatencyChart) {
-                  setChartExpanded(!chartExpanded)
-                }
-              }}
-              onMouseEnter={(e) => {
-                if (!monitor.hideLatencyChart) {
-                  e.currentTarget.style.opacity = '0.8'
-                  e.currentTarget.style.transform = 'scale(1.05)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!monitor.hideLatencyChart) {
-                  e.currentTarget.style.opacity = '1'
-                  e.currentTarget.style.transform = 'scale(1)'
-                }
-              }}
-            >
-              总体可用率: {uptimePercent}%
-            </Text>
-          </div>
+          <Text 
+            fw={700} 
+            style={{ 
+              display: 'inline', 
+              color: getColor(uptimePercent, true), 
+              whiteSpace: 'nowrap',
+              textShadow: `0 0 10px ${getColor(uptimePercent, true)}`,
+              fontFamily: 'monospace',
+              letterSpacing: '1px',
+              fontSize: '16px',
+              userSelect: 'none'
+            }}
+          >
+            总体可用率: {uptimePercent}%
+          </Text>
+        </div>
 
-          {/* DetailBar在同一行显示 */}
+        {/* 右侧：DetailBar */}
+        <div style={{ flex: '0 0 auto', marginLeft: 'auto' }}>
           <DetailBar monitor={monitor} state={state} />
         </div>
       </div>
@@ -457,11 +435,6 @@ export default function MonitorDetail({
         }
       })()}
 
-      {!monitor.hideLatencyChart && (
-        <Collapse in={chartExpanded}>
-          <DetailChart monitor={monitor} state={state} />
-        </Collapse>
-      )}
     </>
   )
 }
