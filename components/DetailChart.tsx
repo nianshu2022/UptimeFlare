@@ -149,17 +149,17 @@ export default function DetailChart({
 
   return (
     <div style={{ 
-      height: '150px',
+      height: '160px',
       position: 'relative',
-      background: 'rgba(255, 255, 255, 0.08)',
-      borderRadius: '12px',
-      padding: '16px',
-      border: '1px solid rgba(0, 255, 255, 0.2)',
-      marginTop: '16px',
+      background: 'rgba(255, 255, 255, 0.05)',
+      borderRadius: '16px',
+      padding: '20px',
+      border: '1px solid rgba(0, 255, 255, 0.15)',
+      marginTop: '0px',
       overflow: 'hidden',
-      backdropFilter: 'blur(20px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
+      backdropFilter: 'blur(25px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(25px) saturate(180%)',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset, 0 1px 0 rgba(255, 255, 255, 0.03) inset'
     }}>
       <Line options={options} data={data} />
       <style jsx>{`

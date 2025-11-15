@@ -282,22 +282,24 @@ export default function MonitorDetail({
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'flex-start', 
-        gap: '16px', 
+        gap: '20px', 
         flexWrap: 'nowrap',
-        paddingBottom: '16px',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
-        marginBottom: '16px',
+        paddingBottom: '20px',
+        borderBottom: '1px solid rgba(0, 255, 255, 0.1)',
+        marginBottom: '20px',
         position: 'relative',
-        paddingTop: '40px'
+        paddingTop: '48px',
+        minHeight: '60px'
       }}>
         {/* 左侧：监控信息 */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
-          gap: '12px', 
+          gap: '16px', 
           flexWrap: 'wrap', 
           flex: '1 1 auto', 
-          minWidth: 0 
+          minWidth: 0,
+          paddingRight: '140px'
         }}>
           {monitor.tooltip ? (
             <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
@@ -308,34 +310,38 @@ export default function MonitorDetail({
           {/* 当前状态：响应时间或错误信息 */}
           {!isCurrentlyDown && latestLatency ? (
             <span style={{ 
-              padding: '6px 12px',
-              background: 'rgba(48, 209, 88, 0.15)',
-              borderRadius: '8px',
-              border: '1px solid rgba(48, 209, 88, 0.2)',
+              padding: '8px 14px',
+              background: 'rgba(48, 209, 88, 0.2)',
+              borderRadius: '10px',
+              border: '1px solid rgba(48, 209, 88, 0.3)',
               fontSize: '13px',
               fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
               color: '#30d158',
-              fontWeight: 500,
+              fontWeight: 600,
               letterSpacing: '0.3px',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              boxShadow: '0 2px 8px rgba(48, 209, 88, 0.2), 0 0 0 1px rgba(48, 209, 88, 0.1) inset'
             }}>
               ✓ {latestLatency.ping}ms · {formatLocation(latestLatency.loc)}
             </span>
           ) : isCurrentlyDown && formattedError ? (
             <span style={{ 
-              padding: '6px 12px',
-              background: 'rgba(255, 59, 48, 0.15)',
-              borderRadius: '8px',
-              border: '1px solid rgba(255, 59, 48, 0.2)',
+              padding: '8px 14px',
+              background: 'rgba(255, 59, 48, 0.2)',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 59, 48, 0.3)',
               fontSize: '13px',
               fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
               color: '#ff3b30',
-              fontWeight: 500,
+              fontWeight: 600,
               letterSpacing: '0.3px',
               whiteSpace: 'nowrap',
               display: 'inline-block',
               backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)'
+              WebkitBackdropFilter: 'blur(10px)',
+              boxShadow: '0 2px 8px rgba(255, 59, 48, 0.2), 0 0 0 1px rgba(255, 59, 48, 0.1) inset'
             }}>
               ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
             </span>
@@ -345,8 +351,8 @@ export default function MonitorDetail({
         {/* 右上角：总体可用率 */}
         <div style={{
           position: 'absolute',
-          top: 0,
-          right: 0,
+          top: '8px',
+          right: '0',
           zIndex: 10
         }}>
           <Text 
@@ -357,15 +363,15 @@ export default function MonitorDetail({
               whiteSpace: 'nowrap',
               fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
               letterSpacing: '0.3px',
-              fontSize: '16px',
+              fontSize: '15px',
               userSelect: 'none',
-              padding: '6px 12px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              border: '1px solid rgba(0, 255, 255, 0.3)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
+              padding: '8px 16px',
+              background: 'rgba(255, 255, 255, 0.06)',
+              borderRadius: '10px',
+              border: '1px solid rgba(0, 255, 255, 0.25)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.08) inset, 0 1px 0 rgba(255, 255, 255, 0.05) inset'
             }}
           >
             总体可用率: {uptimePercent}%
@@ -384,17 +390,17 @@ export default function MonitorDetail({
             display: 'flex', 
             flexWrap: 'nowrap', 
             marginTop: '0px', 
-            marginBottom: '12px', 
+            marginBottom: '16px', 
             minWidth: '200px', 
             alignItems: 'center', 
             gap: '2px', 
-            padding: '6px', 
-            background: 'rgba(255, 255, 255, 0.05)', 
-            borderRadius: '8px', 
-            border: '1px solid rgba(0, 255, 255, 0.15)', 
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 255, 255, 0.05) inset'
+            padding: '10px 14px', 
+            background: 'rgba(255, 255, 255, 0.04)', 
+            borderRadius: '12px', 
+            border: '1px solid rgba(0, 255, 255, 0.12)', 
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 255, 255, 0.05) inset'
           }}>
             <DetailBar monitor={monitor} state={state} />
           </div>

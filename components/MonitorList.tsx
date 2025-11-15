@@ -126,30 +126,30 @@ export default function MonitorList({
                   >
                     <div
                       style={{
-                        padding: '20px',
-                        borderRadius: '16px',
-                        marginBottom: '12px',
+                        padding: '24px',
+                        borderRadius: '20px',
+                        marginBottom: '16px',
                         transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                         cursor: 'pointer',
-                        background: 'rgba(255, 255, 255, 0.08)',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.06)',
+                        border: '1px solid rgba(0, 255, 255, 0.15)',
                         position: 'relative',
                         overflow: 'hidden',
-                        backdropFilter: 'blur(20px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
+                        backdropFilter: 'blur(30px) saturate(180%)',
+                        WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 255, 255, 0.08) inset, 0 1px 0 rgba(255, 255, 255, 0.05) inset'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.4)'
-                        e.currentTarget.style.transform = 'translateY(-2px)'
-                        e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 255, 255, 0.2), 0 0 0 1px rgba(0, 255, 255, 0.2) inset'
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.35)'
+                        e.currentTarget.style.transform = 'translateY(-3px) scale(1.01)'
+                        e.currentTarget.style.boxShadow = '0 16px 64px rgba(0, 255, 255, 0.25), 0 0 0 1px rgba(0, 255, 255, 0.15) inset, 0 1px 0 rgba(255, 255, 255, 0.08) inset'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
-                        e.currentTarget.style.transform = 'translateY(0)'
-                        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.15)'
+                        e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 255, 255, 0.08) inset, 0 1px 0 rgba(255, 255, 255, 0.05) inset'
                       }}
                     >
                       <MonitorDetail monitor={monitor} state={state} />
@@ -181,30 +181,30 @@ export default function MonitorList({
         >
           <div
             style={{
-              padding: '20px',
-              borderRadius: '16px',
-              marginBottom: '12px',
+              padding: '24px',
+              borderRadius: '20px',
+              marginBottom: '16px',
               transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
               cursor: 'pointer',
-              background: 'rgba(255, 255, 255, 0.08)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(0, 255, 255, 0.15)',
               position: 'relative',
               overflow: 'hidden',
-              backdropFilter: 'blur(20px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
+              backdropFilter: 'blur(30px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 255, 255, 0.08) inset, 0 1px 0 rgba(255, 255, 255, 0.05) inset'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.4)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 255, 255, 0.2), 0 0 0 1px rgba(0, 255, 255, 0.2) inset'
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.35)'
+              e.currentTarget.style.transform = 'translateY(-3px) scale(1.01)'
+              e.currentTarget.style.boxShadow = '0 16px 64px rgba(0, 255, 255, 0.25), 0 0 0 1px rgba(0, 255, 255, 0.15) inset, 0 1px 0 rgba(255, 255, 255, 0.08) inset'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.15)'
+              e.currentTarget.style.transform = 'translateY(0) scale(1)'
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 255, 255, 0.08) inset, 0 1px 0 rgba(255, 255, 255, 0.05) inset'
             }}
           >
             <MonitorDetail monitor={monitor} state={state} />
