@@ -145,6 +145,28 @@ export default function OverallStatus({
             {statusString}
           </Title>
         </div>
+        
+        {/* 最后更新时间（无卡片样式） */}
+        <Title style={{ 
+          textAlign: 'center', 
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '13px',
+          fontWeight: 400,
+          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+          letterSpacing: '0.3px',
+          margin: 0,
+          marginTop: '16px'
+        }} order={5}>
+          最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
+          {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          })}
+        </Title>
       </div>
       <style jsx>{`
         @keyframes fadeIn {

@@ -162,12 +162,22 @@ export default function MonitorDetail({
             e.currentTarget.style.transform = 'translateX(0)'
           }}
         >
-          <span style={{ filter: 'drop-shadow(0 0 8px currentColor)' }}>{statusIcon}</span>
+          <span style={{ 
+            filter: 'drop-shadow(0 0 8px currentColor)', 
+            display: 'inline-flex', 
+            alignItems: 'center',
+            lineHeight: 1
+          }}>{statusIcon}</span>
           <span>{monitor.name}</span>
         </a>
       ) : (
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ filter: 'drop-shadow(0 0 8px currentColor)' }}>{statusIcon}</span>
+          <span style={{ 
+            filter: 'drop-shadow(0 0 8px currentColor)', 
+            display: 'inline-flex', 
+            alignItems: 'center',
+            lineHeight: 1
+          }}>{statusIcon}</span>
           <span>{monitor.name}</span>
         </div>
       )}
