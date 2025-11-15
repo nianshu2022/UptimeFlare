@@ -16,6 +16,8 @@ export default function DetailBar({
   state: MonitorState
 }) {
   const [barRef, barRect] = useResizeObserver()
+  
+  const montiorStartTime = state.incident[monitor.id]?.[0]?.start?.[0] || Math.round(Date.now() / 1000)
   const [modalOpened, setModalOpened] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
   const [incidentReasonsList, setIncidentReasonsList] = useState<Array<{ start: string; end: string; duration: string; error: string }>>([])
@@ -28,7 +30,7 @@ export default function DetailBar({
   const uptimePercentBars = []
 
   const currentTime = Math.round(Date.now() / 1000)
-  const montiorStartTime = state.incident[monitor.id][0].start[0]
+  const montiorStartTime = state.incident[monitor.id]?.[0]?.start?.[0] || Math.round(Date.now() / 1000)
 
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
@@ -352,10 +354,9 @@ export default function DetailBar({
           marginTop: '0',
           marginBottom: '0',
         }}
-        visibleFrom="540"
         ref={barRef}
       >
-        {uptimePercentBars.slice(Math.floor(Math.max(9 * 90 - barRect.width, 0) / 9), 90)}
+        {uptimePercentBars.slice(Math.floor(Math.max(9 * 90 - (barRect.width || 400), 0) / 9), 90)}
       </Box>
     </>
   )

@@ -350,7 +350,7 @@ export default function MonitorDetail({
         </div>
 
         {/* 右侧：DetailBar */}
-        <div style={{ flex: '0 0 auto', marginLeft: 'auto' }}>
+        <div style={{ flex: '0 0 auto', marginLeft: 'auto', minWidth: '300px', display: 'flex', alignItems: 'center' }}>
           <DetailBar monitor={monitor} state={state} />
         </div>
       </div>

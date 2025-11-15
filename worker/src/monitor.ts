@@ -211,28 +211,60 @@ export async function getStatusWithGlobalPing(
       let certificateInfo: { expiryDate?: number; error?: string } | null = null
       if (monitor.target.toLowerCase().startsWith('https') && measurementResult.results[0].result.tls) {
         const tlsInfo = measurementResult.results[0].result.tls
+        
+        // 调试：输出TLS信息的结构
+        console.log(`${monitor.name} TLS info structure: ${JSON.stringify(Object.keys(tlsInfo))}`)
+        if (tlsInfo.certificate) {
+          console.log(`${monitor.name} Certificate structure: ${JSON.stringify(Object.keys(tlsInfo.certificate))}`)
+          console.log(`${monitor.name} Certificate data: ${JSON.stringify(tlsInfo.certificate).slice(0, 500)}`)
+        }
+        
         if (tlsInfo.authorized && tlsInfo.certificate) {
           // Globalping可能返回证书信息，尝试提取到期日期
           try {
-            // 检查是否有validTo字段（证书到期日期，通常是Unix时间戳毫秒）
-            if (tlsInfo.certificate.validTo) {
-              const expiryDateMs = typeof tlsInfo.certificate.validTo === 'number' 
-                ? tlsInfo.certificate.validTo 
-                : new Date(tlsInfo.certificate.validTo).getTime()
+            const cert = tlsInfo.certificate
+            
+            // 尝试多种可能的字段名
+            let expiryDateMs: number | null = null
+            
+            // 检查不同的可能字段名
+            if (cert.validTo) {
+              expiryDateMs = typeof cert.validTo === 'number' 
+                ? cert.validTo 
+                : new Date(cert.validTo).getTime()
+            } else if (cert.valid_to) {
+              expiryDateMs = typeof cert.valid_to === 'number' 
+                ? cert.valid_to 
+                : new Date(cert.valid_to).getTime()
+            } else if (cert.validUntil) {
+              expiryDateMs = typeof cert.validUntil === 'number' 
+                ? cert.validUntil 
+                : new Date(cert.validUntil).getTime()
+            } else if (cert.notAfter) {
+              expiryDateMs = typeof cert.notAfter === 'number' 
+                ? cert.notAfter 
+                : new Date(cert.notAfter).getTime()
+            } else if (cert.expiryDate) {
+              expiryDateMs = typeof cert.expiryDate === 'number' 
+                ? cert.expiryDate 
+                : new Date(cert.expiryDate).getTime()
+            }
+            
+            if (expiryDateMs && expiryDateMs > 0) {
+              const expiryDateSeconds = Math.floor(expiryDateMs / 1000)
+              const nowSeconds = Math.floor(Date.now() / 1000)
+              const daysRemaining = Math.ceil((expiryDateSeconds - nowSeconds) / (60 * 60 * 24))
               
-              if (expiryDateMs > 0) {
-                const expiryDateSeconds = Math.floor(expiryDateMs / 1000)
-                const nowSeconds = Math.floor(Date.now() / 1000)
-                const daysRemaining = Math.ceil((expiryDateSeconds - nowSeconds) / (60 * 60 * 24))
-                
-                certificateInfo = {
-                  expiryDate: expiryDateSeconds,
-                }
-                console.log(`${monitor.name} certificate expires in ${daysRemaining} days`)
+              certificateInfo = {
+                expiryDate: expiryDateSeconds,
               }
+              console.log(`${monitor.name} certificate expires in ${daysRemaining} days (${new Date(expiryDateSeconds * 1000).toISOString()})`)
+            } else {
+              console.log(`${monitor.name} No certificate expiry date found in TLS response`)
             }
           } catch (e: any) {
             console.log(`Failed to parse certificate info for ${monitor.name}: ${e.message}`)
+            console.log(`Error stack: ${e.stack}`)
           }
         } else if (!tlsInfo.authorized) {
           console.log(
@@ -240,6 +272,23 @@ export async function getStatusWithGlobalPing(
           )
           err = 'TLS 证书不受信任: ' + tlsInfo.error
           certificateInfo = { error: 'TLS 证书不受信任: ' + tlsInfo.error }
+        } else if (tlsInfo.authorized) {
+          console.log(`${monitor.name} TLS authorized but no certificate data available, trying external API`)
+          // 如果Globalping不返回证书信息，尝试使用外部API获取
+          try {
+            const domain = extractDomain(monitor.target)
+            if (domain) {
+              const certInfoFromAPI = await getCertificateExpiryFromAPI(domain, monitor.timeout || 10000)
+              if (certInfoFromAPI && certInfoFromAPI.expiryDate > 0) {
+                certificateInfo = {
+                  expiryDate: certInfoFromAPI.expiryDate,
+                }
+                console.log(`${monitor.name} Certificate expiry fetched from external API: ${new Date(certInfoFromAPI.expiryDate * 1000).toISOString()}`)
+              }
+            }
+          } catch (e: any) {
+            console.log(`Failed to fetch certificate info via external API for ${monitor.name}: ${e.message}`)
+          }
         }
       }
 
@@ -384,6 +433,64 @@ function extractDomain(target: string): string | null {
     return url.hostname.replace(/^www\./, '') // 移除www前缀
   } catch (e) {
     console.log(`Failed to parse domain from target: ${target}, error: ${e}`)
+    return null
+  }
+}
+
+/**
+ * 从外部API获取证书到期信息
+ * 使用 crt.sh (Certificate Transparency Log) API
+ */
+async function getCertificateExpiryFromAPI(
+  domain: string,
+  timeout: number
+): Promise<{ expiryDate: number; daysRemaining: number } | null> {
+  try {
+    // 使用 crt.sh API 获取证书信息（免费，无需API密钥）
+    const apiUrl = `https://crt.sh/?q=${encodeURIComponent(domain)}&output=json`
+    
+    try {
+      const response = await fetchTimeout(apiUrl, timeout, {
+        headers: {
+          'User-Agent': 'UptimeFlare/1.0 (+https://github.com/lyc8503/UptimeFlare)',
+        },
+      })
+      
+      if (!response.ok) {
+        console.log(`crt.sh API returned status ${response.status}`)
+        return null
+      }
+      
+      const data = await response.json()
+      
+      // crt.sh返回的是一个数组，找到最新的证书
+      if (Array.isArray(data) && data.length > 0) {
+        // 找到not_after最新的证书
+        const latestCert = data.reduce((latest, cert) => {
+          const latestNotAfter = latest?.not_after ? new Date(latest.not_after).getTime() : 0
+          const certNotAfter = cert?.not_after ? new Date(cert.not_after).getTime() : 0
+          return certNotAfter > latestNotAfter ? cert : latest
+        }, data[0])
+        
+        if (latestCert?.not_after) {
+          const expiryDate = new Date(latestCert.not_after)
+          const expiryDateSeconds = Math.floor(expiryDate.getTime() / 1000)
+          const nowSeconds = Math.floor(Date.now() / 1000)
+          const daysRemaining = Math.ceil((expiryDateSeconds - nowSeconds) / (60 * 60 * 24))
+          
+          return {
+            expiryDate: expiryDateSeconds,
+            daysRemaining: daysRemaining,
+          }
+        }
+      }
+    } catch (e: any) {
+      console.log(`Error fetching from crt.sh: ${e.message}`)
+    }
+    
+    return null
+  } catch (e: any) {
+    console.log(`Error checking certificate expiry for ${domain}: ${e.message}`)
     return null
   }
 }
