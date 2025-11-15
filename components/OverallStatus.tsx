@@ -105,33 +105,46 @@ export default function OverallStatus({
 
   return (
     <Container size="md" mt="xl" style={{ transition: 'all 0.3s ease', position: 'relative', zIndex: 1, maxWidth: '100%', paddingLeft: '0', paddingRight: '0' }}>
-      <Center>
-        <div style={{ 
-          transition: 'transform 0.3s ease, opacity 0.3s ease',
-          animation: 'fadeInScale 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-          position: 'relative'
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '24px',
+        marginBottom: '32px'
+      }}>
+        {/* 状态图标和文字组合 */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px',
+          width: '100%'
         }}>
-          {icon}
+          <div style={{ 
+            transition: 'transform 0.3s ease, opacity 0.3s ease',
+            animation: 'fadeInScale 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            position: 'relative'
+          }}>
+            {icon}
+          </div>
+          <Title 
+            style={{ 
+              textAlign: 'center',
+              transition: 'all 0.3s ease',
+              animation: 'fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both',
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+              fontSize: '32px',
+              color: statusColor,
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+              position: 'relative',
+              margin: 0
+            }} 
+            order={1}
+          >
+            {statusString}
+          </Title>
         </div>
-      </Center>
-      <Title 
-        mt="md" 
-        mb="lg"
-        style={{ 
-          textAlign: 'center',
-          transition: 'all 0.3s ease',
-          animation: 'fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both',
-          fontWeight: 600,
-          letterSpacing: '0.5px',
-          fontSize: '34px',
-          color: statusColor,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
-          position: 'relative'
-        }} 
-        order={1}
-      >
-        {statusString}
-      </Title>
       <style jsx>{`
         @keyframes fadeIn {
           from {
@@ -176,75 +189,80 @@ export default function OverallStatus({
           }
         }
       `}</style>
-      <Box style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        gap: '16px', 
-        marginTop: '24px',
-        marginBottom: '32px',
-        padding: '16px 24px',
-        background: 'rgba(255, 255, 255, 0.08)',
-        borderRadius: '16px',
-        border: '1px solid rgba(0, 255, 255, 0.2)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        width: '92%',
-        maxWidth: '1400px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <Title style={{ 
-          textAlign: 'center', 
-          color: 'rgba(255, 255, 255, 0.7)',
-          fontSize: '14px',
-          fontWeight: 400,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-          letterSpacing: '0.3px'
-        }} order={5}>
-          最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
-          {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-          })}
-        </Title>
-        <ActionIcon
-          variant="subtle"
-          size="md"
-          onClick={() => {
-            setIsRefreshing(true)
-            window.location.reload()
-          }}
-          title="刷新页面"
-          loading={isRefreshing}
-          style={{
-            transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            background: 'rgba(0, 122, 255, 0.1)',
-            border: 'none',
-            color: '#007aff',
-            borderRadius: '8px',
-            width: '36px',
-            height: '36px'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'rotate(90deg)'
-            e.currentTarget.style.background = 'rgba(0, 122, 255, 0.15)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'rotate(0deg)'
-            e.currentTarget.style.background = 'rgba(0, 122, 255, 0.1)'
-          }}
-        >
-          <IconRefresh size={18} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
-        </ActionIcon>
-      </Box>
+        {/* 最后更新时间和刷新按钮 */}
+        <Box style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          gap: '20px', 
+          padding: '14px 28px',
+          background: 'rgba(255, 255, 255, 0.06)',
+          borderRadius: '16px',
+          border: '1px solid rgba(0, 255, 255, 0.15)',
+          backdropFilter: 'blur(25px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(25px) saturate(180%)',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          width: '92%',
+          maxWidth: '1400px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset, 0 1px 0 rgba(255, 255, 255, 0.04) inset',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <Title style={{ 
+            textAlign: 'center', 
+            color: 'rgba(255, 255, 255, 0.75)',
+            fontSize: '14px',
+            fontWeight: 500,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+            letterSpacing: '0.3px',
+            margin: 0
+          }} order={5}>
+            最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
+            {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+            })}
+          </Title>
+          <ActionIcon
+            variant="subtle"
+            size="md"
+            onClick={() => {
+              setIsRefreshing(true)
+              window.location.reload()
+            }}
+            title="刷新页面"
+            loading={isRefreshing}
+            style={{
+              transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              background: 'rgba(0, 255, 255, 0.1)',
+              border: '1px solid rgba(0, 255, 255, 0.2)',
+              color: '#00ffff',
+              borderRadius: '10px',
+              width: '38px',
+              height: '38px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'rotate(90deg) scale(1.05)'
+              e.currentTarget.style.background = 'rgba(0, 255, 255, 0.15)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.3)'
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 255, 255, 0.25)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'rotate(0deg) scale(1)'
+              e.currentTarget.style.background = 'rgba(0, 255, 255, 0.1)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
+          >
+            <IconRefresh size={18} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
+          </ActionIcon>
+        </Box>
+      </div>
       <style jsx>{`
         @keyframes spin {
           from {

@@ -281,15 +281,13 @@ export default function MonitorDetail({
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
-        alignItems: 'flex-start', 
+        alignItems: 'center', 
         gap: '20px', 
         flexWrap: 'nowrap',
         paddingBottom: '20px',
         borderBottom: '1px solid rgba(0, 255, 255, 0.1)',
         marginBottom: '20px',
-        position: 'relative',
-        paddingTop: '48px',
-        minHeight: '60px'
+        position: 'relative'
       }}>
         {/* 左侧：监控信息 */}
         <div style={{ 
@@ -298,8 +296,7 @@ export default function MonitorDetail({
           gap: '16px', 
           flexWrap: 'wrap', 
           flex: '1 1 auto', 
-          minWidth: 0,
-          paddingRight: '140px'
+          minWidth: 0
         }}>
           {monitor.tooltip ? (
             <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
@@ -348,12 +345,10 @@ export default function MonitorDetail({
           ) : null}
         </div>
 
-        {/* 右上角：总体可用率 */}
+        {/* 右侧：总体可用率 */}
         <div style={{
-          position: 'absolute',
-          top: '8px',
-          right: '0',
-          zIndex: 10
+          flex: '0 0 auto',
+          marginLeft: 'auto'
         }}>
           <Text 
             fw={600} 

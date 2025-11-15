@@ -33,7 +33,7 @@ export default function Home({
       return <Text fw={700}>未找到 ID 为 {monitorId} 的监控项！</Text>
     }
     return (
-      <div style={{ maxWidth: '810px' }}>
+      <div style={{ maxWidth: '970px' }}>
         <MonitorDetail monitor={monitor} state={state} />
       </div>
     )
