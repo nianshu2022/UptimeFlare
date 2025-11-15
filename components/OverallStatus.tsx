@@ -145,50 +145,6 @@ export default function OverallStatus({
             {statusString}
           </Title>
         </div>
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes fadeInScale {
-          from {
-            opacity: 0;
-            transform: scale(0.8);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        @keyframes pulseRing {
-          0% {
-            opacity: 0.8;
-            transform: translate(-50%, -50%) scale(0.8);
-          }
-          50% {
-            opacity: 0.2;
-            transform: translate(-50%, -50%) scale(1.3);
-          }
-          100% {
-            opacity: 0.8;
-            transform: translate(-50%, -50%) scale(0.8);
-          }
-        }
-      `}</style>
         {/* 最后更新时间和刷新按钮 */}
         <Box style={{ 
           display: 'flex', 
@@ -264,6 +220,48 @@ export default function OverallStatus({
         </Box>
       </div>
       <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes fadeInScale {
+          from {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        @keyframes pulseRing {
+          0% {
+            opacity: 0.8;
+            transform: translate(-50%, -50%) scale(0.8);
+          }
+          50% {
+            opacity: 0.2;
+            transform: translate(-50%, -50%) scale(1.3);
+          }
+          100% {
+            opacity: 0.8;
+            transform: translate(-50%, -50%) scale(0.8);
+          }
+        }
         @keyframes spin {
           from {
             transform: rotate(0deg);
