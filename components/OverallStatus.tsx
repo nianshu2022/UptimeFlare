@@ -110,10 +110,13 @@ export default function OverallStatus({
     }
   })
   
-  // 按时间排序，取最近3个
+  // 按时间排序
   const sortedRecentIncidents = recentIncidents
     .sort((a, b) => b.startTime - a.startTime)
-    .slice(0, 3)
+  
+  // 控制最近事件展开/折叠
+  const [expandRecentIncidents, setExpandRecentIncidents] = useState(false)
+  const displayedIncidents = expandRecentIncidents ? sortedRecentIncidents : sortedRecentIncidents.slice(0, 3)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -405,21 +408,54 @@ export default function OverallStatus({
             backdropFilter: 'blur(25px)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset'
           }}>
-          <Text style={{
-            fontSize: '16px',
-            fontWeight: 600,
-            color: '#ffffff',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
-            marginBottom: '16px',
+          <div style={{
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '8px'
+            marginBottom: '16px'
           }}>
-            <IconAlertCircle size={18} style={{ color: '#ff9500' }} />
-            最近事件
-          </Text>
+            <Text style={{
+              fontSize: '16px',
+              fontWeight: 600,
+              color: '#ffffff',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <IconAlertCircle size={18} style={{ color: '#ff9500' }} />
+              最近事件 {sortedRecentIncidents.length > 0 && `(${sortedRecentIncidents.length})`}
+            </Text>
+            {sortedRecentIncidents.length > 3 && (
+              <Text
+                style={{
+                  fontSize: '13px',
+                  color: 'rgba(0, 255, 255, 0.8)',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  padding: '4px 12px',
+                  borderRadius: '8px',
+                  background: 'rgba(0, 255, 255, 0.1)',
+                  border: '1px solid rgba(0, 255, 255, 0.2)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 255, 255, 0.15)'
+                  e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.3)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 255, 255, 0.1)'
+                  e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+                }}
+                onClick={() => setExpandRecentIncidents(!expandRecentIncidents)}
+              >
+                {expandRecentIncidents ? '收起' : `展开 ${sortedRecentIncidents.length - 3} 条`}
+              </Text>
+            )}
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {sortedRecentIncidents.map((incident, idx) => (
+            {displayedIncidents.map((incident, idx) => (
               <div
                 key={idx}
                 style={{

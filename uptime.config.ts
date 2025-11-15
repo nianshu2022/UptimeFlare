@@ -48,12 +48,6 @@ const workerConfig: WorkerConfig = {
       target: 'https://mv.nianshu2022.cn/',
       // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
       statusPageLink: 'https://mv.nianshu2022.cn/',
-      // [可选] 启用域名到期监控
-      domainExpiryCheck: true,
-      // [可选] 提前多少天警告域名即将到期，默认30天
-      domainExpiryWarningDays: 30,
-      // [可选] WHOIS API密钥（如果使用whoisxmlapi.com服务，可选）
-      // domainExpiryWhoisApiKey: 'your-api-key-here',
     },
     // WithYou 监控
     {
@@ -67,28 +61,45 @@ const workerConfig: WorkerConfig = {
       target: 'https://time.nianshu2022.cn/',
       // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
       statusPageLink: 'https://time.nianshu2022.cn/',
-      // [可选] 启用域名到期监控
-      domainExpiryCheck: true,
-      // [可选] 提前多少天警告域名即将到期，默认30天
-      domainExpiryWarningDays: 30,
     },
+    // 每日推送 监控
     {
       // `id` 应该是唯一的，如果 `id` 保持不变，历史记录将被保留
-      id: 'cs_monitor',
+      id: 'daily_push_monitor',
       // `name` 用于状态页面和回调消息
-      name: 'cs',
+      name: '每日推送',
       // `method` 应该是一个有效的 HTTP 方法
       method: 'GET',
       // `target` 是一个有效的 URL
-      target: 'https://cs.nianshu2022.cn/',
+      target: 'https://za.nianshu2022.cn',
       // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
-      statusPageLink: 'https://cs.nianshu2022.cn/',
-      // [可选] 启用域名到期监控
-      domainExpiryCheck: true,
-      // [可选] 提前多少天警告域名即将到期，默认30天
-      domainExpiryWarningDays: 30,
-      // [可选] WHOIS API密钥（如果使用whoisxmlapi.com服务，可选）
-      // domainExpiryWhoisApiKey: 'your-api-key-here',
+      statusPageLink: 'https://za.nianshu2022.cn',
+    },
+    // 01lovehub 监控
+    {
+      // `id` 应该是唯一的，如果 `id` 保持不变，历史记录将被保留
+      id: '01lovehub_monitor',
+      // `name` 用于状态页面和回调消息
+      name: '01lovehub',
+      // `method` 应该是一个有效的 HTTP 方法
+      method: 'GET',
+      // `target` 是一个有效的 URL
+      target: 'https://zc.nianshu2022.cn',
+      // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
+      statusPageLink: 'https://zc.nianshu2022.cn',
+    },
+    // Nginx 监控
+    {
+      // `id` 应该是唯一的，如果 `id` 保持不变，历史记录将被保留
+      id: 'nginx_monitor',
+      // `name` 用于状态页面和回调消息
+      name: 'Nginx',
+      // `method` 应该是一个有效的 HTTP 方法
+      method: 'GET',
+      // `target` 是一个有效的 URL
+      target: 'https://nginx.nianshu2022.cn',
+      // [可选] `statusPageLink` 仅在状态页面用于可点击的链接
+      statusPageLink: 'https://nginx.nianshu2022.cn',
     },
   ],
   // [可选] 通知设置

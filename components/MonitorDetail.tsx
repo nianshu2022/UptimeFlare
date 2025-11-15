@@ -1,6 +1,6 @@
 import { Text, Tooltip, Badge } from '@mantine/core'
 import { MonitorState, MonitorTarget } from '@/types/config'
-import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconCalendar } from '@tabler/icons-react'
+import { IconAlertCircle, IconAlertTriangle, IconCircleCheck } from '@tabler/icons-react'
 import DetailBar from './DetailBar'
 import DetailChart from './DetailChart'
 import { getColor } from '@/util/color'
@@ -89,45 +89,6 @@ export default function MonitorDetail({
   }
 
   const uptimePercent = (((totalTime - downTime) / totalTime) * 100).toPrecision(4)
-
-  // 域名到期信息
-  const domainExpiryInfo = state.domainExpiry?.[monitor.id]
-  let domainExpiryElement: JSX.Element | null = null
-
-  if (monitor.domainExpiryCheck && domainExpiryInfo && domainExpiryInfo.expiryDate > 0) {
-    const expiryDate = new Date(domainExpiryInfo.expiryDate * 1000)
-    const daysRemaining = domainExpiryInfo.daysRemaining
-    const expiryDateStr = expiryDate.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-
-    let badgeColor = 'green'
-    let badgeText = `域名到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
-
-    if (daysRemaining <= 0) {
-      badgeColor = 'red'
-      badgeText = `域名已到期: ${expiryDateStr}！请尽快续费`
-    } else if (daysRemaining <= 7) {
-      badgeColor = 'red'
-      badgeText = `域名即将到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
-    } else if (daysRemaining <= 30) {
-      badgeColor = 'yellow'
-      badgeText = `域名即将到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
-    }
-
-    domainExpiryElement = (
-      <Badge
-        color={badgeColor}
-        variant="light"
-        leftSection={<IconCalendar size={12} />}
-        style={{ marginTop: '8px' }}
-      >
-        {badgeText}
-      </Badge>
-    )
-  }
 
   // Conditionally render monitor name with or without hyperlink based on monitor.url presence
   const monitorNameElement = (
@@ -390,8 +351,6 @@ export default function MonitorDetail({
         </div>
 
       </div>
-
-      {domainExpiryElement}
 
       {/* Response times 图表 */}
       {!monitor.hideLatencyChart && state.latency[monitor.id]?.recent && state.latency[monitor.id].recent.length > 0 && (
