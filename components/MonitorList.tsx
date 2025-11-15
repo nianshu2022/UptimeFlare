@@ -217,8 +217,8 @@ export default function MonitorList({
     <Center>
       <div
         style={{ 
-          width: groupedMonitor ? '92%' : '92%',
-          maxWidth: '1400px',
+          width: '100%',
+          maxWidth: '970px',
           transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           animation: 'fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           position: 'relative',

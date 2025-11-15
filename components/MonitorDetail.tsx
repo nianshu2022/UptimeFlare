@@ -131,13 +131,14 @@ export default function MonitorDetail({
 
   // Conditionally render monitor name with or without hyperlink based on monitor.url presence
   const monitorNameElement = (
-    <Text mt="sm" fw={600} style={{ 
+    <Text fw={600} style={{ 
       display: 'inline-flex', 
       alignItems: 'center',
       color: '#ffffff',
       fontSize: '20px',
       letterSpacing: '0.3px',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+      margin: 0
     }}>
       {monitor.statusPageLink ? (
         <a
