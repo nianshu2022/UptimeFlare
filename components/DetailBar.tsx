@@ -16,8 +16,6 @@ export default function DetailBar({
   state: MonitorState
 }) {
   const [barRef, barRect] = useResizeObserver()
-  
-  const montiorStartTime = state.incident[monitor.id]?.[0]?.start?.[0] || Math.round(Date.now() / 1000)
   const [modalOpened, setModalOpened] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
   const [incidentReasonsList, setIncidentReasonsList] = useState<Array<{ start: string; end: string; duration: string; error: string }>>([])
