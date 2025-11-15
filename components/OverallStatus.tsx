@@ -156,112 +156,120 @@ export default function OverallStatus({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '24px',
-        marginBottom: '32px'
+        gap: '32px',
+        width: '100%',
+        maxWidth: '970px',
+        marginLeft: 'auto',
+        marginRight: 'auto'
       }}>
         {/* 状态图标和文字组合 */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '20px',
+          gap: '24px',
           width: '100%'
         }}>
-          <div style={{ 
-            transition: 'transform 0.3s ease, opacity 0.3s ease',
-            animation: 'fadeInScale 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            position: 'relative'
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '20px',
+            width: '100%'
           }}>
-            {icon}
+            <div style={{ 
+              transition: 'transform 0.3s ease, opacity 0.3s ease',
+              animation: 'fadeInScale 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              position: 'relative'
+            }}>
+              {icon}
+            </div>
+            <Title 
+              style={{ 
+                textAlign: 'center',
+                transition: 'all 0.3s ease',
+                animation: 'fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both',
+                fontWeight: 600,
+                letterSpacing: '0.5px',
+                fontSize: '32px',
+                color: statusColor,
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+                position: 'relative',
+                margin: 0
+              }} 
+              order={1}
+            >
+              {statusString}
+            </Title>
           </div>
-          <Title 
-            style={{ 
-              textAlign: 'center',
-              transition: 'all 0.3s ease',
-              animation: 'fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both',
-              fontWeight: 600,
-              letterSpacing: '0.5px',
-              fontSize: '32px',
-              color: statusColor,
-              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
-              position: 'relative',
+          
+          {/* 最后更新时间和刷新按钮 */}
+          <Group style={{ 
+            gap: '12px',
+            alignItems: 'center'
+          }}>
+            <Title style={{ 
+              textAlign: 'center', 
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '13px',
+              fontWeight: 400,
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+              letterSpacing: '0.3px',
               margin: 0
-            }} 
-            order={1}
-          >
-            {statusString}
-          </Title>
+            }} order={5}>
+              最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
+              {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+              })}
+            </Title>
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              onClick={() => {
+                setIsRefreshing(true)
+                window.location.reload()
+              }}
+              title="刷新页面"
+              loading={isRefreshing}
+              style={{
+                transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                background: 'rgba(0, 255, 255, 0.1)',
+                border: '1px solid rgba(0, 255, 255, 0.2)',
+                color: '#00ffff',
+                borderRadius: '8px',
+                width: '32px',
+                height: '32px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'rotate(90deg) scale(1.05)'
+                e.currentTarget.style.background = 'rgba(0, 255, 255, 0.15)'
+                e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.3)'
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 255, 255, 0.25)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'rotate(0deg) scale(1)'
+                e.currentTarget.style.background = 'rgba(0, 255, 255, 0.1)'
+                e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+            >
+              <IconRefresh size={16} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
+            </ActionIcon>
+          </Group>
         </div>
-        
-        {/* 最后更新时间和刷新按钮 */}
-        <Group style={{ 
-          gap: '12px',
-          alignItems: 'center'
-        }}>
-          <Title style={{ 
-            textAlign: 'center', 
-            color: 'rgba(255, 255, 255, 0.6)',
-            fontSize: '13px',
-            fontWeight: 400,
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-            letterSpacing: '0.3px',
-            margin: 0
-          }} order={5}>
-            最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
-            {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-            })}
-          </Title>
-          <ActionIcon
-            variant="subtle"
-            size="sm"
-            onClick={() => {
-              setIsRefreshing(true)
-              window.location.reload()
-            }}
-            title="刷新页面"
-            loading={isRefreshing}
-            style={{
-              transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              background: 'rgba(0, 255, 255, 0.1)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
-              color: '#00ffff',
-              borderRadius: '8px',
-              width: '32px',
-              height: '32px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'rotate(90deg) scale(1.05)'
-              e.currentTarget.style.background = 'rgba(0, 255, 255, 0.15)'
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.3)'
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 255, 255, 0.25)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'rotate(0deg) scale(1)'
-              e.currentTarget.style.background = 'rgba(0, 255, 255, 0.1)'
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
-          >
-            <IconRefresh size={16} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
-          </ActionIcon>
-        </Group>
-      </div>
 
-      {/* 统计信息卡片 */}
-      <Group style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '16px',
-        marginBottom: '32px',
-        width: '100%',
-        maxWidth: '970px'
-      }}>
+        {/* 统计信息卡片 */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '16px',
+          width: '100%'
+        }}>
         {/* 总监控数 */}
         <Box style={{
           padding: '16px 20px',
@@ -384,21 +392,19 @@ export default function OverallStatus({
             总体可用率
           </Text>
         </Box>
-      </Group>
+      </div>
 
-      {/* 最近事件预览 */}
-      {sortedRecentIncidents.length > 0 && (
-        <Box style={{
-          width: '100%',
-          maxWidth: '970px',
-          padding: '20px',
-          background: 'rgba(255, 255, 255, 0.06)',
-          borderRadius: '16px',
-          border: '1px solid rgba(0, 255, 255, 0.15)',
-          backdropFilter: 'blur(25px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset',
-          marginBottom: '32px'
-        }}>
+        {/* 最近事件预览 */}
+        {sortedRecentIncidents.length > 0 && (
+          <Box style={{
+            width: '100%',
+            padding: '20px',
+            background: 'rgba(255, 255, 255, 0.06)',
+            borderRadius: '16px',
+            border: '1px solid rgba(0, 255, 255, 0.15)',
+            backdropFilter: 'blur(25px)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset'
+          }}>
           <Text style={{
             fontSize: '16px',
             fontWeight: 600,
@@ -485,7 +491,8 @@ export default function OverallStatus({
             ))}
           </div>
         </Box>
-      )}
+        )}
+      </div>
       <style jsx>{`
         @keyframes fadeIn {
           from {
