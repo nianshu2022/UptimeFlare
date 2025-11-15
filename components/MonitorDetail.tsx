@@ -2,6 +2,7 @@ import { Text, Tooltip, Badge } from '@mantine/core'
 import { MonitorState, MonitorTarget } from '@/types/config'
 import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconCalendar } from '@tabler/icons-react'
 import DetailBar from './DetailBar'
+import DetailChart from './DetailChart'
 import { getColor } from '@/util/color'
 import { maintenances } from '@/uptime.config'
 
@@ -124,17 +125,6 @@ export default function MonitorDetail({
         style={{ marginTop: '8px' }}
       >
         {badgeText}
-      </Badge>
-    )
-  } else if (monitor.domainExpiryCheck && domainExpiryInfo?.error) {
-    domainExpiryElement = (
-      <Badge
-        color="gray"
-        variant="light"
-        leftSection={<IconCalendar size={12} />}
-        style={{ marginTop: '8px' }}
-      >
-        域名到期信息查询失败
       </Badge>
     )
   }
@@ -294,12 +284,14 @@ export default function MonitorDetail({
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
-        alignItems: 'center', 
+        alignItems: 'flex-start', 
         gap: '16px', 
         flexWrap: 'nowrap',
         paddingBottom: '16px',
         borderBottom: '1px solid rgba(0, 255, 255, 0.15)',
-        marginBottom: '16px'
+        marginBottom: '16px',
+        position: 'relative',
+        paddingRight: isCurrentlyDown && formattedError ? '180px' : '0'
       }}>
         {/* 左侧：监控信息 */}
         <div style={{ 
@@ -314,26 +306,6 @@ export default function MonitorDetail({
             <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
           ) : (
             monitorNameElement
-          )}
-          
-          {/* 显示当前状态和错误信息（内联显示） */}
-          {isCurrentlyDown && formattedError && (
-            <span style={{ 
-              padding: '6px 12px',
-              background: 'linear-gradient(135deg, rgba(255, 51, 102, 0.15) 0%, rgba(255, 51, 102, 0.05) 100%)',
-              borderRadius: '6px',
-              border: '1px solid rgba(255, 51, 102, 0.4)',
-              fontSize: '13px',
-              fontFamily: 'monospace',
-              color: '#ff3366',
-              fontWeight: 600,
-              textShadow: '0 0 10px rgba(255, 51, 102, 0.6)',
-              letterSpacing: '0.5px',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 0 15px rgba(255, 51, 102, 0.2)'
-            }}>
-              ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
-            </span>
           )}
           
           {/* 显示响应时间（内联显示） */}
@@ -377,19 +349,52 @@ export default function MonitorDetail({
           </Text>
         </div>
 
+        {/* 右上角：错误信息 */}
+        {isCurrentlyDown && formattedError && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            zIndex: 10
+          }}>
+            <span style={{ 
+              padding: '6px 12px',
+              background: 'linear-gradient(135deg, rgba(255, 51, 102, 0.15) 0%, rgba(255, 51, 102, 0.05) 100%)',
+              borderRadius: '6px',
+              border: '1px solid rgba(255, 51, 102, 0.4)',
+              fontSize: '13px',
+              fontFamily: 'monospace',
+              color: '#ff3366',
+              fontWeight: 600,
+              textShadow: '0 0 10px rgba(255, 51, 102, 0.6)',
+              letterSpacing: '0.5px',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 0 15px rgba(255, 51, 102, 0.2)',
+              display: 'inline-block'
+            }}>
+              ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
+            </span>
+          </div>
+        )}
+
         {/* 右侧：DetailBar */}
         <div style={{ 
           flex: '0 0 auto', 
           marginLeft: 'auto', 
           minWidth: '300px', 
           display: 'flex', 
-          alignItems: 'center' 
+          alignItems: 'center'
         }}>
           <DetailBar monitor={monitor} state={state} />
         </div>
       </div>
 
       {domainExpiryElement}
+
+      {/* Response times 图表 */}
+      {!monitor.hideLatencyChart && state.latency[monitor.id]?.recent && state.latency[monitor.id].recent.length > 0 && (
+        <DetailChart monitor={monitor} state={state} />
+      )}
 
     </>
   )
