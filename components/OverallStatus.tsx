@@ -443,9 +443,16 @@ export default function OverallStatus({
                   e.currentTarget.style.background = incident.isActive ? 'rgba(255, 59, 48, 0.1)' : 'rgba(255, 255, 255, 0.04)'
                   e.currentTarget.style.transform = 'translateX(0)'
                 }}
-                onClick={() => {
-                  window.location.hash = incident.monitorId
-                  window.location.reload()
+                onClick={(e) => {
+                  e.preventDefault()
+                  // 滚动到对应的监控项
+                  const monitorElement = document.getElementById(`monitor-${incident.monitorId}`)
+                  if (monitorElement) {
+                    monitorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                  } else {
+                    // 如果找不到元素，使用 hash 跳转
+                    window.location.hash = incident.monitorId
+                  }
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, minWidth: 0 }}>

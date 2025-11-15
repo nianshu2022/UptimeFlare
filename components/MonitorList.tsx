@@ -119,6 +119,7 @@ export default function MonitorList({
                 .map((monitor, index) => (
                   <div 
                     key={monitor.id}
+                    id={`monitor-${monitor.id}`}
                     style={{
                       transition: 'all 0.3s ease',
                       animation: `fadeInUp 0.4s ease-in ${index * 0.1}s both`
@@ -174,6 +175,7 @@ export default function MonitorList({
       .map((monitor, index) => (
         <div 
           key={monitor.id}
+          id={`monitor-${monitor.id}`}
           style={{
             transition: 'all 0.3s ease',
             animation: `fadeInUp 0.4s ease-in ${index * 0.1}s both`

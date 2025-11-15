@@ -289,25 +289,26 @@ export default function MonitorDetail({
 
   return (
     <>
-      <div style={{ 
+      <div className="monitor-header" style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
         gap: '20px', 
-        flexWrap: 'nowrap',
+        flexWrap: 'wrap',
         paddingBottom: '20px',
         borderBottom: '1px solid rgba(0, 255, 255, 0.1)',
         marginBottom: '20px',
         position: 'relative'
       }}>
         {/* 左侧：监控信息 */}
-        <div style={{ 
+        <div className="monitor-header-left" style={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: '16px', 
           flexWrap: 'wrap', 
           flex: '1 1 auto', 
-          minWidth: 0
+          minWidth: 0,
+          maxWidth: '100%'
         }}>
           {monitor.tooltip ? (
             <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
@@ -349,7 +350,10 @@ export default function MonitorDetail({
               display: 'inline-block',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
-              boxShadow: '0 2px 8px rgba(255, 59, 48, 0.2), 0 0 0 1px rgba(255, 59, 48, 0.1) inset'
+              boxShadow: '0 2px 8px rgba(255, 59, 48, 0.2), 0 0 0 1px rgba(255, 59, 48, 0.1) inset',
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}>
               ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
             </span>
@@ -357,9 +361,10 @@ export default function MonitorDetail({
         </div>
 
         {/* 右侧：总体可用率 */}
-        <div style={{
+        <div className="monitor-header-right" style={{
           flex: '0 0 auto',
-          marginLeft: 'auto'
+          marginLeft: 'auto',
+          minWidth: 'fit-content'
         }}>
           <Text 
             fw={600} 
@@ -385,6 +390,24 @@ export default function MonitorDetail({
         </div>
 
       </div>
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .monitor-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 12px !important;
+          }
+          .monitor-header-left {
+            width: 100%;
+          }
+          .monitor-header-right {
+            margin-left: 0 !important;
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+          }
+        }
+      `}</style>
 
       {domainExpiryElement}
 

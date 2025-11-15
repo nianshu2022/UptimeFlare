@@ -6,8 +6,9 @@ import { KVNamespace } from '@cloudflare/workers-types'
 import { maintenances, pageConfig, workerConfig } from '@/uptime.config'
 import OverallStatus from '@/components/OverallStatus'
 import MonitorList from '@/components/MonitorList'
-import { Center, Text } from '@mantine/core'
+import { Center, Text, Tooltip, ActionIcon } from '@mantine/core'
 import MonitorDetail from '@/components/MonitorDetail'
+import { IconBrandGithub, IconMail, IconExternalLink, IconLink } from '@tabler/icons-react'
 
 export const runtime = 'experimental-edge'
 
@@ -93,54 +94,82 @@ export default function Home({
                 }}>
                   {pageConfig.title}
                 </h1>
-                {pageConfig.links && pageConfig.links.length > 0 && (
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexWrap: 'wrap',
-                    gap: '16px',
-                    marginTop: '16px'
-                  }}>
-                    {pageConfig.links.map((link, idx) => (
-                      <a
-                        key={idx}
-                        href={link.link}
-                        target={link.link.startsWith('mailto:') ? undefined : '_blank'}
-                        rel={link.link.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-                        style={{
-                          padding: '8px 16px',
-                          background: link.highlight ? 'rgba(0, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.06)',
-                          borderRadius: '12px',
-                          border: `1px solid ${link.highlight ? 'rgba(0, 255, 255, 0.3)' : 'rgba(0, 255, 255, 0.15)'}`,
-                          color: link.highlight ? '#00ffff' : 'rgba(255, 255, 255, 0.8)',
-                          textDecoration: 'none',
-                          fontSize: '14px',
-                          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                          fontWeight: link.highlight ? 600 : 400,
-                          transition: 'all 0.3s ease',
-                          backdropFilter: 'blur(10px)',
-                          display: 'inline-block'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = link.highlight ? 'rgba(0, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.08)'
-                          e.currentTarget.style.transform = 'translateY(-2px)'
-                          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 255, 255, 0.2)'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = link.highlight ? 'rgba(0, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.06)'
-                          e.currentTarget.style.transform = 'translateY(0)'
-                          e.currentTarget.style.boxShadow = 'none'
-                        }}
-                      >
-                        {link.label}
-                      </a>
-                    ))}
-                  </div>
-                )}
               </div>
             )}
             <OverallStatus state={state} monitors={monitors} maintenances={maintenances} />
             <MonitorList monitors={monitors} state={state} />
+          </div>
+        )}
+
+        {/* 悬浮链接按钮 */}
+        {pageConfig.links && pageConfig.links.length > 0 && (
+          <div style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            zIndex: 1000
+          }}>
+            {pageConfig.links.map((link, idx) => {
+              // 根据链接类型选择图标
+              let Icon = IconLink
+              if (link.link.includes('github.com') || link.label.toLowerCase().includes('github')) {
+                Icon = IconBrandGithub
+              } else if (link.link.startsWith('mailto:') || link.label.toLowerCase().includes('email') || link.label.toLowerCase().includes('mail')) {
+                Icon = IconMail
+              } else if (link.link.startsWith('http')) {
+                Icon = IconExternalLink
+              }
+
+              return (
+                <Tooltip
+                  key={idx}
+                  label={link.label}
+                  position="left"
+                  withArrow
+                >
+                  <ActionIcon
+                    component="a"
+                    href={link.link}
+                    target={link.link.startsWith('mailto:') ? undefined : '_blank'}
+                    rel={link.link.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                    size="xl"
+                    radius="xl"
+                    variant="filled"
+                    style={{
+                      background: link.highlight ? 'rgba(0, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                      border: `1px solid ${link.highlight ? 'rgba(0, 255, 255, 0.4)' : 'rgba(0, 255, 255, 0.2)'}`,
+                      color: link.highlight ? '#00ffff' : 'rgba(255, 255, 255, 0.9)',
+                      backdropFilter: 'blur(20px)',
+                      boxShadow: link.highlight 
+                        ? '0 4px 16px rgba(0, 255, 255, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset' 
+                        : '0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.08) inset',
+                      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      width: '48px',
+                      height: '48px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = link.highlight ? 'rgba(0, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.12)'
+                      e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'
+                      e.currentTarget.style.boxShadow = link.highlight
+                        ? '0 8px 24px rgba(0, 255, 255, 0.4), 0 0 0 1px rgba(0, 255, 255, 0.2) inset'
+                        : '0 8px 24px rgba(0, 255, 255, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.15) inset'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = link.highlight ? 'rgba(0, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.08)'
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                      e.currentTarget.style.boxShadow = link.highlight
+                        ? '0 4px 16px rgba(0, 255, 255, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
+                        : '0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.08) inset'
+                    }}
+                  >
+                    <Icon size={24} stroke={1.5} />
+                  </ActionIcon>
+                </Tooltip>
+              )
+            })}
           </div>
         )}
 

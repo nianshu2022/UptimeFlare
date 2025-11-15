@@ -5,8 +5,7 @@ const pageConfig: PageConfig = {
   title: "Nianshu's Status Page",
   // 显示在状态页面顶部的链接，可以将 `highlight` 设置为 `true` 来高亮显示
   links: [
-    { link: 'https://mv.nianshu2022.cn/', label: 'MoonTV' },
-    { link: 'https://time.nianshu2022.cn/', label: 'WithYou' },
+    { link: 'https://github.com/nianshu2022/', label: 'GitHub' },
     { link: 'mailto:ouerqixi@nianshu2022.cn', label: 'Email Me', highlight: true },
   ],
   // [可选] 对监控项进行分组
