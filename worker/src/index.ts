@@ -1,7 +1,7 @@
 import { DurableObject } from 'cloudflare:workers'
 import { MonitorState, MonitorTarget } from '../../types/config'
 import { maintenances, workerConfig } from '../../uptime.config'
-import { getStatus, getStatusWithGlobalPing, getDomainExpiry } from './monitor'
+import { getStatus, getStatusWithGlobalPing, getDomainExpiry, extractDomain, getCertificateExpiryFromAPI } from './monitor'
 import { formatStatusChangeNotification, getWorkerLocation, webhookNotify } from './util'
 
 export interface Env {
@@ -494,6 +494,52 @@ const Worker = {
           }
         } catch (e) {
           console.log(`Error checking domain expiry for ${monitor.name}: ${e}`)
+        }
+      }
+
+      // 检查证书到期（如果HTTPS监控）
+      if (monitor.target && typeof monitor.target === 'string' && monitor.target.toLowerCase().startsWith('https://')) {
+        try {
+          const shouldCheckCert = !state.certificateExpiry?.[monitor.id] ||
+            currentTimeSecond - (state.certificateExpiry[monitor.id]?.lastChecked || 0) >= 24 * 60 * 60 // 每24小时检查一次
+
+          if (shouldCheckCert) {
+            console.log(`Checking certificate expiry for ${monitor.name}...`)
+            
+            // 如果已经有证书信息（从Globalping获取），不需要再次检查
+            if (!state.certificateExpiry?.[monitor.id]?.expiryDate || state.certificateExpiry[monitor.id].expiryDate === 0) {
+              // 从外部API获取证书信息
+              const domain = extractDomain(monitor.target)
+              if (domain) {
+                  const certInfo = await getCertificateExpiryFromAPI(domain, monitor.timeout || 10000)
+                
+                if (!state.certificateExpiry) {
+                  state.certificateExpiry = {}
+                }
+                
+                if (certInfo && certInfo.expiryDate > 0) {
+                  state.certificateExpiry[monitor.id] = {
+                    expiryDate: certInfo.expiryDate,
+                    daysRemaining: certInfo.daysRemaining,
+                    lastChecked: currentTimeSecond,
+                  }
+                  statusChanged = true
+                  console.log(`${monitor.name} certificate expires in ${certInfo.daysRemaining} days`)
+                } else {
+                  // 如果没有获取到证书信息，记录错误
+                  state.certificateExpiry[monitor.id] = {
+                    expiryDate: 0,
+                    daysRemaining: -1,
+                    lastChecked: currentTimeSecond,
+                    error: '无法获取证书信息',
+                  }
+                  statusChanged = true
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.log(`Error checking certificate expiry for ${monitor.name}: ${e}`)
         }
       }
 

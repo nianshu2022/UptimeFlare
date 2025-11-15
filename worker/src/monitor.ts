@@ -420,7 +420,7 @@ export async function getStatus(
 /**
  * 从URL中提取域名
  */
-function extractDomain(target: string): string | null {
+export function extractDomain(target: string): string | null {
   try {
     // 如果target是URL，提取域名
     let url: URL
@@ -441,7 +441,7 @@ function extractDomain(target: string): string | null {
  * 从外部API获取证书到期信息
  * 使用 crt.sh (Certificate Transparency Log) API
  */
-async function getCertificateExpiryFromAPI(
+export async function getCertificateExpiryFromAPI(
   domain: string,
   timeout: number
 ): Promise<{ expiryDate: number; daysRemaining: number } | null> {
