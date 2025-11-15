@@ -289,7 +289,7 @@ export default function MonitorDetail({
 
   return (
     <>
-      <div className="monitor-header" style={{ 
+      <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
@@ -301,7 +301,7 @@ export default function MonitorDetail({
         position: 'relative'
       }}>
         {/* 左侧：监控信息 */}
-        <div className="monitor-header-left" style={{ 
+        <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: '16px', 
@@ -361,7 +361,7 @@ export default function MonitorDetail({
         </div>
 
         {/* 右侧：总体可用率 */}
-        <div className="monitor-header-right" style={{
+        <div style={{
           flex: '0 0 auto',
           marginLeft: 'auto',
           minWidth: 'fit-content'
@@ -390,24 +390,6 @@ export default function MonitorDetail({
         </div>
 
       </div>
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .monitor-header {
-            flex-direction: column;
-            align-items: flex-start !important;
-            gap: 12px !important;
-          }
-          .monitor-header-left {
-            width: 100%;
-          }
-          .monitor-header-right {
-            margin-left: 0 !important;
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-          }
-        }
-      `}</style>
 
       {domainExpiryElement}
 

@@ -2,7 +2,7 @@ import { MaintenanceConfig, PageConfig, WorkerConfig } from './types/config'
 
 const pageConfig: PageConfig = {
   // 状态页面的标题
-  title: "Nianshu's Status Page",
+  title: " ",
   // 显示在状态页面顶部的链接，可以将 `highlight` 设置为 `true` 来高亮显示
   links: [
     { link: 'https://github.com/nianshu2022/', label: 'GitHub' },
