@@ -100,7 +100,7 @@ export default function IncidentsPage() {
 
       <main className={inter.className} style={{ 
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f5f5f7 0%, #ffffff 40%, #f0f0f5 100%)',
+        background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f3a 30%, #0f1629 70%, #0a0e27 100%)',
         paddingTop: '40px',
         paddingBottom: '40px',
         position: 'relative',
@@ -108,6 +108,7 @@ export default function IncidentsPage() {
       }}>
         <div className="tech-background" />
         <div className="tech-background-glow" />
+        <div className="tech-grid-overlay" />
         <Center style={{ position: 'relative', zIndex: 1 }}>
           <Container size="md" style={{ width: '100%' }}>
             <Group justify="end" mb="md">

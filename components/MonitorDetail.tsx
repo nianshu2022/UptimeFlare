@@ -134,7 +134,7 @@ export default function MonitorDetail({
     <Text mt="sm" fw={600} style={{ 
       display: 'inline-flex', 
       alignItems: 'center',
-      color: '#1d1d1f',
+      color: '#ffffff',
       fontSize: '20px',
       letterSpacing: '0.3px',
       fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif'
@@ -147,17 +147,17 @@ export default function MonitorDetail({
           style={{ 
             display: 'inline-flex', 
             alignItems: 'center', 
-            color: '#1d1d1f',
+            color: '#ffffff',
             textDecoration: 'none',
             transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
             gap: '8px'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#007aff'
+            e.currentTarget.style.color = '#00ffff'
             e.currentTarget.style.transform = 'translateX(2px)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = '#1d1d1f'
+            e.currentTarget.style.color = '#ffffff'
             e.currentTarget.style.transform = 'translateX(0)'
           }}
         >
@@ -288,7 +288,7 @@ export default function MonitorDetail({
         borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
         marginBottom: '16px',
         position: 'relative',
-        paddingTop: isCurrentlyDown && formattedError ? '40px' : '0'
+        paddingTop: '40px'
       }}>
         {/* 左侧：监控信息 */}
         <div style={{ 
@@ -305,8 +305,8 @@ export default function MonitorDetail({
             monitorNameElement
           )}
           
-          {/* 显示响应时间（内联显示） */}
-          {!isCurrentlyDown && latestLatency && (
+          {/* 当前状态：响应时间或错误信息 */}
+          {!isCurrentlyDown && latestLatency ? (
             <span style={{ 
               padding: '6px 12px',
               background: 'rgba(48, 209, 88, 0.15)',
@@ -321,33 +321,7 @@ export default function MonitorDetail({
             }}>
               ✓ {latestLatency.ping}ms · {formatLocation(latestLatency.loc)}
             </span>
-          )}
-
-          <Text 
-            fw={600} 
-            style={{ 
-              display: 'inline', 
-              color: getColor(uptimePercent, true), 
-              whiteSpace: 'nowrap',
-              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-              letterSpacing: '0.3px',
-              fontSize: '16px',
-              userSelect: 'none'
-            }}
-          >
-            总体可用率: {uptimePercent}%
-          </Text>
-        </div>
-
-        {/* 右上角：错误信息 */}
-        {isCurrentlyDown && formattedError && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            zIndex: 10,
-            marginRight: '320px'
-          }}>
+          ) : isCurrentlyDown && formattedError ? (
             <span style={{ 
               padding: '6px 12px',
               background: 'rgba(255, 59, 48, 0.15)',
@@ -365,27 +339,67 @@ export default function MonitorDetail({
             }}>
               ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
             </span>
-          </div>
-        )}
-
-        {/* 右侧：DetailBar */}
-        <div style={{ 
-          flex: '0 0 auto', 
-          marginLeft: 'auto', 
-          minWidth: '300px', 
-          display: 'flex', 
-          alignItems: 'center',
-          zIndex: 5
-        }}>
-          <DetailBar monitor={monitor} state={state} />
+          ) : null}
         </div>
+
+        {/* 右上角：总体可用率 */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          zIndex: 10
+        }}>
+          <Text 
+            fw={600} 
+            style={{ 
+              display: 'inline-block', 
+              color: getColor(uptimePercent, true), 
+              whiteSpace: 'nowrap',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+              letterSpacing: '0.3px',
+              fontSize: '16px',
+              userSelect: 'none',
+              padding: '6px 12px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '8px',
+              border: '1px solid rgba(0, 255, 255, 0.3)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
+            }}
+          >
+            总体可用率: {uptimePercent}%
+          </Text>
+        </div>
+
       </div>
 
       {domainExpiryElement}
 
       {/* Response times 图表 */}
       {!monitor.hideLatencyChart && state.latency[monitor.id]?.recent && state.latency[monitor.id].recent.length > 0 && (
-        <DetailChart monitor={monitor} state={state} />
+        <>
+          {/* DetailBar 显示在图表上方 */}
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'nowrap', 
+            marginTop: '0px', 
+            marginBottom: '12px', 
+            minWidth: '200px', 
+            alignItems: 'center', 
+            gap: '2px', 
+            padding: '6px', 
+            background: 'rgba(255, 255, 255, 0.05)', 
+            borderRadius: '8px', 
+            border: '1px solid rgba(0, 255, 255, 0.15)', 
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 255, 255, 0.05) inset'
+          }}>
+            <DetailBar monitor={monitor} state={state} />
+          </div>
+          <DetailChart monitor={monitor} state={state} />
+        </>
       )}
 
     </>

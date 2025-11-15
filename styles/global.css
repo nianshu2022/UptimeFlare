@@ -28,13 +28,13 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 50%, #f0f0f5 100%);
-  color: var(--ios-text-primary);
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 30%, #0f1629 70%, #0a0e27 100%);
+  color: #ffffff;
   overflow-x: hidden;
   position: relative;
 }
 
-/* iOS 风格背景 - 柔和渐变 */
+/* 科技感背景 - 网格和渐变 */
 .tech-background {
   position: fixed;
   top: 0;
@@ -43,14 +43,23 @@ body {
   height: 100%;
   z-index: 0;
   background: 
-    radial-gradient(circle at 20% 30%, rgba(0, 122, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(255, 45, 85, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(88, 86, 214, 0.05) 0%, transparent 50%);
+    linear-gradient(to right, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
   pointer-events: none;
-  animation: subtlePulse 8s ease-in-out infinite;
+  animation: gridMove 20s linear infinite;
 }
 
-/* iOS 风格柔和光晕 */
+@keyframes gridMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
+  }
+}
+
+/* 科技感光晕效果 */
 .tech-background-glow {
   position: fixed;
   top: -50%;
@@ -60,21 +69,59 @@ body {
   z-index: 0;
   background: 
     radial-gradient(
-      circle at 30% 20%,
-      rgba(0, 122, 255, 0.1) 0%,
-      rgba(0, 122, 255, 0.05) 30%,
-      transparent 60%
+      circle at 20% 30%,
+      rgba(0, 255, 255, 0.15) 0%,
+      rgba(0, 255, 255, 0.08) 25%,
+      transparent 50%
     ),
     radial-gradient(
-      circle at 70% 80%,
-      rgba(255, 45, 85, 0.08) 0%,
-      rgba(255, 45, 85, 0.04) 30%,
-      transparent 60%
+      circle at 80% 70%,
+      rgba(138, 43, 226, 0.12) 0%,
+      rgba(138, 43, 226, 0.06) 25%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 10%,
+      rgba(0, 240, 255, 0.1) 0%,
+      rgba(0, 240, 255, 0.05) 20%,
+      transparent 40%
     );
   pointer-events: none;
-  animation: gentleGlow 20s ease-in-out infinite alternate;
-  filter: blur(120px);
-  opacity: 0.5;
+  animation: techGlow 15s ease-in-out infinite alternate;
+  filter: blur(100px);
+  opacity: 0.6;
+}
+
+@keyframes techGlow {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(5%, 5%) scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-5%, -5%) scale(0.9);
+    opacity: 0.6;
+  }
+}
+
+/* 科技感网格覆盖层 */
+.tech-grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: 
+    linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.05) 50%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, rgba(138, 43, 226, 0.05) 50%, transparent 100%);
+  background-size: 200% 200%;
+  pointer-events: none;
+  animation: gridPulse 8s ease-in-out infinite;
+  opacity: 0.4;
 }
 
 @keyframes gentleGlow {

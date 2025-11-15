@@ -360,15 +360,9 @@ export default function DetailBar({
           flexWrap: 'nowrap',
           marginTop: '0',
           marginBottom: '0',
-          minWidth: '200px',
+          width: '100%',
           alignItems: 'center',
-          gap: '2px',
-          padding: '6px',
-          background: 'rgba(0, 0, 0, 0.04)',
-          borderRadius: '8px',
-          border: '1px solid rgba(0, 0, 0, 0.06)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)'
+          gap: '2px'
         }}
         ref={barRef}
       >

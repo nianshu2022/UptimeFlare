@@ -1,5 +1,5 @@
 import { MonitorState, MonitorTarget } from '@/types/config'
-import { Accordion, Card, Center, Text } from '@mantine/core'
+import { Accordion, Center, Text } from '@mantine/core'
 import MonitorDetail from './MonitorDetail'
 import { pageConfig } from '@/uptime.config'
 import { useEffect, useState } from 'react'
@@ -124,38 +124,36 @@ export default function MonitorList({
                       animation: `fadeInUp 0.4s ease-in ${index * 0.1}s both`
                     }}
                   >
-                    <Card.Section 
-                      ml="xs" 
-                      mr="xs"
+                    <div
                       style={{
                         padding: '20px',
                         borderRadius: '16px',
                         marginBottom: '12px',
                         transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                         cursor: 'pointer',
-                        background: 'rgba(255, 255, 255, 0.7)',
-                        border: '1px solid rgba(0, 0, 0, 0.08)',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(0, 255, 255, 0.2)',
                         position: 'relative',
                         overflow: 'hidden',
-                        backdropFilter: 'blur(40px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.5) inset'
+                        backdropFilter: 'blur(20px) saturate(180%)',
+                        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.12)'
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.4)'
                         e.currentTarget.style.transform = 'translateY(-2px)'
-                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12), 0 1px 0 rgba(255, 255, 255, 0.6) inset'
+                        e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 255, 255, 0.2), 0 0 0 1px rgba(0, 255, 255, 0.2) inset'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.7)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.08)'
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
                         e.currentTarget.style.transform = 'translateY(0)'
-                        e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.5) inset'
+                        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
                       }}
                     >
                       <MonitorDetail monitor={monitor} state={state} />
-                    </Card.Section>
+                    </div>
                   </div>
                 ))}
             </Accordion.Panel>
@@ -181,76 +179,52 @@ export default function MonitorList({
             animation: `fadeInUp 0.4s ease-in ${index * 0.1}s both`
           }}
         >
-          <Card.Section 
-            ml="xs" 
-            mr="xs"
+          <div
             style={{
               padding: '20px',
               borderRadius: '16px',
               marginBottom: '12px',
               transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
               cursor: 'pointer',
-              background: 'rgba(255, 255, 255, 0.7)',
-              border: '1px solid rgba(0, 0, 0, 0.08)',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(0, 255, 255, 0.2)',
               position: 'relative',
               overflow: 'hidden',
-              backdropFilter: 'blur(40px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.5) inset'
+              backdropFilter: 'blur(20px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)'
-              e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.12)'
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.4)'
               e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12), 0 1px 0 rgba(255, 255, 255, 0.6) inset'
+              e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 255, 255, 0.2), 0 0 0 1px rgba(0, 255, 255, 0.2) inset'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.7)'
-              e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.08)'
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
               e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.5) inset'
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
             }}
           >
             <MonitorDetail monitor={monitor} state={state} />
-          </Card.Section>
+          </div>
         </div>
       ))
   }
 
   return (
     <Center>
-      <Card
-        className="tech-card"
-        shadow="none"
-        padding="lg"
-        radius="md"
-        mt="xl"
-        withBorder={false}
+      <div
         style={{ 
           width: groupedMonitor ? '92%' : '92%',
           maxWidth: '1400px',
           transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           animation: 'fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-          background: 'rgba(255, 255, 255, 0.8)',
-          border: '1px solid rgba(0, 0, 0, 0.08)',
-          backdropFilter: 'blur(40px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.5) inset',
           position: 'relative',
           marginLeft: 'auto',
           marginRight: 'auto',
-          borderRadius: '20px',
-          padding: '16px'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 0, 0, 0.12), 0 1px 0 rgba(255, 255, 255, 0.6) inset'
-          e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.12)'
-          e.currentTarget.style.transform = 'translateY(-2px)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.5) inset'
-          e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.08)'
-          e.currentTarget.style.transform = 'translateY(0)'
+          paddingTop: '24px'
         }}
       >
         {content}
@@ -266,7 +240,7 @@ export default function MonitorList({
             }
           }
         `}</style>
-      </Card>
+      </div>
     </Center>
   )
 }

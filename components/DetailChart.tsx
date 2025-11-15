@@ -75,15 +75,15 @@ export default function DetailChart({
     },
     plugins: {
       tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        titleColor: '#1d1d1f',
-        bodyColor: '#6e6e73',
-        borderColor: 'rgba(0, 0, 0, 0.1)',
+        backgroundColor: 'rgba(15, 22, 41, 0.95)',
+        titleColor: '#ffffff',
+        bodyColor: 'rgba(255, 255, 255, 0.7)',
+        borderColor: 'rgba(0, 255, 255, 0.3)',
         borderWidth: 1,
         padding: 12,
         borderRadius: 10,
         backdropFilter: 'blur(20px)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
         callbacks: {
           label: (item: any) => {
             if (item.parsed.y) {
@@ -99,7 +99,7 @@ export default function DetailChart({
         display: true,
         text: 'Response times(ms)',
         align: 'start' as const,
-        color: '#1d1d1f',
+        color: '#ffffff',
         font: {
           family: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
           size: 14,
@@ -114,34 +114,34 @@ export default function DetailChart({
           source: 'auto' as const,
           maxRotation: 0,
           autoSkip: true,
-          color: '#86868b',
+          color: 'rgba(255, 255, 255, 0.6)',
           font: {
             family: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
             size: 11,
           },
         },
         grid: {
-          color: 'rgba(0, 0, 0, 0.06)',
+          color: 'rgba(0, 255, 255, 0.1)',
           lineWidth: 1,
         },
         border: {
-          color: 'rgba(0, 0, 0, 0.08)',
+          color: 'rgba(0, 255, 255, 0.2)',
         },
       },
       y: {
         ticks: {
-          color: '#86868b',
+          color: 'rgba(255, 255, 255, 0.6)',
           font: {
             family: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
             size: 11,
           },
         },
         grid: {
-          color: 'rgba(0, 0, 0, 0.06)',
+          color: 'rgba(0, 255, 255, 0.1)',
           lineWidth: 1,
         },
         border: {
-          color: 'rgba(0, 0, 0, 0.08)',
+          color: 'rgba(0, 255, 255, 0.2)',
         },
       },
     },
@@ -151,15 +151,15 @@ export default function DetailChart({
     <div style={{ 
       height: '150px',
       position: 'relative',
-      background: 'rgba(255, 255, 255, 0.6)',
+      background: 'rgba(255, 255, 255, 0.08)',
       borderRadius: '12px',
       padding: '16px',
-      border: '1px solid rgba(0, 0, 0, 0.06)',
+      border: '1px solid rgba(0, 255, 255, 0.2)',
       marginTop: '16px',
       overflow: 'hidden',
       backdropFilter: 'blur(20px) saturate(180%)',
       WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(255, 255, 255, 0.5) inset'
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 255, 255, 0.1) inset'
     }}>
       <Line options={options} data={data} />
       <style jsx>{`
