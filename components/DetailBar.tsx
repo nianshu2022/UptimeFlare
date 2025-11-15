@@ -128,12 +128,12 @@ export default function DetailBar({
         events={{ hover: true, focus: false, touch: true }}
         label={
           Number.isNaN(Number(dayPercent)) ? (
-            <div style={{ color: '#b0b8c4', fontFamily: 'monospace', fontSize: '12px' }}>无数据</div>
+            <div style={{ color: '#6e6e73', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', fontSize: '13px' }}>无数据</div>
           ) : (
-            <div style={{ color: '#ffffff', fontFamily: 'monospace', fontSize: '12px' }}>
+            <div style={{ color: '#1d1d1f', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', fontSize: '13px' }}>
               <div>{dayPercent + '% - ' + new Date(dayStart * 1000).toLocaleDateString('zh-CN')}</div>
               {dayDownTime > 0 && (
-                <div style={{ color: '#ff3366', marginTop: '4px' }}>
+                <div style={{ color: '#ff3b30', marginTop: '4px', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif' }}>
                   {`故障时长: ${moment.preciseDiff(
                     moment(0),
                     moment(dayDownTime * 1000)
@@ -146,25 +146,24 @@ export default function DetailBar({
       >
         <div
           style={{
-            height: '24px',
-            width: '8px',
-            transition: 'all 0.2s ease',
-            borderRadius: '2px',
+            height: '20px',
+            width: '6px',
+            transition: 'all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            borderRadius: '3px',
             cursor: dayDownTime > 0 ? 'pointer' : 'default',
             background: getColor(dayPercent, false),
             marginLeft: '1px',
             marginRight: '1px',
-            boxShadow: `0 0 8px ${getColor(dayPercent, false)}`,
           }}
           onMouseEnter={(e) => {
             if (dayDownTime > 0) {
-              e.currentTarget.style.boxShadow = `0 0 15px ${getColor(dayPercent, false)}, 0 0 25px ${getColor(dayPercent, false)}`
-              e.currentTarget.style.transform = 'scaleY(1.2)'
+              e.currentTarget.style.transform = 'scaleY(1.3)'
+              e.currentTarget.style.opacity = '0.8'
             }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = `0 0 8px ${getColor(dayPercent, false)}`
             e.currentTarget.style.transform = 'scaleY(1)'
+            e.currentTarget.style.opacity = '1'
           }}
           onClick={() => {
             if (dayDownTime > 0) {
@@ -198,27 +197,34 @@ export default function DetailBar({
         size={'40em'}
         styles={{
           content: {
-            background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 100%)',
-            border: '1px solid rgba(0, 255, 255, 0.3)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 255, 255, 0.2)',
+            background: 'rgba(255, 255, 255, 0.95)',
+            border: '1px solid rgba(0, 0, 0, 0.1)',
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(40px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(40px) saturate(180%)',
           },
           title: {
-            color: '#ffffff',
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '1px',
-            textShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
+            color: '#1d1d1f',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+            fontWeight: 600,
+            letterSpacing: '0.3px',
+            fontSize: '18px',
           },
           close: {
-            color: '#ffffff',
-            background: 'rgba(0, 0, 0, 0.3)',
+            color: '#6e6e73',
+            background: 'rgba(0, 0, 0, 0.04)',
+            borderRadius: '8px',
+            transition: 'all 0.2s ease',
           },
           header: {
             background: 'transparent',
-            borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+            padding: '20px 24px',
           },
           body: {
             background: 'transparent',
+            padding: '24px',
           }
         }}
         classNames={{
@@ -241,15 +247,15 @@ export default function DetailBar({
                   gridTemplateColumns: '60px 1fr 1fr 120px 2fr',
                   gap: '12px',
                   padding: '12px 16px',
-                  background: 'rgba(0, 255, 255, 0.1)',
-                  borderRadius: '6px',
+                  background: 'rgba(0, 122, 255, 0.08)',
+                  borderRadius: '10px',
                   marginBottom: '12px',
-                  border: '1px solid rgba(0, 255, 255, 0.2)',
-                  fontSize: '12px',
+                  border: '1px solid rgba(0, 122, 255, 0.15)',
+                  fontSize: '13px',
                   fontWeight: 600,
-                  color: '#00ffff',
-                  fontFamily: 'monospace',
-                  letterSpacing: '1px'
+                  color: '#007aff',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                  letterSpacing: '0.3px'
                 }}>
                   <div>序号</div>
                   <div>开始时间</div>
@@ -268,51 +274,52 @@ export default function DetailBar({
                         gridTemplateColumns: '60px 1fr 1fr 120px 2fr',
                         gap: '12px',
                         padding: '12px 16px',
-                        marginBottom: '8px',
-                        background: 'rgba(15, 22, 41, 0.6)',
-                        borderRadius: '6px',
-                        border: '1px solid rgba(255, 51, 102, 0.3)',
-                        borderLeft: '3px solid #ff3366',
-                        transition: 'all 0.2s ease',
-                        fontSize: '12px',
-                        fontFamily: 'monospace'
+                        marginBottom: '6px',
+                        background: index % 2 === 0 ? 'rgba(0, 0, 0, 0.02)' : 'transparent',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(0, 0, 0, 0.04)',
+                        transition: 'all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                        fontSize: '13px',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                        color: '#6e6e73'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(15, 22, 41, 0.9)'
-                        e.currentTarget.style.borderColor = 'rgba(255, 51, 102, 0.5)'
+                        e.currentTarget.style.background = 'rgba(0, 122, 255, 0.08)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 122, 255, 0.15)'
                         e.currentTarget.style.transform = 'translateX(2px)'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(15, 22, 41, 0.6)'
-                        e.currentTarget.style.borderColor = 'rgba(255, 51, 102, 0.3)'
+                        e.currentTarget.style.background = index % 2 === 0 ? 'rgba(0, 0, 0, 0.02)' : 'transparent'
+                        e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.04)'
                         e.currentTarget.style.transform = 'translateX(0)'
                       }}
                     >
                       <div style={{ 
-                        color: '#ff3366',
+                        color: '#007aff',
                         fontWeight: 600,
-                        textShadow: '0 0 8px #ff3366'
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
                       }}>
                         #{globalIndex + index + 1}
                       </div>
-                      <div style={{ color: '#b0b8c4' }}>
+                      <div style={{ color: '#6e6e73', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif' }}>
                         {reason.start}
                       </div>
-                      <div style={{ color: '#b0b8c4' }}>
+                      <div style={{ color: '#6e6e73', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif' }}>
                         {reason.end}
                       </div>
                       <div style={{ 
-                        color: '#ff3366',
+                        color: '#ff3b30',
                         fontWeight: 600,
-                        textShadow: '0 0 8px #ff3366'
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
                       }}>
                         {reason.duration}
                       </div>
                       <div style={{ 
-                        color: '#ff3366',
+                        color: '#6e6e73',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'nowrap',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
                       }}>
                         {reason.error}
                       </div>
@@ -329,9 +336,11 @@ export default function DetailBar({
                       size="sm"
                       styles={{
                         control: {
-                          background: 'rgba(15, 22, 41, 0.8)',
-                          border: '1px solid rgba(0, 255, 255, 0.2)',
-                          color: '#ffffff',
+                          background: 'rgba(255, 255, 255, 0.8)',
+                          border: '1px solid rgba(0, 0, 0, 0.08)',
+                          color: '#1d1d1f',
+                          backdropFilter: 'blur(40px) saturate(180%)',
+                          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
                         }
                       }}
                       classNames={{
@@ -354,10 +363,12 @@ export default function DetailBar({
           minWidth: '200px',
           alignItems: 'center',
           gap: '2px',
-          padding: '4px',
-          background: 'rgba(0, 0, 0, 0.2)',
-          borderRadius: '6px',
-          border: '1px solid rgba(0, 255, 255, 0.1)'
+          padding: '6px',
+          background: 'rgba(0, 0, 0, 0.04)',
+          borderRadius: '8px',
+          border: '1px solid rgba(0, 0, 0, 0.06)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)'
         }}
         ref={barRef}
       >

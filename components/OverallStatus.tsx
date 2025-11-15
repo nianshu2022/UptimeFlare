@@ -28,21 +28,21 @@ export default function OverallStatus({
   let groupedMonitor = (group && Object.keys(group).length > 0) || false
 
   let statusString = ''
-  let icon = <IconAlertCircle style={{ width: 72, height: 72, color: '#ff3366', filter: 'drop-shadow(0 0 20px #ff3366)' }} />
-  let statusColor = '#ff3366'
+  let icon = <IconAlertCircle style={{ width: 64, height: 64, color: '#ff3b30' }} />
+  let statusColor = '#ff3b30'
   if (state.overallUp === 0 && state.overallDown === 0) {
     statusString = '暂无数据'
-    statusColor = '#6366f1'
+    statusColor = '#007aff'
   } else if (state.overallUp === 0) {
     statusString = '所有系统不可用'
-    statusColor = '#ff3366'
+    statusColor = '#ff3b30'
   } else if (state.overallDown === 0) {
     statusString = '所有系统正常运行'
-    icon = <IconCircleCheck style={{ width: 72, height: 72, color: '#00ff9f', filter: 'drop-shadow(0 0 20px #00ff9f)' }} />
-    statusColor = '#00ff9f'
+    icon = <IconCircleCheck style={{ width: 64, height: 64, color: '#30d158' }} />
+    statusColor = '#30d158'
   } else {
     statusString = `部分系统不可用 (${state.overallDown}/${state.overallUp + state.overallDown})`
-    statusColor = '#ffaa00'
+    statusColor = '#ff9500'
   }
 
   const [openTime] = useState(Math.round(Date.now() / 1000))
@@ -108,30 +108,10 @@ export default function OverallStatus({
       <Center>
         <div style={{ 
           transition: 'transform 0.3s ease, opacity 0.3s ease',
-          animation: 'fadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          filter: `drop-shadow(0 0 40px ${statusColor}aa)`,
+          animation: 'fadeInScale 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           position: 'relative'
         }}>
           {icon}
-          {/* 多层脉冲环 */}
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: `${100 + i * 40}px`,
-                height: `${100 + i * 40}px`,
-                borderRadius: '50%',
-                border: `2px solid ${statusColor}40`,
-                animation: `pulseRing 2s ease-in-out infinite`,
-                animationDelay: `${i * 0.3}s`,
-                pointerEvents: 'none'
-              }}
-            />
-          ))}
         </div>
       </Center>
       <Title 
@@ -140,16 +120,12 @@ export default function OverallStatus({
         style={{ 
           textAlign: 'center',
           transition: 'all 0.3s ease',
-          animation: 'fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both',
-          fontWeight: 800,
-          letterSpacing: '4px',
-          fontSize: '42px',
-          background: `linear-gradient(135deg, ${statusColor} 0%, ${statusColor}cc 50%, ${statusColor} 100%)`,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          textShadow: `0 0 40px ${statusColor}66, 0 0 80px ${statusColor}33`,
-          fontFamily: 'monospace',
+          animation: 'fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both',
+          fontWeight: 600,
+          letterSpacing: '0.5px',
+          fontSize: '34px',
+          color: statusColor,
+          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
           position: 'relative'
         }} 
         order={1}
@@ -204,40 +180,30 @@ export default function OverallStatus({
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center', 
-        gap: '20px', 
-        marginTop: '32px',
-        marginBottom: '40px',
-        padding: '24px 32px',
-        background: 'linear-gradient(135deg, rgba(20, 20, 35, 0.9) 0%, rgba(30, 20, 50, 0.85) 100%)',
-        borderRadius: '20px',
-        border: '2px solid rgba(138, 43, 226, 0.4)',
-        backdropFilter: 'blur(30px) saturate(180%)',
+        gap: '16px', 
+        marginTop: '24px',
+        marginBottom: '32px',
+        padding: '16px 24px',
+        background: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: '16px',
+        border: '1px solid rgba(0, 0, 0, 0.08)',
+        backdropFilter: 'blur(40px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(40px) saturate(180%)',
         marginLeft: 'auto',
         marginRight: 'auto',
         width: '92%',
         maxWidth: '1400px',
-        boxShadow: '0 12px 48px rgba(0, 0, 0, 0.5), 0 0 60px rgba(138, 43, 226, 0.2) inset, 0 0 100px rgba(0, 240, 255, 0.1)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.5) inset',
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* 彩虹边框光效 */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: '-100%',
-          width: '100%',
-          height: '3px',
-          background: 'linear-gradient(90deg, transparent, rgba(138, 43, 226, 1), rgba(0, 240, 255, 1), rgba(255, 0, 255, 1), rgba(0, 255, 159, 1), transparent)',
-          animation: 'slideBorder 4s linear infinite',
-          filter: 'blur(1px)'
-        }} />
         <Title style={{ 
           textAlign: 'center', 
-          color: '#b0b8c4',
+          color: '#6e6e73',
           fontSize: '14px',
-          fontWeight: 500,
-          fontFamily: 'monospace',
-          letterSpacing: '1px'
+          fontWeight: 400,
+          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+          letterSpacing: '0.3px'
         }} order={5}>
           最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
           {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
@@ -251,7 +217,7 @@ export default function OverallStatus({
         </Title>
         <ActionIcon
           variant="subtle"
-          size="lg"
+          size="md"
           onClick={() => {
             setIsRefreshing(true)
             window.location.reload()
@@ -259,28 +225,24 @@ export default function OverallStatus({
           title="刷新页面"
           loading={isRefreshing}
           style={{
-            transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2) 0%, rgba(0, 240, 255, 0.2) 100%)',
-            border: '2px solid rgba(138, 43, 226, 0.5)',
-            color: '#8a2be2',
-            borderRadius: '12px',
-            width: '44px',
-            height: '44px'
+            transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            background: 'rgba(0, 122, 255, 0.1)',
+            border: 'none',
+            color: '#007aff',
+            borderRadius: '8px',
+            width: '36px',
+            height: '36px'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'rotate(180deg) scale(1.15)'
-            e.currentTarget.style.boxShadow = '0 0 30px rgba(138, 43, 226, 0.8), 0 0 60px rgba(0, 240, 255, 0.4)'
-            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(138, 43, 226, 0.4) 0%, rgba(0, 240, 255, 0.4) 100%)'
-            e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.8)'
+            e.currentTarget.style.transform = 'rotate(90deg)'
+            e.currentTarget.style.background = 'rgba(0, 122, 255, 0.15)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'rotate(0deg) scale(1)'
-            e.currentTarget.style.boxShadow = 'none'
-            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(138, 43, 226, 0.2) 0%, rgba(0, 240, 255, 0.2) 100%)'
-            e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.5)'
+            e.currentTarget.style.transform = 'rotate(0deg)'
+            e.currentTarget.style.background = 'rgba(0, 122, 255, 0.1)'
           }}
         >
-          <IconRefresh size={20} style={{ animation: isRefreshing ? 'spin 0.8s linear infinite' : 'none' }} />
+          <IconRefresh size={18} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
         </ActionIcon>
       </Box>
       <style jsx>{`

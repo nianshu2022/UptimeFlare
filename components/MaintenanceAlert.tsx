@@ -21,11 +21,11 @@ export default function MaintenanceAlert({
     : maintenance.color || 'yellow'
   
   const colorMap: { [key: string]: { bg: string; border: string; text: string } } = {
-    gray: { bg: 'rgba(15, 22, 41, 0.8)', border: 'rgba(0, 255, 255, 0.2)', text: '#b0b8c4' },
-    yellow: { bg: 'rgba(255, 170, 0, 0.1)', border: 'rgba(255, 170, 0, 0.4)', text: '#ffaa00' },
-    orange: { bg: 'rgba(255, 170, 0, 0.1)', border: 'rgba(255, 170, 0, 0.4)', text: '#ffaa00' },
-    red: { bg: 'rgba(255, 51, 102, 0.1)', border: 'rgba(255, 51, 102, 0.4)', text: '#ff3366' },
-    blue: { bg: 'rgba(0, 170, 255, 0.1)', border: 'rgba(0, 170, 255, 0.4)', text: '#00aaff' },
+    gray: { bg: 'rgba(142, 142, 147, 0.15)', border: 'rgba(142, 142, 147, 0.2)', text: '#8e8e93' },
+    yellow: { bg: 'rgba(255, 149, 0, 0.15)', border: 'rgba(255, 149, 0, 0.2)', text: '#ff9500' },
+    orange: { bg: 'rgba(255, 149, 0, 0.15)', border: 'rgba(255, 149, 0, 0.2)', text: '#ff9500' },
+    red: { bg: 'rgba(255, 59, 48, 0.15)', border: 'rgba(255, 59, 48, 0.2)', text: '#ff3b30' },
+    blue: { bg: 'rgba(0, 122, 255, 0.15)', border: 'rgba(0, 122, 255, 0.2)', text: '#007aff' },
   }
   
   const colors = colorMap[alertColor] || colorMap.gray
@@ -36,11 +36,12 @@ export default function MaintenanceAlert({
       style={{
         margin: '16px auto 0 auto',
         padding: '20px',
-        background: colors.bg,
+        background: `rgba(255, 255, 255, 0.8)`,
         border: `1px solid ${colors.border}`,
-        borderRadius: '12px',
-        backdropFilter: 'blur(10px)',
-        boxShadow: `0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px ${colors.border} inset`,
+        borderRadius: '16px',
+        backdropFilter: 'blur(40px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.5) inset',
         position: 'relative',
         overflow: 'hidden',
         ...style
@@ -50,24 +51,22 @@ export default function MaintenanceAlert({
         <IconAlertTriangle 
           style={{ 
             color: colors.text, 
-            marginRight: '8px',
-            filter: `drop-shadow(0 0 8px ${colors.text})`
+            marginRight: '8px'
           }} 
         />
         <span
           style={{
             fontSize: '1.1rem',
-            fontWeight: 700,
+            fontWeight: 600,
             color: colors.text,
-            textShadow: `0 0 10px ${colors.text}`,
-            letterSpacing: '1px',
-            fontFamily: 'monospace'
+            letterSpacing: '0.3px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif'
           }}
         >
           {(upcoming ? '[即将到来] ' : '') + (maintenance.title || '计划维护')}
         </span>
       </div>
-      <div style={{ color: '#b0b8c4' }}>
+      <div style={{ color: '#6e6e73' }}>
         {/* Date range in top right (desktop) or inline (mobile) */}
         <div
           style={{
@@ -100,26 +99,26 @@ export default function MaintenanceAlert({
         >
           <div style={{ 
             textAlign: 'right', 
-            fontWeight: 'bold',
-            color: colors.text,
-            fontFamily: 'monospace',
+            fontWeight: '500',
+            color: '#6e6e73',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
             fontSize: '13px'
           }}>
             {upcoming ? '计划时间:' : '开始时间:'}
           </div>
-          <div style={{ color: '#ffffff', fontFamily: 'monospace', fontSize: '13px' }}>
+          <div style={{ color: '#1d1d1f', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', fontSize: '13px' }}>
             {new Date(maintenance.start).toLocaleString('zh-CN')}
           </div>
           <div style={{ 
             textAlign: 'right', 
-            fontWeight: 'bold',
-            color: colors.text,
-            fontFamily: 'monospace',
+            fontWeight: '500',
+            color: '#6e6e73',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
             fontSize: '13px'
           }}>
             {upcoming ? '预计结束:' : '结束时间:'}
           </div>
-          <div style={{ color: '#ffffff', fontFamily: 'monospace', fontSize: '13px' }}>
+          <div style={{ color: '#1d1d1f', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', fontSize: '13px' }}>
             {maintenance.end ? new Date(maintenance.end).toLocaleString('zh-CN') : '另行通知'}
           </div>
         </div>
@@ -128,24 +127,25 @@ export default function MaintenanceAlert({
         <Text style={{ 
           paddingTop: '3px', 
           whiteSpace: 'pre-line',
-          color: '#ffffff',
-          lineHeight: '1.6'
+          color: '#1d1d1f',
+          lineHeight: '1.6',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
         }}>
           {maintenance.body}
         </Text>
         {maintenance.monitors && maintenance.monitors.length > 0 && (
           <>
-            <Text mt="xs" style={{ color: '#ffffff', fontWeight: 600, fontSize: '14px', letterSpacing: '1px' }}>
+            <Text mt="xs" style={{ color: '#1d1d1f', fontWeight: 600, fontSize: '14px', letterSpacing: '0.3px', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif' }}>
               受影响的组件:
             </Text>
-            <List size="sm" withPadding style={{ color: '#b0b8c4', marginTop: '8px' }}>
+            <List size="sm" withPadding style={{ color: '#6e6e73', marginTop: '8px' }}>
               {maintenance.monitors.map((comp, compIdx) => (
                 <List.Item 
                   key={compIdx}
                   style={{
-                    fontFamily: 'monospace',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
                     padding: '4px 0',
-                    borderLeft: '2px solid rgba(0, 255, 255, 0.3)',
+                    borderLeft: `2px solid ${colors.border}`,
                     paddingLeft: '12px'
                   }}
                 >

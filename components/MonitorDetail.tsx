@@ -131,14 +131,13 @@ export default function MonitorDetail({
 
   // Conditionally render monitor name with or without hyperlink based on monitor.url presence
   const monitorNameElement = (
-    <Text mt="sm" fw={700} style={{ 
+    <Text mt="sm" fw={600} style={{ 
       display: 'inline-flex', 
       alignItems: 'center',
-      color: '#ffffff',
-      fontSize: '22px',
-      letterSpacing: '1.5px',
-      fontFamily: 'monospace',
-      textShadow: '0 0 20px rgba(255, 255, 255, 0.3)'
+      color: '#1d1d1f',
+      fontSize: '20px',
+      letterSpacing: '0.3px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif'
     }}>
       {monitor.statusPageLink ? (
         <a
@@ -148,19 +147,17 @@ export default function MonitorDetail({
           style={{ 
             display: 'inline-flex', 
             alignItems: 'center', 
-            color: '#ffffff',
+            color: '#1d1d1f',
             textDecoration: 'none',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
             gap: '8px'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#00ffff'
-            e.currentTarget.style.textShadow = '0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.4)'
+            e.currentTarget.style.color = '#007aff'
             e.currentTarget.style.transform = 'translateX(2px)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = '#ffffff'
-            e.currentTarget.style.textShadow = '0 0 20px rgba(255, 255, 255, 0.3)'
+            e.currentTarget.style.color = '#1d1d1f'
             e.currentTarget.style.transform = 'translateX(0)'
           }}
         >
@@ -288,10 +285,10 @@ export default function MonitorDetail({
         gap: '16px', 
         flexWrap: 'nowrap',
         paddingBottom: '16px',
-        borderBottom: '1px solid rgba(0, 255, 255, 0.15)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
         marginBottom: '16px',
         position: 'relative',
-        paddingRight: isCurrentlyDown && formattedError ? '180px' : '0'
+        paddingTop: isCurrentlyDown && formattedError ? '40px' : '0'
       }}>
         {/* 左侧：监控信息 */}
         <div style={{ 
@@ -312,37 +309,30 @@ export default function MonitorDetail({
           {!isCurrentlyDown && latestLatency && (
             <span style={{ 
               padding: '6px 12px',
-              background: 'linear-gradient(135deg, rgba(0, 255, 136, 0.15) 0%, rgba(0, 255, 136, 0.05) 100%)',
-              borderRadius: '6px',
-              border: '1px solid rgba(0, 255, 136, 0.4)',
+              background: 'rgba(48, 209, 88, 0.15)',
+              borderRadius: '8px',
+              border: '1px solid rgba(48, 209, 88, 0.2)',
               fontSize: '13px',
-              fontFamily: 'monospace',
-              color: '#00ff88',
-              fontWeight: 600,
-              textShadow: '0 0 10px rgba(0, 255, 136, 0.6)',
-              letterSpacing: '0.5px',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 0 15px rgba(0, 255, 136, 0.2)'
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+              color: '#30d158',
+              fontWeight: 500,
+              letterSpacing: '0.3px',
+              whiteSpace: 'nowrap'
             }}>
               ✓ {latestLatency.ping}ms · {formatLocation(latestLatency.loc)}
             </span>
           )}
 
           <Text 
-            fw={700} 
+            fw={600} 
             style={{ 
               display: 'inline', 
               color: getColor(uptimePercent, true), 
               whiteSpace: 'nowrap',
-              textShadow: `0 0 15px ${getColor(uptimePercent, true)}, 0 0 30px ${getColor(uptimePercent, true)}`,
-              fontFamily: 'monospace',
-              letterSpacing: '1.5px',
-              fontSize: '18px',
-              userSelect: 'none',
-              background: `linear-gradient(135deg, ${getColor(uptimePercent, true)} 0%, ${getColor(uptimePercent, true)}80 100%)`,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+              letterSpacing: '0.3px',
+              fontSize: '16px',
+              userSelect: 'none'
             }}
           >
             总体可用率: {uptimePercent}%
@@ -355,22 +345,23 @@ export default function MonitorDetail({
             position: 'absolute',
             top: 0,
             right: 0,
-            zIndex: 10
+            zIndex: 10,
+            marginRight: '320px'
           }}>
             <span style={{ 
               padding: '6px 12px',
-              background: 'linear-gradient(135deg, rgba(255, 51, 102, 0.15) 0%, rgba(255, 51, 102, 0.05) 100%)',
-              borderRadius: '6px',
-              border: '1px solid rgba(255, 51, 102, 0.4)',
+              background: 'rgba(255, 59, 48, 0.15)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 59, 48, 0.2)',
               fontSize: '13px',
-              fontFamily: 'monospace',
-              color: '#ff3366',
-              fontWeight: 600,
-              textShadow: '0 0 10px rgba(255, 51, 102, 0.6)',
-              letterSpacing: '0.5px',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+              color: '#ff3b30',
+              fontWeight: 500,
+              letterSpacing: '0.3px',
               whiteSpace: 'nowrap',
-              boxShadow: '0 0 15px rgba(255, 51, 102, 0.2)',
-              display: 'inline-block'
+              display: 'inline-block',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)'
             }}>
               ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
             </span>
@@ -383,7 +374,8 @@ export default function MonitorDetail({
           marginLeft: 'auto', 
           minWidth: '300px', 
           display: 'flex', 
-          alignItems: 'center'
+          alignItems: 'center',
+          zIndex: 5
         }}>
           <DetailBar monitor={monitor} state={state} />
         </div>

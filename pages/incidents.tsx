@@ -100,7 +100,7 @@ export default function IncidentsPage() {
 
       <main className={inter.className} style={{ 
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0a0a0f 0%, #151520 30%, #1a1a2e 60%, #151520 100%)',
+        background: 'linear-gradient(135deg, #f5f5f7 0%, #ffffff 40%, #f0f0f5 100%)',
         paddingTop: '40px',
         paddingBottom: '40px',
         position: 'relative',
@@ -123,11 +123,12 @@ export default function IncidentsPage() {
                 }}
                 styles={{
                   input: {
-                    background: 'linear-gradient(135deg, rgba(20, 20, 35, 0.9) 0%, rgba(30, 20, 50, 0.85) 100%)',
-                    border: '2px solid rgba(138, 43, 226, 0.4)',
-                    color: '#ffffff',
+                    background: 'rgba(255, 255, 255, 0.8)',
+                    border: '1px solid rgba(0, 0, 0, 0.08)',
+                    color: '#1d1d1f',
                     borderRadius: '12px',
-                    backdropFilter: 'blur(20px)'
+                    backdropFilter: 'blur(40px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(40px) saturate(180%)'
                   }
                 }}
                 classNames={{
@@ -152,12 +153,13 @@ export default function IncidentsPage() {
                         size="md"
                         styles={{
                           control: {
-                            background: 'linear-gradient(135deg, rgba(20, 20, 35, 0.9) 0%, rgba(30, 20, 50, 0.85) 100%)',
-                            border: '2px solid rgba(138, 43, 226, 0.4)',
-                            color: '#ffffff',
+                            background: 'rgba(255, 255, 255, 0.8)',
+                            border: '1px solid rgba(0, 0, 0, 0.08)',
+                            color: '#1d1d1f',
                             borderRadius: '12px',
-                            backdropFilter: 'blur(20px)',
-                            transition: 'all 0.3s ease'
+                            backdropFilter: 'blur(40px) saturate(180%)',
+                            WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+                            transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
                           }
                         }}
                         classNames={{
@@ -174,39 +176,34 @@ export default function IncidentsPage() {
                 className="tech-button"
                 onClick={() => (window.location.hash = prev)}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 240, 255, 0.2))',
-                  border: '2px solid rgba(138, 43, 226, 0.5)',
-                  color: '#ffffff',
-                  borderRadius: '16px',
-                  padding: '12px 24px',
-                  fontWeight: 600,
-                  letterSpacing: '1px',
-                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  boxShadow: '0 4px 20px rgba(138, 43, 226, 0.3)'
+                  background: 'rgba(0, 122, 255, 0.1)',
+                  border: '1px solid rgba(0, 122, 255, 0.2)',
+                  color: '#007aff',
+                  borderRadius: '12px',
+                  padding: '10px 20px',
+                  fontWeight: 500,
+                  letterSpacing: '0.3px',
+                  transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateX(-4px) scale(1.05)'
-                  e.currentTarget.style.boxShadow = '0 8px 30px rgba(138, 43, 226, 0.5)'
+                  e.currentTarget.style.transform = 'translateX(-2px)'
+                  e.currentTarget.style.background = 'rgba(0, 122, 255, 0.15)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateX(0) scale(1)'
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(138, 43, 226, 0.3)'
+                  e.currentTarget.style.transform = 'translateX(0)'
+                  e.currentTarget.style.background = 'rgba(0, 122, 255, 0.1)'
                 }}
               >
                 ← 上一个月
               </Button>
               <Box style={{ 
                 alignSelf: 'center', 
-                fontWeight: 700, 
-                fontSize: 24,
-                color: '#ffffff',
-                textShadow: '0 0 20px rgba(138, 43, 226, 0.6), 0 0 40px rgba(0, 240, 255, 0.4)',
-                letterSpacing: '3px',
-                fontFamily: 'monospace',
-                background: 'linear-gradient(135deg, rgba(138, 43, 226, 1), rgba(0, 240, 255, 1))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
+                fontWeight: 600, 
+                fontSize: 20,
+                color: '#1d1d1f',
+                letterSpacing: '0.5px',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif'
               }}>
                 {selectedMonth}
               </Box>
@@ -214,23 +211,23 @@ export default function IncidentsPage() {
                 className="tech-button"
                 onClick={() => (window.location.hash = next)}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 240, 255, 0.2))',
-                  border: '2px solid rgba(138, 43, 226, 0.5)',
-                  color: '#ffffff',
-                  borderRadius: '16px',
-                  padding: '12px 24px',
-                  fontWeight: 600,
-                  letterSpacing: '1px',
-                  transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  boxShadow: '0 4px 20px rgba(138, 43, 226, 0.3)'
+                  background: 'rgba(0, 122, 255, 0.1)',
+                  border: '1px solid rgba(0, 122, 255, 0.2)',
+                  color: '#007aff',
+                  borderRadius: '12px',
+                  padding: '10px 20px',
+                  fontWeight: 500,
+                  letterSpacing: '0.3px',
+                  transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateX(4px) scale(1.05)'
-                  e.currentTarget.style.boxShadow = '0 8px 30px rgba(138, 43, 226, 0.5)'
+                  e.currentTarget.style.transform = 'translateX(2px)'
+                  e.currentTarget.style.background = 'rgba(0, 122, 255, 0.15)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateX(0) scale(1)'
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(138, 43, 226, 0.3)'
+                  e.currentTarget.style.transform = 'translateX(0)'
+                  e.currentTarget.style.background = 'rgba(0, 122, 255, 0.1)'
                 }}
               >
                 下一个月 →
