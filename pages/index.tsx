@@ -71,6 +71,74 @@ export default function Home({
           </Center>
         ) : (
           <div style={{ animation: 'fadeInContent 0.8s ease-out', position: 'relative', zIndex: 1 }}>
+            {/* 页面标题 */}
+            {pageConfig.title && (
+              <div style={{
+                textAlign: 'center',
+                marginBottom: '32px',
+                maxWidth: '970px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                padding: '0 20px'
+              }}>
+                <h1 style={{
+                  fontSize: '42px',
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+                  letterSpacing: '1px',
+                  margin: 0,
+                  marginBottom: '8px',
+                  textShadow: '0 0 20px rgba(0, 255, 255, 0.3)'
+                }}>
+                  {pageConfig.title}
+                </h1>
+                {pageConfig.links && pageConfig.links.length > 0 && (
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap',
+                    gap: '16px',
+                    marginTop: '16px'
+                  }}>
+                    {pageConfig.links.map((link, idx) => (
+                      <a
+                        key={idx}
+                        href={link.link}
+                        target={link.link.startsWith('mailto:') ? undefined : '_blank'}
+                        rel={link.link.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                        style={{
+                          padding: '8px 16px',
+                          background: link.highlight ? 'rgba(0, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.06)',
+                          borderRadius: '12px',
+                          border: `1px solid ${link.highlight ? 'rgba(0, 255, 255, 0.3)' : 'rgba(0, 255, 255, 0.15)'}`,
+                          color: link.highlight ? '#00ffff' : 'rgba(255, 255, 255, 0.8)',
+                          textDecoration: 'none',
+                          fontSize: '14px',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                          fontWeight: link.highlight ? 600 : 400,
+                          transition: 'all 0.3s ease',
+                          backdropFilter: 'blur(10px)',
+                          display: 'inline-block'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = link.highlight ? 'rgba(0, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.08)'
+                          e.currentTarget.style.transform = 'translateY(-2px)'
+                          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 255, 255, 0.2)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = link.highlight ? 'rgba(0, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.06)'
+                          e.currentTarget.style.transform = 'translateY(0)'
+                          e.currentTarget.style.boxShadow = 'none'
+                        }}
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <OverallStatus state={state} monitors={monitors} maintenances={maintenances} />
             <MonitorList monitors={monitors} state={state} />
           </div>

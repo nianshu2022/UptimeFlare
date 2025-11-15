@@ -1,6 +1,6 @@
-import { MaintenanceConfig, MonitorTarget } from '@/types/config'
-import { Center, Container, Title, Collapse, Button, Box, ActionIcon, Transition } from '@mantine/core'
-import { IconCircleCheck, IconAlertCircle, IconRefresh } from '@tabler/icons-react'
+import { MaintenanceConfig, MonitorTarget, MonitorState } from '@/types/config'
+import { Center, Container, Title, Collapse, Button, Box, ActionIcon, Transition, Group, Text, Badge } from '@mantine/core'
+import { IconCircleCheck, IconAlertCircle, IconRefresh, IconClock, IconActivity, IconTrendingUp } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import MaintenanceAlert from './MaintenanceAlert'
 import { pageConfig } from '@/uptime.config'
@@ -20,7 +20,7 @@ export default function OverallStatus({
   maintenances,
   monitors,
 }: {
-  state: { overallUp: number; overallDown: number; lastUpdate: number }
+  state: MonitorState
   maintenances: MaintenanceConfig[]
   monitors: MonitorTarget[]
 }) {
@@ -67,6 +67,53 @@ export default function OverallStatus({
       return `${days} 天前`
     }
   }
+
+  // 计算统计信息
+  const totalMonitors = monitors.length
+  const overallUptime = state.overallUp + state.overallDown > 0
+    ? ((state.overallUp / (state.overallUp + state.overallDown)) * 100).toFixed(2)
+    : '0.00'
+  
+  // 计算平均响应时间
+  let totalLatency = 0
+  let latencyCount = 0
+  monitors.forEach(monitor => {
+    const latencyData = state.latency[monitor.id]
+    if (latencyData && latencyData.recent && latencyData.recent.length > 0) {
+      const latestLatency = latencyData.recent[latencyData.recent.length - 1]
+      if (latestLatency && latestLatency.ping > 0) {
+        totalLatency += latestLatency.ping
+        latencyCount++
+      }
+    }
+  })
+  const avgLatency = latencyCount > 0 ? Math.round(totalLatency / latencyCount) : 0
+
+  // 获取最近的事件（最近的3个）
+  const recentIncidents: Array<{ monitorName: string; monitorId: string; startTime: number; error: string; isActive: boolean }> = []
+  monitors.forEach(monitor => {
+    const incidents = state.incident[monitor.id]
+    if (incidents && incidents.length > 0) {
+      const lastIncident = incidents[incidents.length - 1]
+      if (lastIncident && lastIncident.start && lastIncident.start.length > 0) {
+        const startTime = lastIncident.start[0]
+        const isActive = lastIncident.end === undefined
+        const error = lastIncident.error && lastIncident.error.length > 0 ? lastIncident.error[lastIncident.error.length - 1] : '未知错误'
+        recentIncidents.push({
+          monitorName: monitor.name,
+          monitorId: monitor.id,
+          startTime,
+          error,
+          isActive
+        })
+      }
+    }
+  })
+  
+  // 按时间排序，取最近3个
+  const sortedRecentIncidents = recentIncidents
+    .sort((a, b) => b.startTime - a.startTime)
+    .slice(0, 3)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -146,28 +193,299 @@ export default function OverallStatus({
           </Title>
         </div>
         
-        {/* 最后更新时间（无卡片样式） */}
-        <Title style={{ 
-          textAlign: 'center', 
-          color: 'rgba(255, 255, 255, 0.6)',
-          fontSize: '13px',
-          fontWeight: 400,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-          letterSpacing: '0.3px',
-          margin: 0,
-          marginTop: '16px'
-        }} order={5}>
-          最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
-          {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-          })}
-        </Title>
+        {/* 最后更新时间和刷新按钮 */}
+        <Group style={{ 
+          gap: '12px',
+          alignItems: 'center'
+        }}>
+          <Title style={{ 
+            textAlign: 'center', 
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontSize: '13px',
+            fontWeight: 400,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+            letterSpacing: '0.3px',
+            margin: 0
+          }} order={5}>
+            最后更新: {formatRelativeTime(currentTime - state.lastUpdate)} · {' '}
+            {new Date(state.lastUpdate * 1000).toLocaleString('zh-CN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+            })}
+          </Title>
+          <ActionIcon
+            variant="subtle"
+            size="sm"
+            onClick={() => {
+              setIsRefreshing(true)
+              window.location.reload()
+            }}
+            title="刷新页面"
+            loading={isRefreshing}
+            style={{
+              transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              background: 'rgba(0, 255, 255, 0.1)',
+              border: '1px solid rgba(0, 255, 255, 0.2)',
+              color: '#00ffff',
+              borderRadius: '8px',
+              width: '32px',
+              height: '32px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'rotate(90deg) scale(1.05)'
+              e.currentTarget.style.background = 'rgba(0, 255, 255, 0.15)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.3)'
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 255, 255, 0.25)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'rotate(0deg) scale(1)'
+              e.currentTarget.style.background = 'rgba(0, 255, 255, 0.1)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
+          >
+            <IconRefresh size={16} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
+          </ActionIcon>
+        </Group>
       </div>
+
+      {/* 统计信息卡片 */}
+      <Group style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '16px',
+        marginBottom: '32px',
+        width: '100%',
+        maxWidth: '970px'
+      }}>
+        {/* 总监控数 */}
+        <Box style={{
+          padding: '16px 20px',
+          background: 'rgba(255, 255, 255, 0.06)',
+          borderRadius: '16px',
+          border: '1px solid rgba(0, 255, 255, 0.15)',
+          backdropFilter: 'blur(25px)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset',
+          textAlign: 'center',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.25)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.15)'
+        }}
+        >
+          <IconActivity size={24} style={{ color: '#00ffff', marginBottom: '8px' }} />
+          <Text style={{ 
+            fontSize: '28px', 
+            fontWeight: 700, 
+            color: '#ffffff',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+            marginBottom: '4px'
+          }}>
+            {totalMonitors}
+          </Text>
+          <Text style={{ 
+            fontSize: '13px', 
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
+          }}>
+            总监控数
+          </Text>
+        </Box>
+
+        {/* 平均响应时间 */}
+        <Box style={{
+          padding: '16px 20px',
+          background: 'rgba(255, 255, 255, 0.06)',
+          borderRadius: '16px',
+          border: '1px solid rgba(0, 255, 255, 0.15)',
+          backdropFilter: 'blur(25px)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset',
+          textAlign: 'center',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.25)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.15)'
+        }}
+        >
+          <IconClock size={24} style={{ color: '#00ffff', marginBottom: '8px' }} />
+          <Text style={{ 
+            fontSize: '28px', 
+            fontWeight: 700, 
+            color: '#ffffff',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+            marginBottom: '4px'
+          }}>
+            {avgLatency}ms
+          </Text>
+          <Text style={{ 
+            fontSize: '13px', 
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
+          }}>
+            平均响应时间
+          </Text>
+        </Box>
+
+        {/* 总体可用率 */}
+        <Box style={{
+          padding: '16px 20px',
+          background: 'rgba(255, 255, 255, 0.06)',
+          borderRadius: '16px',
+          border: '1px solid rgba(0, 255, 255, 0.15)',
+          backdropFilter: 'blur(25px)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset',
+          textAlign: 'center',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.25)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.15)'
+        }}
+        >
+          <IconTrendingUp size={24} style={{ color: '#00ffff', marginBottom: '8px' }} />
+          <Text style={{ 
+            fontSize: '28px', 
+            fontWeight: 700, 
+            color: parseFloat(overallUptime) >= 99 ? '#30d158' : parseFloat(overallUptime) >= 95 ? '#ff9500' : '#ff3b30',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+            marginBottom: '4px'
+          }}>
+            {overallUptime}%
+          </Text>
+          <Text style={{ 
+            fontSize: '13px', 
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
+          }}>
+            总体可用率
+          </Text>
+        </Box>
+      </Group>
+
+      {/* 最近事件预览 */}
+      {sortedRecentIncidents.length > 0 && (
+        <Box style={{
+          width: '100%',
+          maxWidth: '970px',
+          padding: '20px',
+          background: 'rgba(255, 255, 255, 0.06)',
+          borderRadius: '16px',
+          border: '1px solid rgba(0, 255, 255, 0.15)',
+          backdropFilter: 'blur(25px)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 255, 255, 0.08) inset',
+          marginBottom: '32px'
+        }}>
+          <Text style={{
+            fontSize: '16px',
+            fontWeight: 600,
+            color: '#ffffff',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <IconAlertCircle size={18} style={{ color: '#ff9500' }} />
+            最近事件
+          </Text>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {sortedRecentIncidents.map((incident, idx) => (
+              <div
+                key={idx}
+                style={{
+                  padding: '12px 16px',
+                  background: incident.isActive ? 'rgba(255, 59, 48, 0.1)' : 'rgba(255, 255, 255, 0.04)',
+                  borderRadius: '12px',
+                  border: `1px solid ${incident.isActive ? 'rgba(255, 59, 48, 0.2)' : 'rgba(0, 255, 255, 0.1)'}`,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = incident.isActive ? 'rgba(255, 59, 48, 0.15)' : 'rgba(255, 255, 255, 0.06)'
+                  e.currentTarget.style.transform = 'translateX(4px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = incident.isActive ? 'rgba(255, 59, 48, 0.1)' : 'rgba(255, 255, 255, 0.04)'
+                  e.currentTarget.style.transform = 'translateX(0)'
+                }}
+                onClick={() => {
+                  window.location.hash = incident.monitorId
+                  window.location.reload()
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, minWidth: 0 }}>
+                  <Text style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: '#ffffff',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif'
+                  }}>
+                    {incident.monitorName}
+                  </Text>
+                  <Text style={{
+                    fontSize: '12px',
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                    wordBreak: 'break-word'
+                  }}>
+                    {incident.error.length > 50 ? incident.error.substring(0, 50) + '...' : incident.error}
+                  </Text>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                  <Badge
+                    color={incident.isActive ? 'red' : 'gray'}
+                    variant="light"
+                    style={{
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                      fontSize: '11px',
+                      fontWeight: 600
+                    }}
+                  >
+                    {incident.isActive ? '进行中' : '已解决'}
+                  </Badge>
+                  <Text style={{
+                    fontSize: '11px',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {formatRelativeTime(currentTime - incident.startTime)}
+                  </Text>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Box>
+      )}
       <style jsx>{`
         @keyframes fadeIn {
           from {
