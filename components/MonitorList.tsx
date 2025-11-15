@@ -128,26 +128,27 @@ export default function MonitorList({
                       ml="xs" 
                       mr="xs"
                       style={{
-                        padding: '20px',
-                        borderRadius: '8px',
-                        marginBottom: '12px',
-                        transition: 'all 0.3s ease',
+                        padding: '24px',
+                        borderRadius: '12px',
+                        marginBottom: '16px',
+                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                         cursor: 'pointer',
-                        background: 'rgba(10, 14, 39, 0.5)',
-                        border: '1px solid rgba(0, 255, 255, 0.1)',
+                        background: 'linear-gradient(135deg, rgba(15, 22, 41, 0.7) 0%, rgba(26, 31, 58, 0.5) 100%)',
+                        border: '1px solid rgba(0, 255, 255, 0.2)',
                         position: 'relative',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        backdropFilter: 'blur(10px)'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(15, 22, 41, 0.8)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.4)'
-                        e.currentTarget.style.transform = 'translateY(-2px)'
-                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 255, 255, 0.2)'
+                        e.currentTarget.style.backgroundColor = 'linear-gradient(135deg, rgba(15, 22, 41, 0.95) 0%, rgba(26, 31, 58, 0.8) 100%)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.5)'
+                        e.currentTarget.style.transform = 'translateY(-4px) scale(1.01)'
+                        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 255, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1) inset'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(10, 14, 39, 0.5)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.1)'
-                        e.currentTarget.style.transform = 'translateY(0)'
+                        e.currentTarget.style.backgroundColor = 'linear-gradient(135deg, rgba(15, 22, 41, 0.7) 0%, rgba(26, 31, 58, 0.5) 100%)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+                        e.currentTarget.style.transform = 'translateY(0) scale(1)'
                         e.currentTarget.style.boxShadow = 'none'
                       }}
                     >
@@ -182,26 +183,27 @@ export default function MonitorList({
             ml="xs" 
             mr="xs"
             style={{
-              padding: '20px',
-              borderRadius: '8px',
-              marginBottom: '12px',
-              transition: 'all 0.3s ease',
+              padding: '24px',
+              borderRadius: '12px',
+              marginBottom: '16px',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
               cursor: 'pointer',
-              background: 'rgba(10, 14, 39, 0.5)',
-              border: '1px solid rgba(0, 255, 255, 0.1)',
+              background: 'linear-gradient(135deg, rgba(15, 22, 41, 0.7) 0%, rgba(26, 31, 58, 0.5) 100%)',
+              border: '1px solid rgba(0, 255, 255, 0.2)',
               position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              backdropFilter: 'blur(10px)'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(15, 22, 41, 0.8)'
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.4)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 255, 255, 0.2)'
+              e.currentTarget.style.backgroundColor = 'linear-gradient(135deg, rgba(15, 22, 41, 0.95) 0%, rgba(26, 31, 58, 0.8) 100%)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.5)'
+              e.currentTarget.style.transform = 'translateY(-4px) scale(1.01)'
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 255, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1) inset'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(10, 14, 39, 0.5)'
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.1)'
-              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.backgroundColor = 'linear-gradient(135deg, rgba(15, 22, 41, 0.7) 0%, rgba(26, 31, 58, 0.5) 100%)'
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+              e.currentTarget.style.transform = 'translateY(0) scale(1)'
               e.currentTarget.style.boxShadow = 'none'
             }}
           >
@@ -223,24 +225,26 @@ export default function MonitorList({
         style={{ 
           width: groupedMonitor ? '92%' : '92%',
           maxWidth: '1400px',
-          transition: 'all 0.3s ease',
-          animation: 'fadeInUp 0.5s ease-in',
-          background: 'rgba(15, 22, 41, 0.8)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.1) inset',
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          animation: 'fadeInUp 0.6s ease-out',
+          background: 'linear-gradient(135deg, rgba(15, 22, 41, 0.9) 0%, rgba(26, 31, 58, 0.7) 100%)',
+          border: '1px solid rgba(0, 255, 255, 0.3)',
+          backdropFilter: 'blur(20px)',
+          boxShadow: '0 12px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 255, 255, 0.15) inset',
           position: 'relative',
           marginLeft: 'auto',
-          marginRight: 'auto'
+          marginRight: 'auto',
+          borderRadius: '16px',
+          padding: '8px'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 255, 255, 0.2) inset, 0 0 20px rgba(0, 255, 255, 0.3)'
-          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.5)'
-          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.boxShadow = '0 16px 64px rgba(0, 0, 0, 0.7), 0 0 60px rgba(0, 255, 255, 0.25) inset, 0 0 40px rgba(0, 255, 255, 0.4)'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.6)'
+          e.currentTarget.style.transform = 'translateY(-4px)'
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.1) inset'
-          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.2)'
+          e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 255, 255, 0.15) inset'
+          e.currentTarget.style.borderColor = 'rgba(0, 255, 255, 0.3)'
           e.currentTarget.style.transform = 'translateY(0)'
         }}
       >

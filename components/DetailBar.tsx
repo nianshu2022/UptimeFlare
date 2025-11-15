@@ -146,15 +146,15 @@ export default function DetailBar({
       >
         <div
           style={{
-            height: '20px',
-            width: '7px',
-            background: getColor(dayPercent, false),
+            height: '24px',
+            width: '8px',
+            transition: 'all 0.2s ease',
             borderRadius: '2px',
+            cursor: dayDownTime > 0 ? 'pointer' : 'default',
+            background: getColor(dayPercent, false),
             marginLeft: '1px',
             marginRight: '1px',
-            transition: 'all 0.2s ease',
             boxShadow: `0 0 8px ${getColor(dayPercent, false)}`,
-            cursor: dayDownTime > 0 ? 'pointer' : 'default',
           }}
           onMouseEnter={(e) => {
             if (dayDownTime > 0) {
@@ -351,6 +351,13 @@ export default function DetailBar({
           flexWrap: 'nowrap',
           marginTop: '0',
           marginBottom: '0',
+          minWidth: '200px',
+          alignItems: 'center',
+          gap: '2px',
+          padding: '4px',
+          background: 'rgba(0, 0, 0, 0.2)',
+          borderRadius: '6px',
+          border: '1px solid rgba(0, 255, 255, 0.1)'
         }}
         ref={barRef}
       >

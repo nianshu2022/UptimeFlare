@@ -211,11 +211,6 @@ export default async function handler(req: NextRequest): Promise<Response> {
     const currentTimeSecond = Math.round(Date.now() / 1000)
     const results: any[] = []
 
-    // 确保证书信息存储结构存在
-    if (!state.certificateExpiry) {
-      state.certificateExpiry = {}
-    }
-
     // 检查每个监控项
     for (const monitor of workerConfig.monitors) {
       console.log(`Checking ${monitor.name}...`)
@@ -361,73 +356,6 @@ export default async function handler(req: NextRequest): Promise<Response> {
         }
 
         statusChanged ||= monitorStatusChanged
-
-        // 检查证书到期（如果HTTPS监控）
-        if (monitor.target && typeof monitor.target === 'string' && monitor.target.toLowerCase().startsWith('https://')) {
-          try {
-            const shouldCheckCert = !state.certificateExpiry?.[monitor.id] ||
-              currentTimeSecond - (state.certificateExpiry[monitor.id]?.lastChecked || 0) >= 24 * 60 * 60 // 每24小时检查一次
-
-            if (shouldCheckCert) {
-              console.log(`Checking certificate expiry for ${monitor.name}...`)
-              
-              if (!state.certificateExpiry[monitor.id]?.expiryDate || state.certificateExpiry[monitor.id].expiryDate === 0) {
-                // 从URL中提取域名
-                let domain: string | null = null
-                try {
-                  const url = new URL(monitor.target)
-                  domain = url.hostname.replace(/^www\./, '')
-                } catch (e) {
-                  console.log(`Failed to parse domain from target: ${monitor.target}`)
-                }
-                
-                if (domain) {
-                  // 使用 crt.sh API 获取证书信息
-                  try {
-                    const apiUrl = `https://crt.sh/?q=${encodeURIComponent(domain)}&output=json`
-                    const response = await fetch(apiUrl, {
-                      headers: {
-                        'User-Agent': 'UptimeFlare/1.0 (+https://github.com/lyc8503/UptimeFlare)',
-                      },
-                      signal: AbortSignal.timeout(monitor.timeout || 10000),
-                    })
-                    
-                    if (response.ok) {
-                      const data = await response.json()
-                      
-                      if (Array.isArray(data) && data.length > 0) {
-                        // 找到not_after最新的证书
-                        const latestCert = data.reduce((latest: any, cert: any) => {
-                          const latestNotAfter = latest?.not_after ? new Date(latest.not_after).getTime() : 0
-                          const certNotAfter = cert?.not_after ? new Date(cert.not_after).getTime() : 0
-                          return certNotAfter > latestNotAfter ? cert : latest
-                        }, data[0])
-                        
-                        if (latestCert?.not_after) {
-                          const expiryDate = new Date(latestCert.not_after)
-                          const expiryDateSeconds = Math.floor(expiryDate.getTime() / 1000)
-                          const daysRemaining = Math.ceil((expiryDateSeconds - currentTimeSecond) / (60 * 60 * 24))
-                          
-                          state.certificateExpiry[monitor.id] = {
-                            expiryDate: expiryDateSeconds,
-                            daysRemaining: daysRemaining,
-                            lastChecked: currentTimeSecond,
-                          }
-                          statusChanged = true
-                          console.log(`${monitor.name} certificate expires in ${daysRemaining} days`)
-                        }
-                      }
-                    }
-                  } catch (e: any) {
-                    console.log(`Error fetching certificate info for ${monitor.name}: ${e.message}`)
-                  }
-                }
-              }
-            }
-          } catch (e: any) {
-            console.log(`Error checking certificate expiry for ${monitor.name}: ${e.message}`)
-          }
-        }
       } catch (e: any) {
         monitorResult.error = e.message || String(e)
         console.error(`Error checking ${monitor.name}:`, e)

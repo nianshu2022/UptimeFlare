@@ -103,22 +103,41 @@ export default function OverallStatus({
       <Center>
         <div style={{ 
           transition: 'transform 0.3s ease, opacity 0.3s ease',
-          animation: 'fadeIn 0.5s ease-in',
-          filter: 'drop-shadow(0 0 20px rgba(0, 255, 255, 0.5))'
+          animation: 'fadeInScale 0.6s ease-out',
+          filter: 'drop-shadow(0 0 30px rgba(0, 255, 255, 0.6))',
+          position: 'relative'
         }}>
           {icon}
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '100px',
+            height: '100px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%)',
+            animation: 'pulseRing 2s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
         </div>
       </Center>
       <Title 
-        mt="sm" 
+        mt="md" 
+        mb="lg"
         style={{ 
           textAlign: 'center',
           transition: 'all 0.3s ease',
-          animation: 'fadeInUp 0.5s ease-in',
+          animation: 'fadeInUp 0.6s ease-out 0.2s both',
           color: '#ffffff',
-          textShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+          textShadow: '0 0 30px rgba(0, 255, 255, 0.6), 0 0 60px rgba(0, 255, 255, 0.3)',
           fontWeight: 700,
-          letterSpacing: '2px'
+          letterSpacing: '3px',
+          fontSize: '32px',
+          background: 'linear-gradient(135deg, #ffffff 0%, #00ffff 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text'
         }} 
         order={1}
       >
@@ -136,11 +155,31 @@ export default function OverallStatus({
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+        @keyframes fadeInScale {
+          from {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        @keyframes pulseRing {
+          0%, 100% {
+            opacity: 0.6;
+            transform: translate(-50%, -50%) scale(0.8);
+          }
+          50% {
+            opacity: 0.3;
+            transform: translate(-50%, -50%) scale(1.2);
           }
         }
       `}</style>
@@ -148,18 +187,32 @@ export default function OverallStatus({
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center', 
-        gap: '12px', 
-        marginTop: '16px',
-        padding: '16px',
-        background: 'rgba(15, 22, 41, 0.5)',
-        borderRadius: '8px',
-        border: '1px solid rgba(0, 255, 255, 0.2)',
-        backdropFilter: 'blur(10px)',
+        gap: '16px', 
+        marginTop: '24px',
+        marginBottom: '32px',
+        padding: '20px 24px',
+        background: 'linear-gradient(135deg, rgba(15, 22, 41, 0.8) 0%, rgba(26, 31, 58, 0.6) 100%)',
+        borderRadius: '12px',
+        border: '1px solid rgba(0, 255, 255, 0.3)',
+        backdropFilter: 'blur(20px)',
         marginLeft: 'auto',
         marginRight: 'auto',
         width: '92%',
-        maxWidth: '1400px'
+        maxWidth: '1400px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 255, 255, 0.1) inset',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
+        {/* 装饰性边框光效 */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: '-100%',
+          width: '100%',
+          height: '2px',
+          background: 'linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.8), transparent)',
+          animation: 'slideBorder 3s linear infinite'
+        }} />
         <Title style={{ 
           textAlign: 'center', 
           color: '#b0b8c4',
@@ -180,7 +233,7 @@ export default function OverallStatus({
         </Title>
         <ActionIcon
           variant="subtle"
-          size="sm"
+          size="md"
           onClick={() => {
             setIsRefreshing(true)
             window.location.reload()
@@ -188,21 +241,24 @@ export default function OverallStatus({
           title="刷新页面"
           loading={isRefreshing}
           style={{
-            transition: 'all 0.3s ease',
-            background: 'rgba(0, 255, 255, 0.1)',
-            border: '1px solid rgba(0, 255, 255, 0.3)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 170, 255, 0.15) 100%)',
+            border: '1px solid rgba(0, 255, 255, 0.4)',
             color: '#00ffff',
+            borderRadius: '8px',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'rotate(90deg)'
-            e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.5)'
+            e.currentTarget.style.transform = 'rotate(90deg) scale(1.1)'
+            e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.3)'
+            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0, 255, 255, 0.25) 0%, rgba(0, 170, 255, 0.25) 100%)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'rotate(0deg)'
+            e.currentTarget.style.transform = 'rotate(0deg) scale(1)'
             e.currentTarget.style.boxShadow = 'none'
+            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 170, 255, 0.15) 100%)'
           }}
         >
-          <IconRefresh size={16} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
+          <IconRefresh size={18} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
         </ActionIcon>
       </Box>
       <style jsx>{`
@@ -212,6 +268,14 @@ export default function OverallStatus({
           }
           to {
             transform: rotate(360deg);
+          }
+        }
+        @keyframes slideBorder {
+          0% {
+            left: -100%;
+          }
+          100% {
+            left: 100%;
           }
         }
       `}</style>

@@ -1,6 +1,6 @@
 import { Text, Tooltip, Badge } from '@mantine/core'
 import { MonitorState, MonitorTarget } from '@/types/config'
-import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconCalendar, IconCertificate } from '@tabler/icons-react'
+import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconCalendar } from '@tabler/icons-react'
 import DetailBar from './DetailBar'
 import { getColor } from '@/util/color'
 import { maintenances } from '@/uptime.config'
@@ -145,9 +145,10 @@ export default function MonitorDetail({
       display: 'inline-flex', 
       alignItems: 'center',
       color: '#ffffff',
-      fontSize: '18px',
-      letterSpacing: '1px',
-      fontFamily: 'monospace'
+      fontSize: '22px',
+      letterSpacing: '1.5px',
+      fontFamily: 'monospace',
+      textShadow: '0 0 20px rgba(255, 255, 255, 0.3)'
     }}>
       {monitor.statusPageLink ? (
         <a
@@ -159,23 +160,28 @@ export default function MonitorDetail({
             alignItems: 'center', 
             color: '#ffffff',
             textDecoration: 'none',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            gap: '8px'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = '#00ffff'
-            e.currentTarget.style.textShadow = '0 0 10px rgba(0, 255, 255, 0.5)'
+            e.currentTarget.style.textShadow = '0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.4)'
+            e.currentTarget.style.transform = 'translateX(2px)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = '#ffffff'
-            e.currentTarget.style.textShadow = 'none'
+            e.currentTarget.style.textShadow = '0 0 20px rgba(255, 255, 255, 0.3)'
+            e.currentTarget.style.transform = 'translateX(0)'
           }}
         >
-          {statusIcon} {monitor.name}
+          <span style={{ filter: 'drop-shadow(0 0 8px currentColor)' }}>{statusIcon}</span>
+          <span>{monitor.name}</span>
         </a>
       ) : (
-        <>
-          {statusIcon} {monitor.name}
-        </>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ filter: 'drop-shadow(0 0 8px currentColor)' }}>{statusIcon}</span>
+          <span>{monitor.name}</span>
+        </div>
       )}
     </Text>
   )
@@ -285,9 +291,25 @@ export default function MonitorDetail({
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        gap: '16px', 
+        flexWrap: 'nowrap',
+        paddingBottom: '16px',
+        borderBottom: '1px solid rgba(0, 255, 255, 0.15)',
+        marginBottom: '16px'
+      }}>
         {/* 左侧：监控信息 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: '1 1 auto', minWidth: 0 }}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '12px', 
+          flexWrap: 'wrap', 
+          flex: '1 1 auto', 
+          minWidth: 0 
+        }}>
           {monitor.tooltip ? (
             <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
           ) : (
@@ -297,17 +319,18 @@ export default function MonitorDetail({
           {/* 显示当前状态和错误信息（内联显示） */}
           {isCurrentlyDown && formattedError && (
             <span style={{ 
-              padding: '4px 8px',
-              background: 'rgba(255, 51, 102, 0.1)',
-              borderRadius: '4px',
-              border: '1px solid rgba(255, 51, 102, 0.3)',
-              fontSize: '12px',
+              padding: '6px 12px',
+              background: 'linear-gradient(135deg, rgba(255, 51, 102, 0.15) 0%, rgba(255, 51, 102, 0.05) 100%)',
+              borderRadius: '6px',
+              border: '1px solid rgba(255, 51, 102, 0.4)',
+              fontSize: '13px',
               fontFamily: 'monospace',
               color: '#ff3366',
               fontWeight: 600,
-              textShadow: '0 0 8px rgba(255, 51, 102, 0.5)',
+              textShadow: '0 0 10px rgba(255, 51, 102, 0.6)',
               letterSpacing: '0.5px',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              boxShadow: '0 0 15px rgba(255, 51, 102, 0.2)'
             }}>
               ⚠️ {formattedError.message} {formattedError.description && `(${formattedError.description})`}
             </span>
@@ -316,17 +339,18 @@ export default function MonitorDetail({
           {/* 显示响应时间（内联显示） */}
           {!isCurrentlyDown && latestLatency && (
             <span style={{ 
-              padding: '4px 8px',
-              background: 'rgba(0, 255, 136, 0.1)',
-              borderRadius: '4px',
-              border: '1px solid rgba(0, 255, 136, 0.3)',
-              fontSize: '12px',
+              padding: '6px 12px',
+              background: 'linear-gradient(135deg, rgba(0, 255, 136, 0.15) 0%, rgba(0, 255, 136, 0.05) 100%)',
+              borderRadius: '6px',
+              border: '1px solid rgba(0, 255, 136, 0.4)',
+              fontSize: '13px',
               fontFamily: 'monospace',
               color: '#00ff88',
               fontWeight: 600,
-              textShadow: '0 0 8px rgba(0, 255, 136, 0.5)',
+              textShadow: '0 0 10px rgba(0, 255, 136, 0.6)',
               letterSpacing: '0.5px',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              boxShadow: '0 0 15px rgba(0, 255, 136, 0.2)'
             }}>
               ✓ {latestLatency.ping}ms · {formatLocation(latestLatency.loc)}
             </span>
@@ -338,11 +362,15 @@ export default function MonitorDetail({
               display: 'inline', 
               color: getColor(uptimePercent, true), 
               whiteSpace: 'nowrap',
-              textShadow: `0 0 10px ${getColor(uptimePercent, true)}`,
+              textShadow: `0 0 15px ${getColor(uptimePercent, true)}, 0 0 30px ${getColor(uptimePercent, true)}`,
               fontFamily: 'monospace',
-              letterSpacing: '1px',
-              fontSize: '16px',
-              userSelect: 'none'
+              letterSpacing: '1.5px',
+              fontSize: '18px',
+              userSelect: 'none',
+              background: `linear-gradient(135deg, ${getColor(uptimePercent, true)} 0%, ${getColor(uptimePercent, true)}80 100%)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
             }}
           >
             总体可用率: {uptimePercent}%
@@ -350,90 +378,18 @@ export default function MonitorDetail({
         </div>
 
         {/* 右侧：DetailBar */}
-        <div style={{ flex: '0 0 auto', marginLeft: 'auto', minWidth: '300px', display: 'flex', alignItems: 'center' }}>
+        <div style={{ 
+          flex: '0 0 auto', 
+          marginLeft: 'auto', 
+          minWidth: '300px', 
+          display: 'flex', 
+          alignItems: 'center' 
+        }}>
           <DetailBar monitor={monitor} state={state} />
         </div>
       </div>
 
       {domainExpiryElement}
-
-      {/* 证书有效期信息（如果HTTPS监控）- 始终显示 */}
-      {(() => {
-        // 检查是否为HTTPS监控
-        const isHttps = monitor.target && typeof monitor.target === 'string' && (
-          monitor.target.toLowerCase().startsWith('https://') || 
-          monitor.target.toLowerCase().startsWith('http://') && monitor.method === 'HTTPS'
-        )
-        
-        if (!isHttps) {
-          return null
-        }
-
-        const certInfo = state.certificateExpiry?.[monitor.id]
-        
-        if (certInfo && certInfo.expiryDate && certInfo.expiryDate > 0) {
-          // 有证书信息，显示到期日期
-          const expiryDate = new Date(certInfo.expiryDate * 1000)
-          const daysRemaining = certInfo.daysRemaining || 0
-          const expiryDateStr = expiryDate.toLocaleDateString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          })
-
-          let badgeColor = 'green'
-          let badgeText = `证书到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
-
-          if (daysRemaining <= 0) {
-            badgeColor = 'red'
-            badgeText = `证书已过期: ${expiryDateStr}！请立即更新`
-          } else if (daysRemaining <= 7) {
-            badgeColor = 'red'
-            badgeText = `证书即将过期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
-          } else if (daysRemaining <= 30) {
-            badgeColor = 'yellow'
-            badgeText = `证书即将到期: ${expiryDateStr} (剩余 ${daysRemaining} 天)`
-          }
-
-          return (
-            <Badge
-              key="certificate-expiry"
-              color={badgeColor}
-              variant="light"
-              leftSection={<IconCertificate size={12} />}
-              style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
-            >
-              {badgeText}
-            </Badge>
-          )
-        } else if (certInfo && certInfo.error) {
-          // 显示证书查询错误
-          return (
-            <Badge
-              key="certificate-error"
-              color="gray"
-              variant="light"
-              leftSection={<IconCertificate size={12} />}
-              style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
-            >
-              证书信息查询失败: {certInfo.error}
-            </Badge>
-          )
-        } else {
-          // 如果还没有证书信息，始终显示待检查提示
-          return (
-            <Badge
-              key="certificate-pending"
-              color="blue"
-              variant="light"
-              leftSection={<IconCertificate size={12} />}
-              style={{ marginTop: '8px', display: 'inline-block', marginRight: '8px' }}
-            >
-              🔒 证书信息待检查
-            </Badge>
-          )
-        }
-      })()}
 
     </>
   )

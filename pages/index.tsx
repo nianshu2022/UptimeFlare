@@ -48,15 +48,18 @@ export default function Home({
 
       <main className={inter.className} style={{ 
         minHeight: '100vh', 
-        background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 50%, #0a0e27 100%)',
-        paddingTop: '40px',
-        paddingBottom: '40px',
-        paddingLeft: '10px',
-        paddingRight: '10px',
+        background: 'linear-gradient(135deg, #0a0e27 0%, #0f1629 50%, #1a1f3a 100%)',
+        paddingTop: '60px',
+        paddingBottom: '60px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        overflowX: 'hidden'
       }}>
+        {/* 动态背景层 */}
         <div className="tech-background" />
+        <div className="tech-background-glow" />
         {state == undefined ? (
           <Center style={{ padding: '60px 20px', position: 'relative', zIndex: 1 }}>
             <div className="tech-card" style={{ maxWidth: '600px', textAlign: 'center' }}>
@@ -66,7 +69,7 @@ export default function Home({
             </div>
           </Center>
         ) : (
-          <div style={{ animation: 'fadeIn 0.5s ease-in', position: 'relative', zIndex: 1 }}>
+          <div style={{ animation: 'fadeInContent 0.8s ease-out', position: 'relative', zIndex: 1 }}>
             <OverallStatus state={state} monitors={monitors} maintenances={maintenances} />
             <MonitorList monitors={monitors} state={state} />
           </div>
@@ -81,6 +84,16 @@ export default function Home({
             to {
               opacity: 1;
               transform: translateY(0);
+            }
+          }
+          @keyframes fadeInContent {
+            from {
+              opacity: 0;
+              transform: translateY(30px) scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
             }
           }
         `}</style>
