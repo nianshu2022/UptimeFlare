@@ -147,4 +147,15 @@ export type MonitorState = {
       error?: string // 错误信息（如果有）
     }
   >
+  // 待确认故障信息（用于故障确认机制）
+  pendingIncidents?: Record<
+    string,
+    {
+      firstDetectionTime: number // 第一次检测到故障的时间戳（秒）
+      confirmationChecks: number // 已确认的次数（不包括第一次检测）
+      lastCheckTime: number // 最后一次检查的时间戳（秒）
+      lastError: string // 最后一次的错误信息
+      notified: boolean // 是否已发送通知
+    }
+  >
 }

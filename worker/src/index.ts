@@ -126,6 +126,9 @@ const Worker = {
     if (!state.domainExpiry) {
       state.domainExpiry = {}
     }
+    if (!state.pendingIncidents) {
+      state.pendingIncidents = {}
+    }
 
     let statusChanged = false
     const currentTimeSecond = Math.round(Date.now() / 1000)
@@ -133,7 +136,26 @@ const Worker = {
     // Check each monitor
     // TODO: concurrent status check
     for (const monitor of workerConfig.monitors) {
-      console.log(`[${workerLocation}] Checking ${monitor.name}...`)
+      // 判断是否需要执行检测
+      const pendingIncident = state.pendingIncidents?.[monitor.id]
+      const lastNormalCheckTime = state.latency[monitor.id]?.recent?.slice(-1)?.[0]?.time || 0
+      const isNormalCheck = !pendingIncident && (currentTimeSecond - lastNormalCheckTime >= 300 || lastNormalCheckTime === 0) // 5分钟间隔或首次检测
+      const isConfirmationCheck = pendingIncident && !pendingIncident.notified && (currentTimeSecond - pendingIncident.lastCheckTime >= 60) // 故障确认检测（每1分钟）
+      
+      // 如果既不是正常检测也不是故障确认检测，跳过
+      if (!isNormalCheck && !isConfirmationCheck) {
+        console.log(`[${monitor.name}] Skipping check: normal check interval not met and no pending incident confirmation needed`)
+        // 继续更新统计（使用上次状态）
+        const lastIncident = state.incident[monitor.id]?.slice(-1)?.[0]
+        if (lastIncident && lastIncident.end === undefined) {
+          state.overallDown++
+        } else {
+          state.overallUp++
+        }
+        continue
+      }
+      
+      console.log(`[${workerLocation}] Checking ${monitor.name}... (${isNormalCheck ? 'normal check' : 'confirmation check'})`)
 
       let monitorStatusChanged = false
       let checkLocation = workerLocation
@@ -185,7 +207,7 @@ const Worker = {
       }
 
       // const status = await getStatus(monitor)
-      const currentTimeSecond = Math.round(Date.now() / 1000)
+      // currentTimeSecond 已在循环外部定义
 
       // Update counters
       status.up ? state.overallUp++ : state.overallDown++
@@ -204,6 +226,12 @@ const Worker = {
 
       if (status.up) {
         // Current status is up
+        // 清除待确认故障信息（如果服务已恢复）
+        if (state.pendingIncidents[monitor.id]) {
+          console.log(`[${monitor.name}] Service recovered, clearing pending incident`)
+          delete state.pendingIncidents[monitor.id]
+        }
+        
         // close existing incident if any
         if (lastIncident.end === undefined) {
           lastIncident.end = currentTimeSecond
@@ -229,95 +257,108 @@ const Worker = {
         }
       } else {
         // Current status is down
-        // open new incident if not already open
-        if (lastIncident.end !== undefined) {
-          state.incident[monitor.id].push({
-            start: [currentTimeSecond],
-            end: undefined,
-            error: [status.err],
-          })
-          monitorStatusChanged = true
-        } else if (
-          lastIncident.end === undefined &&
-          lastIncident.error.slice(-1)[0] !== status.err
-        ) {
-          // append if the error message changes
-          lastIncident.start.push(currentTimeSecond)
-          lastIncident.error.push(status.err)
-          monitorStatusChanged = true
+        // 故障确认机制：连续3次检测到故障才发送通知
+        
+        if (isNormalCheck) {
+          // 正常检测（每5分钟）首次检测到故障，开始故障确认流程
+          console.log(`[${monitor.name}] First detection of failure at ${new Date(currentTimeSecond * 1000).toISOString()}, starting confirmation process`)
+          state.pendingIncidents[monitor.id] = {
+            firstDetectionTime: currentTimeSecond,
+            confirmationChecks: 0,
+            lastCheckTime: currentTimeSecond,
+            lastError: status.err,
+            notified: false,
+          }
+          
+          // 更新 incident 记录
+          if (lastIncident.end !== undefined) {
+            state.incident[monitor.id].push({
+              start: [currentTimeSecond],
+              end: undefined,
+              error: [status.err],
+            })
+            monitorStatusChanged = true
+          }
+        } else if (pendingIncident && !pendingIncident.notified) {
+          // 故障确认检测（每1分钟）
+          const timeSinceLastCheck = currentTimeSecond - pendingIncident.lastCheckTime
+          
+          if (timeSinceLastCheck >= 60) {
+            // 距离上次检查已超过1分钟，进行确认检测
+            pendingIncident.confirmationChecks++
+            pendingIncident.lastCheckTime = currentTimeSecond
+            pendingIncident.lastError = status.err
+            
+            console.log(`[${monitor.name}] Confirmation check #${pendingIncident.confirmationChecks} at ${new Date(currentTimeSecond * 1000).toISOString()}, still down: ${status.err}`)
+            
+            if (pendingIncident.confirmationChecks >= 2) {
+              // 已连续3次检测到故障（首次检测 + 2次确认），发送通知
+              console.log(`[${monitor.name}] Confirmed failure after ${pendingIncident.confirmationChecks} confirmation checks, sending notification`)
+              
+              // 更新 incident 记录
+              if (lastIncident.end !== undefined) {
+                state.incident[monitor.id].push({
+                  start: [pendingIncident.firstDetectionTime],
+                  end: undefined,
+                  error: [pendingIncident.lastError],
+                })
+                monitorStatusChanged = true
+              } else {
+                // 如果已经有 incident，更新错误信息
+                if (lastIncident.error.slice(-1)[0] !== pendingIncident.lastError) {
+                  lastIncident.error.push(pendingIncident.lastError)
+                  monitorStatusChanged = true
+                }
+              }
+              
+              const currentIncident = state.incident[monitor.id].slice(-1)[0]
+              
+              try {
+                // 发送通知
+                console.log(`Sending notification for ${monitor.name} (DOWN) after confirmation`)
+                await formatAndNotify(
+                  monitor,
+                  false,
+                  pendingIncident.firstDetectionTime,
+                  currentTimeSecond,
+                  pendingIncident.lastError
+                )
+                
+                // 标记已通知
+                pendingIncident.notified = true
+                
+                if (monitorStatusChanged) {
+                  console.log('Calling config onStatusChange callback...')
+                  await workerConfig.callbacks?.onStatusChange?.(
+                    env,
+                    monitor,
+                    false,
+                    pendingIncident.firstDetectionTime,
+                    currentTimeSecond,
+                    pendingIncident.lastError
+                  )
+                }
+              } catch (e) {
+                console.log('Error sending notification: ')
+                console.log(e)
+              }
+            }
+          } else {
+            // 距离上次检查不足1分钟，跳过（等待下次 cron 触发）
+            console.log(`[${monitor.name}] Skipping confirmation check, only ${timeSinceLastCheck}s since last check (need 60s)`)
+          }
+        } else if (pendingIncident && pendingIncident.notified) {
+          // 已发送通知，继续更新 incident 记录
+          if (lastIncident.end === undefined) {
+            if (lastIncident.error.slice(-1)[0] !== status.err) {
+              lastIncident.start.push(currentTimeSecond)
+              lastIncident.error.push(status.err)
+              monitorStatusChanged = true
+            }
+          }
         }
 
         const currentIncident = state.incident[monitor.id].slice(-1)[0]
-        try {
-          // 计算故障持续时间（秒）
-          const incidentDuration = currentTimeSecond - currentIncident.start[0]
-          const gracePeriodSeconds = (workerConfig.notification?.gracePeriod ?? 0) * 60
-          
-          // 判断是否应该发送通知：
-          // 1. 如果状态变化（从正常变为故障），立即发送通知（用户需求1）
-          // 2. 如果宽限期为 0，立即发送（首次检测到故障）
-          // 3. 如果宽限期 > 0，需要满足宽限期要求
-          const shouldNotify =
-            // 状态变化（新故障），立即发送
-            (monitorStatusChanged) ||
-            // 或者宽限期为 0 且是首次检测（故障持续时间很短，说明是新故障）
-            (gracePeriodSeconds === 0 && incidentDuration < 60) ||
-            // 或者在宽限期窗口内（用于持续故障的通知）
-            (gracePeriodSeconds > 0 &&
-              incidentDuration >= gracePeriodSeconds - 30 &&
-              incidentDuration < gracePeriodSeconds + 30)
-          
-          if (shouldNotify) {
-            console.log(
-              `Should notify for ${monitor.name}: monitorStatusChanged=${monitorStatusChanged}, gracePeriod=${workerConfig.notification?.gracePeriod}, incidentDuration=${incidentDuration}s`
-            )
-            if (
-              currentIncident.start[0] !== currentTimeSecond &&
-              workerConfig.notification?.skipErrorChangeNotification
-            ) {
-              console.log(
-                'Skipping notification for following error reason change due to user config'
-              )
-            } else {
-              console.log(`Sending notification for ${monitor.name} (DOWN)`)
-              await formatAndNotify(
-                monitor,
-                false,
-                currentIncident.start[0],
-                currentTimeSecond,
-                status.err
-              )
-            }
-          } else {
-            console.log(
-              `Grace period (${workerConfig.notification
-                ?.gracePeriod}m) not met or no change (currently down for ${
-                currentTimeSecond - currentIncident.start[0]
-              }s, changed ${monitorStatusChanged}), skipping webhook DOWN notification for ${
-                monitor.name
-              }`
-            )
-            console.log(
-              `Debug: monitorStatusChanged=${monitorStatusChanged}, gracePeriodSeconds=${gracePeriodSeconds}, incidentDuration=${incidentDuration}`
-            )
-          }
-
-          if (monitorStatusChanged) {
-            console.log('Calling config onStatusChange callback...')
-            await workerConfig.callbacks?.onStatusChange?.(
-              env,
-              monitor,
-              false,
-              currentIncident.start[0],
-              currentTimeSecond,
-              status.err
-            )
-          }
-        } catch (e) {
-          console.log('Error calling callback: ')
-          console.log(e)
-        }
-
         try {
           console.log('Calling config onIncident callback...')
           await workerConfig.callbacks?.onIncident?.(
